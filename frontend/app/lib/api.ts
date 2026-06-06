@@ -28,6 +28,8 @@ export const api = {
       request("/auth/register", { method: "POST", body: JSON.stringify({ email, password, name }) }),
     login: (email: string, password: string) =>
       request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+    updateProfile: (body: object, token?: string) =>
+      request(`/auth/profile?token=${token || getToken()}`, { method: "PATCH", body: JSON.stringify(body) }),
   },
   programs: {
     recommend: (body: object) =>

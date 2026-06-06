@@ -27,7 +27,14 @@ export default function SignupPage() {
     try {
       const res = await api.auth.register(form.email, form.password, form.name) as any;
       localStorage.setItem("access_token", res.access_token);
-      localStorage.setItem("user", JSON.stringify(res.user));
+      const updatedUser = await api.auth.updateProfile({
+        item_keyword: form.item_keyword,
+        category: form.category,
+        startup_stage: form.startup_stage,
+        region: form.region,
+        has_team: form.has_team,
+      }, res.access_token) as any;
+      localStorage.setItem("user", JSON.stringify(updatedUser));
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
