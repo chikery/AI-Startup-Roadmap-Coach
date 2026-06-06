@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+.next/
+
+# Environment
+.env
+.env.local
+backend/.env
+frontend/.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# FAISS index (빌드 시 재생성)
+backend/app/rag/faiss_index/
+
+# macOS
+.DS_Store
+
+# Build
+dist/
+build/
