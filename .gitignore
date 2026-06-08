@@ -21,6 +21,12 @@ backend/app/rag/faiss_index/
 # macOS
 .DS_Store
 
+# Design assets
+*.png
+*.jpg
+*.jpeg
+mockup*
+
 # Build
 dist/
 build/
