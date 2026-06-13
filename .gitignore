@@ -30,3 +30,4 @@ mockup*
 # Build
 dist/
 build/
+.gstack/
