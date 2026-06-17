@@ -1,10 +1,20 @@
 from fastapi import APIRouter, HTTPException
 from openai import OpenAI
+from pydantic import BaseModel
+from typing import List
 from app.schemas.roadmap import AIDraftRequest
 from app.config import settings
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 client = OpenAI(api_key=settings.openai_api_key)
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
 
 STEP_PROMPTS = {
     1: """창업 아이템: {item_keyword}
@@ -156,5 +166,43 @@ def generate_draft(body: AIDraftRequest):
         import json
         draft = json.loads(response.choices[0].message.content)
         return {"step": body.step, "draft": draft}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+CHAT_SYSTEM_PROMPT = """당신은 AI 창업 로드맵 코치입니다.
+예술인·초기 창업자가 아이디어에서 사업계획서까지 완성할 수 있도록 친절하고 실용적으로 도와주세요.
+창업 관련 질문(아이디어 검증, 시장 조사, MVP, 비즈니스 모델, 투자 유치 등)에 집중하되,
+일반적인 질문에도 자연스럽게 답변하세요. 한국어로 답변하고 간결하게 핵심을 전달하세요."""
+
+
+@router.post("/chat")
+def chat(body: ChatRequest):
+    if not body.messages:
+        raise HTTPException(status_code=400, detail="메시지가 없습니다")
+
+    use_solar = bool(settings.solar_api_key and settings.solar_api_key != "your-solar-api-key-here")
+
+    try:
+        if use_solar:
+            chat_client = OpenAI(
+                api_key=settings.solar_api_key,
+                base_url="https://api.upstage.ai/v1",
+            )
+            model = "solar-pro"
+        else:
+            chat_client = client
+            model = "gpt-4o-mini"
+
+        response = chat_client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": CHAT_SYSTEM_PROMPT},
+                *[{"role": m.role, "content": m.content} for m in body.messages],
+            ],
+            temperature=0.7,
+            max_tokens=1024,
+        )
+        return {"message": response.choices[0].message.content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
