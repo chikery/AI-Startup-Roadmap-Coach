@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const isProd = process.env.NODE_ENV === "production";
-const repoName = "roadmap-coach";
+const repoName = "AI-Startup-Roadmap-Coach";
 
 const nextConfig: NextConfig = {
   output: "export",
