@@ -1,12 +1,14 @@
 import type { NextConfig } from "next";
 
-const isProd = process.env.NODE_ENV === "production";
+const isGithubPages = process.env.GITHUB_ACTIONS === "true";
 const repoName = "AI-Startup-Roadmap-Coach";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  basePath: isProd ? `/${repoName}` : "",
-  assetPrefix: isProd ? `/${repoName}/` : "",
+  ...(isGithubPages && {
+    output: "export",
+    basePath: `/${repoName}`,
+    assetPrefix: `/${repoName}/`,
+  }),
   images: { unoptimized: true },
 };
 
