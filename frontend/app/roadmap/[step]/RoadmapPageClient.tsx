@@ -481,14 +481,23 @@ export default function RoadmapStepPage() {
               </button>
             </div>
           ) : (
-            <div style={{ background: "#E7F5EE", border: "1px solid #CDEBDC", borderRadius: 14, padding: "16px 20px", marginTop: 18, display: "flex", alignItems: "center", gap: 13 }}>
-              <span style={{ width: 40, height: 40, borderRadius: 11, background: "#15A06B", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </span>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: "#15803D" }}>AI 초안이 생성되었습니다</div>
-                <div style={{ fontSize: 13, color: "#3F7A5A", marginTop: 3 }}>각 항목을 검토하고 다듬은 뒤 저장 후 다음 단계로 진행하세요.</div>
+            <div style={{ background: "#E7F5EE", border: "1px solid #CDEBDC", borderRadius: 14, padding: "16px 20px", marginTop: 18, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
+                <span style={{ width: 40, height: 40, borderRadius: 11, background: "#15A06B", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </span>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: "#15803D" }}>AI 초안이 생성되었습니다</div>
+                  <div style={{ fontSize: 13, color: "#3F7A5A", marginTop: 3 }}>각 항목을 검토하고 다듬은 뒤 저장 후 다음 단계로 진행하세요.</div>
+                </div>
               </div>
+              <button
+                onClick={handleGenerate}
+                disabled={generating || !user?.item_keyword}
+                style={{ cursor: generating || !user?.item_keyword ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "#15A06B", color: "#fff", border: "none", padding: "11px 18px", borderRadius: 11, fontSize: 13, fontWeight: 700, opacity: generating || !user?.item_keyword ? 0.6 : 1 }}
+              >
+                {generating ? "생성 중..." : "다시 생성하기"}
+              </button>
             </div>
           )}
 
@@ -509,7 +518,8 @@ export default function RoadmapStepPage() {
             </div>
 
             {meta.rows.map((row, idx) => {
-              const val = (content?.[row.key] as string) || "";
+              const raw = content?.[row.key];
+              const val = raw === null || raw === undefined ? "" : typeof raw === "string" ? raw : JSON.stringify(raw, null, 2);
               const isLast = idx === meta.rows.length - 1;
               return (
                 <div key={row.key} style={{ display: "grid", gridTemplateColumns: "210px 1fr", borderBottom: isLast ? "none" : "1px solid #EEF0F3" }}>
