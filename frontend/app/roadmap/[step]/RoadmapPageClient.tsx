@@ -212,6 +212,8 @@ export default function RoadmapStepPage() {
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [draftGenerated, setDraftGenerated] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [fetchingFeedback, setFetchingFeedback] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -227,6 +229,7 @@ export default function RoadmapStepPage() {
           if (data.content) {
             setContent(data.content);
             setDraftGenerated(true);
+            fetchFeedback(step, data.content);
           }
         })
         .catch(() => {});
@@ -237,6 +240,26 @@ export default function RoadmapStepPage() {
     }
   }, [step]);
 
+  async function fetchFeedback(stepNum: number, stepContent: Record<string, unknown>) {
+    setFetchingFeedback(true);
+    setFeedback(null);
+    try {
+      const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${BASE_URL}/ai/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ step: stepNum, content: stepContent }),
+      });
+      if (!res.ok) throw new Error("피드백 오류");
+      const data = await res.json();
+      setFeedback(data.feedback);
+    } catch {
+      setFeedback(null);
+    } finally {
+      setFetchingFeedback(false);
+    }
+  }
+
   async function handleGenerate() {
     if (!user?.item_keyword) return;
     setGenerating(true);
@@ -244,6 +267,7 @@ export default function RoadmapStepPage() {
       const res = await (api.ai.generateDraft(step, user.item_keyword, content ?? undefined) as Promise<{ draft: Record<string, unknown> }>);
       setContent(res.draft);
       setDraftGenerated(true);
+      fetchFeedback(step, res.draft);
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "오류가 발생했습니다");
     } finally {
@@ -525,13 +549,13 @@ export default function RoadmapStepPage() {
           </div>
 
           {/* Coaching Feedback */}
-          {!hasAnyField ? (
+          {!draftGenerated ? (
             <div style={{ border: "1.5px dashed #D5D9E2", borderRadius: 16, padding: 34, marginTop: 18, textAlign: "center" }}>
               <span style={{ width: 46, height: 46, borderRadius: "50%", background: "#F0F1F5", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.5 8.5 0 01-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1121 11.5z" stroke="#9198A6" strokeWidth="1.7" strokeLinejoin="round"/></svg>
               </span>
               <div style={{ fontSize: 15, fontWeight: 800, color: "#6B7280", marginTop: 14 }}>코칭 피드백 대기 중</div>
-              <div style={{ fontSize: 13, color: "#9198A6", marginTop: 5, lineHeight: 1.6 }}>AI 초안을 생성하면 코치 요다가 가설을 검증할 피드백을 제시합니다.</div>
+              <div style={{ fontSize: 13, color: "#9198A6", marginTop: 5, lineHeight: 1.6 }}>AI 초안을 생성하면 코치 요다가 작성된 내용을 분석해 피드백을 제시합니다.</div>
             </div>
           ) : (
             <div style={{ background: "#EAF1FB", border: "1px solid #D9E6F7", borderRadius: 16, padding: "18px 20px", marginTop: 18 }}>
@@ -539,9 +563,24 @@ export default function RoadmapStepPage() {
                 <span style={{ width: 34, height: 34, borderRadius: 9, background: "#fff", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px -6px rgba(47,62,114,0.3)" }}>
                   <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="3" stroke="#2F3E72" strokeWidth="1.7"/><path d="M12 8V4M9 4h6" stroke="#2F3E72" strokeWidth="1.7" strokeLinecap="round"/><circle cx="9" cy="14" r="1.2" fill="#2F3E72"/><circle cx="15" cy="14" r="1.2" fill="#2F3E72"/></svg>
                 </span>
-                <div>
-                  <div style={{ fontSize: 13.5, fontWeight: 800, color: "#2F3E72" }}>코치 요다의 피드백</div>
-                  <div style={{ fontSize: 13.5, lineHeight: 1.65, color: "#42506B", marginTop: 5 }}>"{meta.feedbackQuote}"</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 800, color: "#2F3E72", display: "flex", alignItems: "center", gap: 8 }}>
+                    코치 요다의 피드백
+                    {fetchingFeedback && (
+                      <span style={{ display: "inline-flex", gap: 3 }}>
+                        {[0, 150, 300].map((d, i) => (
+                          <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "#5A5BD6", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
+                        ))}
+                      </span>
+                    )}
+                  </div>
+                  {fetchingFeedback ? (
+                    <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>작성된 내용을 분석 중입니다...</div>
+                  ) : feedback ? (
+                    <div style={{ fontSize: 13.5, lineHeight: 1.65, color: "#42506B", marginTop: 5 }}>"{feedback}"</div>
+                  ) : (
+                    <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>피드백을 불러오지 못했습니다.</div>
+                  )}
                 </div>
               </div>
             </div>

@@ -218,6 +218,112 @@ DEFAULT_CHAT_PROMPT = """당신은 StepUp의 AI 창업 코치입니다.
 한국어로 답변하고 간결하게 핵심을 전달하세요."""
 
 
+# ── 피드백 프롬프트 ───────────────────────────────────────────────────────
+STEP_FEEDBACK_PROMPTS = {
+    1: """아래는 창업자가 작성한 TPCS 프레임워크 내용입니다.
+
+Target(고객): {target}
+Problem(문제): {problem}
+Cause(원인): {cause}
+Solution(해결책): {solution}
+
+린 스타트업 코치로서 이 내용을 검토하고 구체적인 피드백을 2~3문장으로 작성하세요.
+잘된 점 1가지와 보완할 점 1~2가지를 콕 집어서 말하세요.
+칭찬으로 시작하되 날카롭게 짚어주세요. 근거 없는 낙관은 부추기지 마세요.""",
+
+    2: """아래는 창업자가 작성한 비전 캔버스 내용입니다.
+
+핵심 가치: {core_value}
+독창성: {originality}
+미학 방향: {aesthetic}
+시장적 의미: {relevance}
+
+코치로서 이 비전이 시장에서 설득력 있는지 검토하고 2~3문장으로 피드백하세요.
+'왜 당신이어야 하는가'에 대한 답이 명확한지 집중적으로 짚어주세요.""",
+
+    3: """아래는 창업자가 작성한 시장 분석 내용입니다.
+
+TAM(전체 시장): {tam}
+SAM(유효 시장): {sam}
+SOM(점유 목표): {som}
+경쟁 우위: {competitive_edge}
+
+시장 분석 전문가로서 숫자의 근거와 경쟁 우위의 설득력을 검토하고 2~3문장으로 피드백하세요.
+수치의 현실성과 경쟁사 대비 차별점이 명확한지 집중적으로 짚어주세요.""",
+
+    4: """아래는 창업자가 작성한 수익 모델 내용입니다.
+
+수익원: {revenue}
+가격 전략: {pricing}
+비용 구조: {cost}
+단위 경제: {unit_economics}
+
+재무 코치로서 수익 구조의 지속 가능성을 검토하고 2~3문장으로 피드백하세요.
+손익분기점 도달 가능성과 단위 경제의 현실성을 집중적으로 짚어주세요.""",
+
+    5: """아래는 창업자가 작성한 자금 계획 내용입니다.
+
+소요 자금: {funding_need}
+조달 전략: {funding_strategy}
+마일스톤: {milestone}
+추천 지원사업: {matched_grants}
+
+투자 코치로서 자금 계획의 현실성을 검토하고 2~3문장으로 피드백하세요.
+마일스톤과 자금 소진 계획의 연결고리, 지원사업 적합성을 집중적으로 짚어주세요.""",
+
+    6: """아래는 창업자가 작성한 팀 설계 내용입니다.
+
+핵심 역할: {roles}
+현재 팀: {current_team}
+보완 영역: {gaps}
+협업 방식: {collaboration}
+
+팀 빌딩 코치로서 팀 구성의 실행 가능성을 검토하고 2~3문장으로 피드백하세요.
+역할 공백의 심각성과 충원 계획의 구체성을 집중적으로 짚어주세요.""",
+
+    7: """아래는 창업자가 작성한 런칭 준비 내용입니다.
+
+피치덱 핵심 흐름: {pitch_deck}
+예상 Q&A: {qa}
+출시 계획(GTM): {gtm}
+핵심 지표(KPI): {kpi}
+
+최종 코치로서 피치덱과 런칭 준비의 완성도를 검토하고 2~3문장으로 피드백하세요.
+'왜 이 사업, 왜 지금, 왜 당신'에 대한 답변이 명확한지 집중적으로 짚어주세요.""",
+}
+
+
+class FeedbackRequest(BaseModel):
+    step: int
+    content: dict
+
+
+@router.post("/feedback")
+def generate_feedback(body: FeedbackRequest):
+    if body.step not in STEP_FEEDBACK_PROMPTS:
+        raise HTTPException(status_code=400, detail="유효하지 않은 단계입니다")
+
+    template = STEP_FEEDBACK_PROMPTS[body.step]
+    try:
+        prompt = template.format(**{k: (v or "미작성") for k, v in body.content.items()})
+    except KeyError:
+        prompt = f"STEP {body.step} 작성 내용:\n{body.content}\n\n위 내용을 검토하고 2~3문장으로 구체적인 피드백을 주세요."
+
+    try:
+        response = solar_client.chat.completions.create(
+            model="solar-pro",
+            messages=[
+                {"role": "system", "content": "당신은 StepUp의 AI 창업 코치 요다입니다. 날카롭지만 따뜻하게, 구체적이고 실용적인 피드백을 2~3문장으로 제공하세요. 한국어로만 답변하세요."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.7,
+            max_tokens=300,
+        )
+        return {"feedback": response.choices[0].message.content.strip()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ── 엔드포인트 ────────────────────────────────────────────────────────────
 
 @router.post("/generate")
