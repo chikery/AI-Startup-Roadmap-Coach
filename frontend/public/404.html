@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>StepUp</title>
+  <script>
+    // GitHub Pages SPA 404 redirect
+    // 브라우저에 캐시된 404를 처리해 올바른 페이지로 이동
+    var basePath = '/AI-Startup-Roadmap-Coach';
+    var path = window.location.pathname;
+    // 이미 trailing slash가 없으면 추가해서 리다이렉트
+    if (path !== basePath + '/' && !path.endsWith('/')) {
+      window.location.replace(path + '/' + window.location.search + window.location.hash);
+    } else {
+      window.location.replace(basePath + '/');
+    }
+  </script>
+</head>
+<body></body>
+</html>
