@@ -7,6 +7,7 @@ from app.config import settings
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 client = OpenAI(api_key=settings.openai_api_key)
+solar_client = OpenAI(api_key=settings.solar_api_key, base_url="https://api.upstage.ai/v1")
 
 
 class ChatMessage(BaseModel):
@@ -230,17 +231,22 @@ def generate_draft(body: AIDraftRequest):
     )
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
+        import json
+        response = solar_client.chat.completions.create(
+            model="solar-pro",
             messages=[
-                {"role": "system", "content": "당신은 창업 전문 코치입니다. 반드시 유효한 JSON 형식으로만 응답하세요."},
+                {"role": "system", "content": "당신은 창업 전문 코치입니다. 반드시 유효한 JSON 형식으로만 응답하세요. JSON 외 다른 텍스트는 절대 포함하지 마세요."},
                 {"role": "user", "content": prompt},
             ],
-            response_format={"type": "json_object"},
             temperature=0.7,
         )
-        import json
-        draft = json.loads(response.choices[0].message.content)
+        content = response.choices[0].message.content.strip()
+        # JSON 블록만 추출
+        if "```" in content:
+            content = content.split("```")[1]
+            if content.startswith("json"):
+                content = content[4:]
+        draft = json.loads(content)
         return {"step": body.step, "draft": draft}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
