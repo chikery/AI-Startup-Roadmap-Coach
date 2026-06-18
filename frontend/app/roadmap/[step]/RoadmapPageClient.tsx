@@ -211,6 +211,7 @@ export default function RoadmapStepPage() {
   const [progress, setProgress] = useState<{ step: number; is_completed: boolean }[]>([]);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [draftGenerated, setDraftGenerated] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -223,7 +224,10 @@ export default function RoadmapStepPage() {
       (api.roadmap.getStep(step) as Promise<{ content: Record<string, unknown> | null; is_completed: boolean }>)
         .then((data) => {
           setIsCompleted(data.is_completed);
-          if (data.content) setContent(data.content);
+          if (data.content) {
+            setContent(data.content);
+            setDraftGenerated(true);
+          }
         })
         .catch(() => {});
 
@@ -239,6 +243,7 @@ export default function RoadmapStepPage() {
     try {
       const res = await (api.ai.generateDraft(step, user.item_keyword, content ?? undefined) as Promise<{ draft: Record<string, unknown> }>);
       setContent(res.draft);
+      setDraftGenerated(true);
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "오류가 발생했습니다");
     } finally {
@@ -427,7 +432,7 @@ export default function RoadmapStepPage() {
           </div>
 
           {/* AI Draft Banner */}
-          {!hasAnyField ? (
+          {!draftGenerated ? (
             <div style={{ background: "#ECECFB", border: "1px solid #DCDCF6", borderRadius: 14, padding: "16px 20px", marginTop: 18, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
                 <span style={{ width: 40, height: 40, borderRadius: 11, background: "#5A5BD6", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
