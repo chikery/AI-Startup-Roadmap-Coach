@@ -1,26 +1,24 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 @import "tailwindcss";
 
+* { box-sizing: border-box; }
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F6F8;
+  --foreground: #1F2436;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+@keyframes floaty2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Pretendard', -apple-system, sans-serif;
 }
+
+::selection { background: #8E8FF2; color: #2F3E72; }
+
+textarea:focus, input:focus { outline: none; }
