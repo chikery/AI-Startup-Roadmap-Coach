@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 interface Message {
   role: "user" | "assistant";
@@ -9,14 +10,41 @@ interface Message {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+const STEP_GREETINGS: Record<number, string> = {
+  1: "STEP 1 — 문제 발견 단계에 있군요! TPCS 프레임워크(Target·Problem·Cause·Solution)로 아이디어를 검증해 드릴게요. 어떤 문제를 해결하려 하시나요?",
+  2: "STEP 2 — 예술적 비전 단계네요! '예쁘다'를 넘어 '왜 지금 이것이 필요한가'를 시장의 언어로 번역해 드릴게요.",
+  3: "STEP 3 — 시장 적합성 단계입니다. TAM·SAM·SOM을 데이터로 증명할 수 있어야 설득력이 생깁니다. 어떤 시장을 보고 계신가요?",
+  4: "STEP 4 — 재무 지도 단계입니다. 어떻게 돈을 벌고 언제 흑자로 전환하는지 함께 설계해 봐요.",
+  5: "STEP 5 — 투자 유치 단계네요! 지금 신청 가능한 지원사업과 자금 조달 전략을 연결해 드릴게요.",
+  6: "STEP 6 — 팀 빌딩 단계입니다. 혼자라도 괜찮아요. '내가 잘하는 것 + 채워야 할 것'이 명확하면 강점이 됩니다.",
+  7: "STEP 7 — 런칭 데이입니다! 3분 피치로 '왜 이 사업인가, 왜 지금인가, 왜 당신인가'를 함께 다듬어 봐요.",
+};
+
+const DEFAULT_GREETING = "안녕하세요! StepUp AI 코치입니다. 창업 여정의 어떤 단계든 함께 고민해 드릴게요.";
+
+function useCurrentStep(): number | null {
+  const pathname = usePathname();
+  const match = pathname?.match(/\/roadmap\/(\d+)/);
+  return match ? parseInt(match[1]) : null;
+}
+
 export default function ChatPopup() {
+  const step = useCurrentStep();
+
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "안녕하세요! AI 창업 코치입니다. 창업 관련 궁금한 점을 물어보세요." },
+    { role: "assistant", content: step ? (STEP_GREETINGS[step] ?? DEFAULT_GREETING) : DEFAULT_GREETING },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Reset messages when step changes
+  useEffect(() => {
+    setMessages([
+      { role: "assistant", content: step ? (STEP_GREETINGS[step] ?? DEFAULT_GREETING) : DEFAULT_GREETING },
+    ]);
+  }, [step]);
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -35,7 +63,10 @@ export default function ChatPopup() {
       const res = await fetch(`${BASE_URL}/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({
+          messages: next,
+          step: step ?? undefined,
+        }),
       });
       if (!res.ok) throw new Error("응답 오류");
       const data = await res.json();
@@ -47,48 +78,97 @@ export default function ChatPopup() {
     }
   }
 
+  const INDIGO = "#5A5BD6";
+  const INDIGO_DARK = "#4849C0";
+  const INDIGO_BG = "#ECECFB";
+
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 12 }}>
       {open && (
-        <div className="w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden"
-          style={{ height: "480px" }}>
+        <div style={{
+          width: 360,
+          height: 500,
+          background: "#fff",
+          borderRadius: 20,
+          boxShadow: "0 20px 60px rgba(90,91,214,0.18), 0 4px 16px rgba(0,0,0,0.08)",
+          border: `1.5px solid ${INDIGO_BG}`,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}>
           {/* Header */}
-          <div className="bg-blue-600 px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-400" />
-              <span className="text-white font-semibold text-sm">AI 창업 코치</span>
+          <div style={{
+            background: `linear-gradient(135deg, ${INDIGO} 0%, #4849C0 100%)`,
+            padding: "14px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: "50%",
+                background: "rgba(255,255,255,0.18)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 18,
+              }}>🤖</div>
+              <div>
+                <div style={{ color: "#fff", fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>AI 창업 코치</div>
+                <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 11, display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
+                  {step ? `STEP ${step} 전문 코칭 중` : "언제든 질문하세요"}
+                </div>
+              </div>
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="text-blue-200 hover:text-white transition-colors text-lg leading-none"
+              style={{
+                color: "rgba(255,255,255,0.7)", background: "none", border: "none",
+                cursor: "pointer", fontSize: 20, lineHeight: 1, padding: "4px 6px",
+                borderRadius: 8,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.7)")}
             >
               ×
             </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+          <div style={{ flex: 1, overflowY: "auto", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10, background: "#F8F8FE" }}>
             {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-                    m.role === "user"
-                      ? "bg-blue-600 text-white rounded-br-sm"
-                      : "bg-white text-gray-800 border border-gray-200 rounded-bl-sm shadow-sm"
-                  }`}
-                >
+              <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
+                <div style={{
+                  maxWidth: "82%",
+                  padding: "10px 13px",
+                  borderRadius: m.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  background: m.role === "user" ? INDIGO : "#fff",
+                  color: m.role === "user" ? "#fff" : "#1F2436",
+                  boxShadow: m.role === "user" ? "none" : "0 1px 4px rgba(0,0,0,0.06)",
+                  border: m.role === "user" ? "none" : "1px solid #ECECFB",
+                }}>
                   {m.content}
                 </div>
               </div>
             ))}
             {loading && (
-              <div className="flex justify-start">
-                <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-2 shadow-sm">
-                  <span className="flex gap-1">
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                  </span>
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                <div style={{
+                  background: "#fff", border: "1px solid #ECECFB", borderRadius: "16px 16px 16px 4px",
+                  padding: "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                  display: "flex", gap: 4, alignItems: "center",
+                }}>
+                  {[0, 150, 300].map((delay, idx) => (
+                    <span key={idx} style={{
+                      width: 7, height: 7, borderRadius: "50%", background: INDIGO,
+                      display: "inline-block", opacity: 0.6,
+                      animation: "bounce 1.2s infinite",
+                      animationDelay: `${delay}ms`,
+                    }} />
+                  ))}
                 </div>
               </div>
             )}
@@ -96,22 +176,39 @@ export default function ChatPopup() {
           </div>
 
           {/* Input */}
-          <div className="p-3 bg-white border-t border-gray-100 flex gap-2">
+          <div style={{ padding: "10px 12px", background: "#fff", borderTop: "1px solid #ECECFB", display: "flex", gap: 8 }}>
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
-              placeholder="메시지를 입력하세요..."
+              placeholder="코치에게 물어보세요..."
               disabled={loading}
-              className="flex-1 text-sm px-3 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-blue-400 disabled:opacity-50"
+              style={{
+                flex: 1, fontSize: 13, padding: "9px 13px",
+                borderRadius: 12, border: "1.5px solid #E0E1FA",
+                outline: "none", background: "#FAFAFE",
+                color: "#1F2436",
+                opacity: loading ? 0.5 : 1,
+              }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = INDIGO)}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "#E0E1FA")}
             />
             <button
               onClick={send}
               disabled={loading || !input.trim()}
-              className="px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              style={{
+                padding: "9px 13px",
+                background: loading || !input.trim() ? "#C5C6F4" : INDIGO,
+                color: "#fff", border: "none", borderRadius: 12,
+                cursor: loading || !input.trim() ? "not-allowed" : "pointer",
+                transition: "background 0.15s",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+              onMouseEnter={(e) => { if (!loading && input.trim()) e.currentTarget.style.background = INDIGO_DARK; }}
+              onMouseLeave={(e) => { if (!loading && input.trim()) e.currentTarget.style.background = INDIGO; }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
               </svg>
             </button>
@@ -119,17 +216,27 @@ export default function ChatPopup() {
         </div>
       )}
 
-      {/* Toggle button */}
+      {/* Toggle FAB */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+        style={{
+          width: 56, height: 56,
+          background: open ? INDIGO_DARK : INDIGO,
+          border: "none", borderRadius: "50%",
+          boxShadow: "0 4px 20px rgba(90,91,214,0.4)",
+          cursor: "pointer", color: "#fff",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "transform 0.15s, background 0.15s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.08)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       >
         {open ? (
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z" />
           </svg>
         )}
