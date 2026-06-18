@@ -291,7 +291,7 @@ export default function RoadmapStepPage() {
       <nav style={{ background: "#fff", borderBottom: "1px solid #E8EAEE" }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", height: 64, padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-            <span style={{ fontFamily: "var(--font-bricolage, 'Bricolage Grotesque', sans-serif)", fontWeight: 800, fontSize: 21, color: "#2F3E72", letterSpacing: "-0.01em" }}>StepUp</span>
+            <Link href="/" style={{ fontFamily: "var(--font-bricolage, 'Bricolage Grotesque', sans-serif)", fontWeight: 800, fontSize: 21, color: "#2F3E72", letterSpacing: "-0.01em", textDecoration: "none" }}>StepUp</Link>
             <span style={{ fontSize: 13, color: "#9198A6", paddingLeft: 18, borderLeft: "1px solid #E8EAEE" }}>{step}단계: {meta.name}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
