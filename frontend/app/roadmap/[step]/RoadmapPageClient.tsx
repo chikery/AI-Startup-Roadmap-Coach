@@ -181,6 +181,7 @@ export default function RoadmapStepPage() {
   const meta = STEP_META[step - 1];
 
   const [user, setUser] = useState<Record<string, string> | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [content, setContent] = useState<Record<string, unknown> | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [programs, setPrograms] = useState<Record<string, unknown>[]>([]);
@@ -191,19 +192,20 @@ export default function RoadmapStepPage() {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const raw = localStorage.getItem("user");
-    if (!token) { router.push("/login"); return; }
-
     const parsedUser: Record<string, string> = raw ? JSON.parse(raw) : {};
     setUser(parsedUser);
+    setIsLoggedIn(!!token);
 
-    (api.roadmap.getStep(step) as Promise<{ content: Record<string, unknown> | null; is_completed: boolean }>)
-      .then((data) => {
-        setIsCompleted(data.is_completed);
-        if (data.content) {
-          setContent(data.content);
-        }
-      })
-      .catch(() => {});
+    if (token) {
+      (api.roadmap.getStep(step) as Promise<{ content: Record<string, unknown> | null; is_completed: boolean }>)
+        .then((data) => {
+          setIsCompleted(data.is_completed);
+          if (data.content) {
+            setContent(data.content);
+          }
+        })
+        .catch(() => {});
+    }
 
     if (parsedUser.item_keyword) {
       setLoadingPrograms(true);
@@ -234,6 +236,11 @@ export default function RoadmapStepPage() {
   }
 
   async function handleSave() {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
     setSaving(true);
     try {
       const saveContent = content;
@@ -383,17 +390,26 @@ export default function RoadmapStepPage() {
 
             {/* Save / Next Button */}
             {hasContent && (
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="w-full py-4 bg-[#2D6A4F] text-white font-bold rounded-2xl hover:bg-[#245A42] transition-colors disabled:opacity-50 text-[0.95rem] shadow-sm"
-              >
-                {saving
-                  ? "저장 중..."
-                  : isCompleted
-                  ? step < 7 ? "다음 단계로 →" : "사업계획서 보기"
-                  : step < 7 ? "저장하고 다음 단계 →" : "완성! 사업계획서 보기"}
-              </button>
+              <>
+                {!isLoggedIn && (
+                  <p className="text-xs text-amber-600 text-center bg-amber-50 border border-amber-100 rounded-xl px-4 py-2.5">
+                    로그인하면 진행 내용을 저장할 수 있습니다
+                  </p>
+                )}
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="w-full py-4 bg-[#2D6A4F] text-white font-bold rounded-2xl hover:bg-[#245A42] transition-colors disabled:opacity-50 text-[0.95rem] shadow-sm"
+                >
+                  {saving
+                    ? "저장 중..."
+                    : !isLoggedIn
+                    ? "로그인하고 저장하기 →"
+                    : isCompleted
+                    ? step < 7 ? "다음 단계로 →" : "사업계획서 보기"
+                    : step < 7 ? "저장하고 다음 단계 →" : "완성! 사업계획서 보기"}
+                </button>
+              </>
             )}
 
             {step > 1 && (

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/app/lib/api";
 import StepCard from "@/app/components/StepCard";
@@ -12,26 +11,31 @@ interface StepStatus {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [progress, setProgress] = useState<StepStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const u = localStorage.getItem("user");
-    if (!token || !u) { router.push("/login"); return; }
-    setUser(JSON.parse(u));
+    if (u) setUser(JSON.parse(u));
+    setIsLoggedIn(!!token);
 
-    api.roadmap.getProgress()
-      .then((data: any) => setProgress(data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    if (token) {
+      api.roadmap.getProgress()
+        .then((data: any) => setProgress(data))
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const completedCount = progress.filter((s) => s.is_completed).length;
 
   function isLocked(step: number) {
+    if (!isLoggedIn) return false;
     if (step === 1) return false;
     return !progress.find((s) => s.step === step - 1)?.is_completed;
   }
@@ -54,16 +58,39 @@ export default function DashboardPage() {
             <Link href="/programs" className="text-sm text-blue-600 font-medium hover:underline">
               지원사업 추천
             </Link>
-            <span className="text-sm text-gray-500">{user?.name}</span>
+            {isLoggedIn ? (
+              <span className="text-sm text-gray-500">{user?.name}</span>
+            ) : (
+              <Link href="/login" className="text-sm text-blue-600 font-semibold hover:underline">
+                로그인
+              </Link>
+            )}
           </div>
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-10">
+        {/* Guest Banner */}
+        {!isLoggedIn && (
+          <div className="mb-6 bg-blue-50 border border-blue-100 rounded-2xl px-6 py-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-blue-700">
+              로그인하면 진행 상황이 저장되고, AI 초안 생성 기능을 사용할 수 있습니다.
+            </p>
+            <div className="flex gap-2 shrink-0">
+              <Link href="/signup" className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+                무료 가입
+              </Link>
+              <Link href="/login" className="text-sm font-semibold text-blue-600 bg-white border border-blue-200 px-4 py-2 rounded-full hover:border-blue-300 transition-colors">
+                로그인
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            안녕하세요, {user?.name}님 👋
+            {isLoggedIn ? `안녕하세요, ${user?.name}님 👋` : "AI 창업 로드맵"}
           </h1>
           {user?.item_keyword && (
             <p className="text-gray-500">

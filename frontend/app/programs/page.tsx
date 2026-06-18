@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/app/lib/api";
 
@@ -23,7 +22,6 @@ interface Program {
 }
 
 export default function ProgramsPage() {
-  const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [form, setForm] = useState({ item_keyword: "", category: "", startup_stage: "", region: "" });
   const [results, setResults] = useState<Program[]>([]);
@@ -31,9 +29,7 @@ export default function ProgramsPage() {
   const [searched, setSearched] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
     const u = localStorage.getItem("user");
-    if (!token) { router.push("/login"); return; }
     if (u) {
       const parsed = JSON.parse(u);
       setUser(parsed);
