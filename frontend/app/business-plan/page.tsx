@@ -52,6 +52,8 @@ export default function BusinessPlanPage() {
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savedOk, setSavedOk] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasFetched = useRef(false);
 
@@ -134,6 +136,26 @@ export default function BusinessPlanPage() {
     });
   }
 
+  async function handleSave() {
+    if (!businessPlan) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`${BASE_URL}/roadmap/business-plan/save?token=${token}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: businessPlan }),
+      });
+      if (res.ok) {
+        setSavedOk(true);
+        setTimeout(() => setSavedOk(false), 2000);
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
   function handleLogout() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
@@ -196,31 +218,58 @@ export default function BusinessPlanPage() {
             {/* Toolbar */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: "#2F3E72" }}>전체 사업계획서</span>
-              <button
-                onClick={handleCopy}
-                disabled={!businessPlan}
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  fontSize: 13, fontWeight: 600,
-                  color: copied ? "#15803D" : INDIGO,
-                  background: copied ? "#F0FDF4" : "#ECECFB",
-                  border: "none", padding: "7px 16px", borderRadius: 8,
-                  cursor: businessPlan ? "pointer" : "not-allowed",
-                  transition: "all 0.2s",
-                }}
-              >
-                {copied ? (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#15803D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    복사됨!
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke={INDIGO} strokeWidth="1.8"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round"/></svg>
-                    전체 복사
-                  </>
-                )}
-              </button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={handleSave}
+                  disabled={!businessPlan || saving}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    fontSize: 13, fontWeight: 600,
+                    color: savedOk ? "#15803D" : "#15A06B",
+                    background: savedOk ? "#F0FDF4" : "#EDFAF4",
+                    border: "none", padding: "7px 16px", borderRadius: 8,
+                    cursor: businessPlan && !saving ? "pointer" : "not-allowed",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  {savedOk ? (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#15803D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      저장됨!
+                    </>
+                  ) : (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="#15A06B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M17 21v-8H7v8M7 3v5h8" stroke="#15A06B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      {saving ? "저장 중..." : "저장"}
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={handleCopy}
+                  disabled={!businessPlan}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    fontSize: 13, fontWeight: 600,
+                    color: copied ? "#15803D" : INDIGO,
+                    background: copied ? "#F0FDF4" : "#ECECFB",
+                    border: "none", padding: "7px 16px", borderRadius: 8,
+                    cursor: businessPlan ? "pointer" : "not-allowed",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  {copied ? (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#15803D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      복사됨!
+                    </>
+                  ) : (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke={INDIGO} strokeWidth="1.8"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round"/></svg>
+                      전체 복사
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 16, padding: "28px 32px", minHeight: 500 }}>

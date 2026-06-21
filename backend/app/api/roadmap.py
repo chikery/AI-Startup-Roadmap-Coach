@@ -1,5 +1,6 @@
 import json
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -11,6 +12,10 @@ from app.api.auth import get_current_user
 router = APIRouter(prefix="/roadmap", tags=["roadmap"])
 
 TOTAL_STEPS = 7
+
+
+class BusinessPlanSaveBody(BaseModel):
+    content: str
 
 
 @router.get("/progress", response_model=list[StepResponse])
@@ -32,6 +37,28 @@ def get_all_progress(token: str, db: Session = Depends(get_db)):
         else:
             result.append(StepResponse(step=step, is_completed=False, content=None, ai_draft=None))
     return result
+
+
+@router.get("/business-plan")
+def get_business_plan(token: str, db: Session = Depends(get_db)):
+    user = get_current_user(token, db)
+    row = db.query(BusinessPlan).filter(BusinessPlan.user_id == user.id).first()
+    if not row:
+        return {"content": None}
+    return {"content": row.content, "updated_at": row.updated_at}
+
+
+@router.post("/business-plan/save")
+def save_business_plan(token: str, body: BusinessPlanSaveBody, db: Session = Depends(get_db)):
+    user = get_current_user(token, db)
+    row = db.query(BusinessPlan).filter(BusinessPlan.user_id == user.id).first()
+    if row:
+        row.content = body.content
+    else:
+        row = BusinessPlan(user_id=user.id, content=body.content)
+        db.add(row)
+    db.commit()
+    return {"ok": True}
 
 
 @router.get("/{step}", response_model=StepResponse)
@@ -58,7 +85,6 @@ def save_step(step: int, body: StepSave, token: str, db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="존재하지 않는 단계입니다")
     user = get_current_user(token, db)
 
-    # 이전 단계 완료 여부 검증
     if step > 1:
         prev = db.query(RoadmapProgress).filter(
             RoadmapProgress.user_id == user.id, RoadmapProgress.step == step - 1
@@ -83,25 +109,3 @@ def save_step(step: int, body: StepSave, token: str, db: Session = Depends(get_d
         content=json.loads(row.content),
         ai_draft=json.loads(row.ai_draft) if row.ai_draft else None,
     )
-
-
-@router.get("/business-plan")
-def get_business_plan(token: str, db: Session = Depends(get_db)):
-    user = get_current_user(token, db)
-    row = db.query(BusinessPlan).filter(BusinessPlan.user_id == user.id).first()
-    if not row:
-        return {"content": None}
-    return {"content": row.content, "updated_at": row.updated_at}
-
-
-@router.post("/business-plan/save")
-def save_business_plan(token: str, body: dict, db: Session = Depends(get_db)):
-    user = get_current_user(token, db)
-    row = db.query(BusinessPlan).filter(BusinessPlan.user_id == user.id).first()
-    if row:
-        row.content = body.get("content", "")
-    else:
-        row = BusinessPlan(user_id=user.id, content=body.get("content", ""))
-        db.add(row)
-    db.commit()
-    return {"ok": True}
