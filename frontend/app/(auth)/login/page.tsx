@@ -19,7 +19,7 @@ export default function LoginPage() {
       const res = await api.auth.login(form.email, form.password) as any;
       localStorage.setItem("access_token", res.access_token);
       localStorage.setItem("user", JSON.stringify(res.user));
-      router.push("/roadmap/1");
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
     } finally {
