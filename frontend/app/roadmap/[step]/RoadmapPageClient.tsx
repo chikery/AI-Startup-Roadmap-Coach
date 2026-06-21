@@ -624,7 +624,7 @@ export default function RoadmapStepPage() {
                   {fetchingFeedback ? (
                     <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>작성된 내용을 분석 중입니다...</div>
                   ) : feedback ? (
-                    <div style={{ fontSize: 13.5, lineHeight: 1.65, color: "#42506B", marginTop: 5 }}>"{feedback}"</div>
+                    <div style={{ fontSize: 13.5, lineHeight: 1.75, color: "#42506B", marginTop: 5, whiteSpace: "pre-line" }}>{feedback}</div>
                   ) : (
                     <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>피드백을 불러오지 못했습니다.</div>
                   )}
