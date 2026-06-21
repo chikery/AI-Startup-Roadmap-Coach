@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: stepup-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stepup-db
+          property: connectionString
+      - key: SECRET_KEY
+        sync: false
+      - key: SOLAR_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+
+databases:
+  - name: stepup-db
+    plan: free
+    databaseName: startup_coach
