@@ -280,49 +280,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Recommended Grants */}
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "6px 2px 16px" }}>
-              <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>추천 지원사업</h2>
-              <Link href="/programs" style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13.5, fontWeight: 700, color: "#5A5BD6", textDecoration: "none" }}>
-                전체보기
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="#5A5BD6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </Link>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
-              {/* Grant 1 */}
-              <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 16, padding: "20px 22px", display: "flex", gap: 16, alignItems: "center" }}>
-                <span style={{ width: 48, height: 48, borderRadius: 12, background: "#E7F5EE", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V10M19 21V10M3 10l9-6 9 6M9 21v-6h6v6" stroke="#15A06B" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ marginBottom: 6 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#E7F5EE", color: "#15A06B", fontSize: 11.5, fontWeight: 800, padding: "3px 9px", borderRadius: 6 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="#15A06B"/></svg>D-14
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 15.5, fontWeight: 700 }}>기술보증기금 창업지원</div>
-                  <div style={{ fontSize: 13, color: "#9198A6", marginTop: 3 }}>최대 1억 원 보증 지원</div>
-                </div>
-              </div>
-              {/* Grant 2 */}
-              <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 16, padding: "20px 22px", display: "flex", gap: 16, alignItems: "center" }}>
-                <span style={{ width: 48, height: 48, borderRadius: 12, background: "#ECECFB", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2.3" stroke="#5A5BD6" strokeWidth="1.7"/><circle cx="5" cy="17" r="2.3" stroke="#5A5BD6" strokeWidth="1.7"/><circle cx="19" cy="17" r="2.3" stroke="#5A5BD6" strokeWidth="1.7"/><path d="M10.5 6.8L6.5 15M13.5 6.8L17.5 15M7 17h10" stroke="#5A5BD6" strokeWidth="1.7"/></svg>
-                </span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ marginBottom: 6 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#FBE9E9", color: "#DC4444", fontSize: 11.5, fontWeight: 800, padding: "3px 9px", borderRadius: 6 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="#DC4444"/></svg>D-3
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 15.5, fontWeight: 700 }}>청년창업사관학교 14기</div>
-                  <div style={{ fontSize: 13, color: "#9198A6", marginTop: 3 }}>사업화 자금 및 교육 지원</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* 지원사업 매칭 */}
           <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 18, padding: "24px 26px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
