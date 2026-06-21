@@ -4,6 +4,190 @@
 
 ---
 
+## 2026-06-21
+
+### 백엔드 클라우드 배포 · 사업계획서 고도화 · 지원사업 매칭 · 발표 시연 스크립트
+
+---
+
+### 1. 백엔드 Render 배포 (CORS 문제 해결)
+
+**배경:** GitHub Pages(정적)에서 `localhost:8000` 호출 → CORS 차단으로 사업계획서 페이지 동작 불가
+
+**시도 1 — Railway:**
+- `railway up` → 환경변수 미설정으로 크래시 반복
+- PostgreSQL 추가 (`railway add` CLI 버그로 웹 대시보드 직접 추가)
+- 환경변수 설정 후 배포 성공했으나 비용 발생 → Render로 전환 결정
+
+**Render 최종 배포:**
+- `render.yaml` 작성 — Web Service(Docker) + PostgreSQL Free 플랜 정의
+- Blueprint 연동으로 GitHub push 시 자동 재배포
+- 공개 URL: `https://stepup-backend-rnlj.onrender.com`
+- GitHub Secret `NEXT_PUBLIC_API_URL` 등록 → 프론트 재빌드
+
+| 항목 | 이전 | 이후 |
+|------|------|------|
+| 백엔드 위치 | localhost:8000 (로컬 Docker) | Render (클라우드) |
+| DB | Docker PostgreSQL | Render PostgreSQL Free |
+| 배포 방식 | 수동 docker compose | GitHub push → 자동 재배포 |
+| CORS | localhost만 허용 | `https://chikery.github.io` 추가 |
+
+**변경 파일:** `render.yaml` (신규), `backend/app/main.py` (CORS origins 유지)
+
+---
+
+### 2. `import json` 누락 버그 수정 (business-plan 500 에러)
+
+**증상:** `/ai/business-plan` 호출 시 500 Internal Server Error → CORS 헤더도 누락되어 CORS 오류처럼 보임
+
+**원인:** `ai.py` 최상단에 `import json` 없음 → `generate_business_plan()` 내 `json.dumps()` 호출 시 `NameError`
+
+```python
+# 수정 전
+import re
+from fastapi import APIRouter, HTTPException
+...
+
+# 수정 후
+import re
+import json
+from fastapi import APIRouter, HTTPException
+...
+```
+
+**교훈:** FastAPI의 500 에러는 CORS 헤더를 포함하지 않아 브라우저에서 CORS 오류로 오인됨 — 실제 원인은 서버 내부 오류
+
+---
+
+### 3. `/roadmap/business-plan` 라우트 충돌 수정
+
+**원인:** `GET /roadmap/{step}` 라우트가 `/roadmap/business-plan` 요청을 가로챔 → `step="business-plan"` → int 파싱 실패 → 422
+
+**수정 (`backend/app/api/roadmap.py`):** 고정 경로(`/business-plan`, `/business-plan/save`)를 파라미터 경로(`/{step}`) 보다 먼저 선언
+
+**추가 수정:** `body: dict` → `body: BusinessPlanSaveBody(BaseModel)` 로 타입 명시 (FastAPI 422 방지)
+
+---
+
+### 4. 사업계획서 저장·불러오기 기능
+
+**배경:** 사업계획서 페이지 진입 시마다 Solar AI 재생성 → 30초 대기 + 비용 낭비
+
+**구현:**
+
+**백엔드:**
+- `BusinessPlan` 모델 신규 (`backend/app/models/business_plan.py`)
+  - `user_id` (FK, unique) · `content` (Text) · `updated_at`
+- `GET /roadmap/business-plan?token=` — 저장된 계획 조회
+- `POST /roadmap/business-plan/save?token=` — 저장/업데이트
+
+**프론트엔드 (`business-plan/page.tsx`):**
+- 페이지 진입 시 저장된 계획 먼저 조회 → 있으면 바로 표시 (AI 재생성 생략)
+- 새로 생성한 경우 즉시 자동 저장
+- 대시보드 사이드바에 **내 사업계획서 보기** 링크 추가 (저장 여부에 따라 초록/회색)
+
+---
+
+### 5. 사업계획서 저장 버튼 및 편집 모드
+
+**저장 버튼:** 툴바에 저장 아이콘 버튼 추가 — 클릭 시 `POST /roadmap/business-plan/save` 호출 → "저장됨!" 피드백
+
+**편집 모드:**
+- **편집** 버튼 클릭 → 읽기 전용 렌더링 → textarea 전환 (파란색 테두리)
+- **저장 완료** — `editText` 상태를 `businessPlan`에 반영 + 서버 저장
+- **취소** — 원본 내용 그대로 읽기 모드 복귀
+
+```
+읽기 모드: [편집] [저장] [전체 복사]
+편집 모드: [취소] [저장 완료]
+```
+
+---
+
+### 6. 코치 요다 피드백 다시 받기
+
+**배경:** 사용자가 내용 수정 후 새 피드백을 받을 방법이 없었음
+
+**스텝 페이지 (`RoadmapPageClient.tsx`):**
+- 피드백 하단에 구분선 + 안내 문구: *"내용을 수정했다면 피드백을 다시 받아보세요."*
+- **피드백 다시 받기** 버튼 → `fetchFeedback(step, content)` 재호출
+
+**사업계획서 페이지 (`business-plan/page.tsx`):**
+- 코치 요다 패널 하단에 안내 문구: *"사업계획서를 편집한 후 새 피드백을 받고 싶다면 아래 버튼을 눌러주세요."*
+- **피드백 다시 받기** 버튼 (전체 너비) → `handleRefreshFeedback()` 재호출
+
+---
+
+### 7. 지원사업 매칭 기능
+
+**배경:** `support-program-roadmap-matching.md` 데이터 기반으로 단계별 지원사업 자동 연결
+
+**데이터 파일 (`frontend/app/lib/support-programs.ts`):**
+- 19개 지원사업 (예술경영지원센터 · 문화체육관광부 · K-Startup 기준, 2026-06-18 조회)
+- 각 항목: `name`, `url`, `deadline`, `steps[]`, `description`, `maxSupport`
+- 유틸 함수: `getProgramsForStep()`, `isExpired()`, `daysLeft()`
+
+**스텝 페이지 사이드바 (`RoadmapPageClient.tsx`):**
+- "AI 인사이트 받기" 버튼 아래에 해당 단계 매칭 지원사업 최대 4개 표시
+- 마감된 항목: 흐리게 + "마감" 표시
+- D-7 이내 임박 항목: 빨간색 날짜 표시
+- 카드 클릭 시 원문 공고 페이지로 이동
+
+**대시보드 (`dashboard/page.tsx`):**
+- 전체 19개 지원사업 그리드 카드로 표시
+- 사용자의 현재 단계(completedCount + 1)와 매칭되는 카드: 노란 배경 + "현재 단계" 뱃지 + 그림자
+- 기존 더미 "추천 지원사업" 카드 제거
+
+---
+
+### 8. 발표 시연 스크립트 작성
+
+**파일:** `DEMO_SCRIPT.md` (신규)
+
+- 시연 소요 시간: 8~12분
+- 시연 캐릭터: 공연예술인-공연장 매칭 플랫폼 예비창업자
+- 6개 단계별 시연 흐름 + 멘트 + 강조 포인트
+- 핵심 차별점 표, 예상 Q&A 포함
+- 사전 준비사항 체크리스트 (미리 저장할 단계 안내)
+
+---
+
+### 9. 기술 스택 업데이트
+
+| 구분 | 기술 |
+|------|------|
+| Frontend | Next.js 15 (App Router, Static Export) · TypeScript |
+| Backend | FastAPI · Python (Docker) |
+| Database | PostgreSQL · SQLAlchemy |
+| AI | Solar API (`solar-pro`) — 초안·챗봇·피드백·사업계획서 |
+| Auth | JWT, localStorage |
+| Deploy | GitHub Pages (frontend) · **Render Free** (backend) |
+
+---
+
+### 10. 현재 구현 완료 기능
+
+**Frontend**
+- [x] 로그인 후 대시보드 자동 이동
+- [x] 대시보드 — 전체 지원사업 매칭 (현재 단계 강조)
+- [x] 사이드바 — 단계별 매칭 지원사업 (마감일·D-day 표시)
+- [x] 로드맵 스텝 — 피드백 다시 받기 버튼
+- [x] 사업계획서 페이지 — 저장·불러오기·편집·피드백 재요청
+- [x] 대시보드 사이드바 — 내 사업계획서 보기 링크
+
+**Backend**
+- [x] `GET/POST /roadmap/business-plan` — 사업계획서 저장·조회
+- [x] `BusinessPlan` DB 모델 (user당 1개, upsert)
+- [x] `/roadmap/business-plan` 라우트 우선순위 수정
+- [x] `import json` 누락 버그 수정
+
+**Infra**
+- [x] Render 클라우드 배포 (`render.yaml`)
+- [x] GitHub Secret `NEXT_PUBLIC_API_URL` 등록
+- [x] GitHub push → Render 자동 재배포
+
+---
+
 ## 2026-06-19
 
 ### AI 기능 고도화 · GitHub Pages 안정화
