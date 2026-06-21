@@ -458,3 +458,108 @@ def chat(body: ChatRequest):
         return {"message": strip_markdown(raw)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── 사업계획서 생성 ────────────────────────────────────────────────────────
+
+class BusinessPlanRequest(BaseModel):
+    token: str
+    all_content: dict
+
+
+class BusinessPlanFeedbackRequest(BaseModel):
+    business_plan: str
+
+
+@router.post("/business-plan")
+def generate_business_plan(body: BusinessPlanRequest):
+    step_names = {
+        1: "문제 발견과 솔루션", 2: "예술적 비전", 3: "시장 분석",
+        4: "수익 모델", 5: "자금 계획", 6: "팀 빌딩", 7: "피치덱·런칭",
+    }
+    context = ""
+    for step_num in range(1, 8):
+        content = body.all_content.get(str(step_num)) or body.all_content.get(step_num)
+        if content:
+            context += f"\n[{step_num}단계 - {step_names[step_num]}]\n"
+            for k, v in content.items():
+                if v:
+                    val = v if isinstance(v, str) else json.dumps(v, ensure_ascii=False)
+                    context += f"- {k}: {val}\n"
+
+    prompt = f"""당신은 전문 창업 컨설턴트입니다. 아래 창업자의 7단계 로드맵 작성 내용을 바탕으로 완성도 높은 한국어 사업계획서를 작성해주세요.
+
+작성 원칙:
+- 모든 금액은 한국 원(만 원, 억 원) 단위로 표기하세요
+- 마크다운 기호(**, ##, -, * 등)는 절대 사용하지 마세요
+- 각 섹션은 [섹션명] 형태로 시작하세요
+- 자연스러운 한국어 문장으로 작성하세요
+- 구체적인 수치와 근거를 포함해 작성하세요
+
+창업자 정보:
+{context}
+
+아래 구조로 사업계획서를 작성하세요:
+
+[사업 개요]
+[해결하는 문제와 솔루션]
+[목표 고객]
+[시장 분석]
+[비즈니스 모델과 수익 구조]
+[자금 조달 계획]
+[팀 구성]
+[마케팅 및 출시 전략]
+[핵심 지표(KPI)]
+[비전과 성장 로드맵]
+"""
+    use_solar = bool(settings.solar_api_key and settings.solar_api_key != "your-solar-api-key-here")
+    try:
+        if use_solar:
+            bp_client = OpenAI(api_key=settings.solar_api_key, base_url="https://api.upstage.ai/v1")
+            model = "solar-pro"
+        else:
+            bp_client = client
+            model = "gpt-4o"
+        response = bp_client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=3000,
+        )
+        return {"business_plan": strip_markdown(response.choices[0].message.content or "")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/business-plan/feedback")
+def generate_business_plan_feedback(body: BusinessPlanFeedbackRequest):
+    prompt = f"""당신은 StepUp AI 창업 코치 '요다'입니다.
+아래 사업계획서 전체를 읽고, 창업자에게 따뜻하고 직접적인 코칭 피드백을 해주세요.
+
+말투 규칙:
+- 친근하고 구어체로 말하세요. "좋아요!", "이 부분은 좀 더 다듬으면 좋겠어요." 같은 톤으로요.
+- 마크다운 기호(**, ##, -, * 등)는 절대 쓰지 마세요.
+- 잘된 점 2가지, 보완할 점 2가지를 자연스러운 문장으로 얘기해주세요.
+- 마지막에 한 줄 응원 메시지를 써주세요.
+- 전체 400자 내외로 간결하게 써주세요.
+
+사업계획서:
+{body.business_plan[:3000]}
+"""
+    use_solar = bool(settings.solar_api_key and settings.solar_api_key != "your-solar-api-key-here")
+    try:
+        if use_solar:
+            fb_client = OpenAI(api_key=settings.solar_api_key, base_url="https://api.upstage.ai/v1")
+            model = "solar-pro"
+        else:
+            fb_client = client
+            model = "gpt-4o-mini"
+        response = fb_client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=800,
+        )
+        return {"feedback": strip_markdown(response.choices[0].message.content or "")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

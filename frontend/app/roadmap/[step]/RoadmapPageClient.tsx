@@ -317,7 +317,7 @@ export default function RoadmapStepPage() {
       await api.roadmap.saveStep(step, content);
       if (navigate) {
         if (step < 7) router.push(`/roadmap/${step + 1}`);
-        else router.push("/dashboard");
+        else router.push("/business-plan");
       }
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "저장에 실패했습니다");
