@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { api } from "@/app/lib/api";
 
 interface StepStatus {
@@ -30,6 +31,7 @@ const STEP_ICONS = [
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [progress, setProgress] = useState<StepStatus[]>([]);
@@ -89,7 +91,7 @@ export default function DashboardPage() {
             <span style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#8E9BD6,#5A5BD6)", display: "inline-block", border: "1px solid #E8EAEE" }}></span>
             {isLoggedIn && (
               <button
-                onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = "/dashboard"; }}
+                onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); router.push("/dashboard"); }}
                 style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "#9198A6", background: "none", border: "1px solid #E8EAEE", padding: "5px 12px", borderRadius: 8, cursor: "pointer" }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = "#E53E3E"; e.currentTarget.style.borderColor = "#E53E3E"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = "#9198A6"; e.currentTarget.style.borderColor = "#E8EAEE"; }}
