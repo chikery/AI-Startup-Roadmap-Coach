@@ -640,7 +640,25 @@ export default function RoadmapStepPage() {
                   {fetchingFeedback ? (
                     <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>작성된 내용을 분석 중입니다...</div>
                   ) : feedback ? (
-                    <div style={{ fontSize: 13.5, lineHeight: 1.75, color: "#42506B", marginTop: 5, whiteSpace: "pre-line" }}>{feedback}</div>
+                    <>
+                      <div style={{ fontSize: 13.5, lineHeight: 1.75, color: "#42506B", marginTop: 5, whiteSpace: "pre-line" }}>{feedback}</div>
+                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid #D9E6F7" }}>
+                        <div style={{ fontSize: 12, color: "#9198A6", marginBottom: 8 }}>내용을 수정했다면 피드백을 다시 받아보세요.</div>
+                        <button
+                          onClick={() => content && fetchFeedback(step, content)}
+                          style={{
+                            display: "inline-flex", alignItems: "center", gap: 6,
+                            fontSize: 12.5, fontWeight: 600, color: "#2F3E72",
+                            background: "#fff", border: "1px solid #C8D8F0", padding: "7px 14px", borderRadius: 8, cursor: "pointer",
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = "#EAF1FB"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="#2F3E72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#2F3E72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          피드백 다시 받기
+                        </button>
+                      </div>
+                    </>
                   ) : (
                     <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>피드백을 불러오지 못했습니다.</div>
                   )}

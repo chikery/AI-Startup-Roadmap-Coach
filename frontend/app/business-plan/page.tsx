@@ -170,6 +170,23 @@ export default function BusinessPlanPage() {
     await handleSave(editText);
   }
 
+  async function handleRefreshFeedback(planText?: string) {
+    const plan = planText ?? businessPlan;
+    if (!plan) return;
+    setLoadingFeedback(true);
+    setFeedback(null);
+    try {
+      const fbRes = await fetch(`${BASE_URL}/ai/business-plan/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ business_plan: plan }),
+      });
+      if (fbRes.ok) setFeedback((await fbRes.json()).feedback);
+    } finally {
+      setLoadingFeedback(false);
+    }
+  }
+
   function handleEditCancel() {
     setIsEditing(false);
     setEditText("");
@@ -398,12 +415,25 @@ export default function BusinessPlanPage() {
                 )}
               </div>
 
-              {/* Footer tip */}
-              {feedback && (
+              {/* Footer — 재요청 버튼 */}
+              {!loadingPlan && !loadingFeedback && (
                 <div style={{ borderTop: "1px solid #EEF0F3", padding: "12px 20px", background: "#FAFAFE" }}>
-                  <div style={{ fontSize: 12, color: "#9198A6", lineHeight: 1.6 }}>
-                    사업계획서 내용을 직접 수정하고 싶다면 각 단계로 돌아가 수정 후 다시 방문하세요.
+                  <div style={{ fontSize: 12, color: "#9198A6", lineHeight: 1.6, marginBottom: 8 }}>
+                    사업계획서를 편집한 후 새 피드백을 받고 싶다면 아래 버튼을 눌러주세요.
                   </div>
+                  <button
+                    onClick={() => handleRefreshFeedback()}
+                    style={{
+                      width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
+                      fontSize: 13, fontWeight: 600, color: INDIGO,
+                      background: "#ECECFB", border: "none", padding: "9px 0", borderRadius: 8, cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "#DDDDF5"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "#ECECFB"; }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke={INDIGO} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke={INDIGO} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    피드백 다시 받기
+                  </button>
                 </div>
               )}
             </div>
