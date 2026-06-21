@@ -47,6 +47,12 @@ export default function ChatPopup() {
   }, [step]);
 
   useEffect(() => {
+    function handleOpenChat() { setOpen(true); }
+    window.addEventListener("open-chat", handleOpenChat);
+    return () => window.removeEventListener("open-chat", handleOpenChat);
+  }, []);
+
+  useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
 

@@ -429,6 +429,7 @@ export default function RoadmapStepPage() {
           <div style={{ borderTop: "1px solid #E4E7ED", margin: "22px 0 16px" }}></div>
 
           <button
+            onClick={() => window.dispatchEvent(new CustomEvent("open-chat"))}
             style={{ width: "100%", cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#5A5BD6", color: "#fff", border: "none", padding: 12, borderRadius: 11, fontSize: 14, fontWeight: 700 }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/></svg>
