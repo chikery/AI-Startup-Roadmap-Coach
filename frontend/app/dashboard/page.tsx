@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "@/app/lib/api";
+import { SUPPORT_PROGRAMS, isExpired, daysLeft } from "@/app/lib/support-programs";
 
 interface StepStatus {
   step: number;
@@ -319,6 +320,50 @@ export default function DashboardPage() {
                   <div style={{ fontSize: 13, color: "#9198A6", marginTop: 3 }}>사업화 자금 및 교육 지원</div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* 지원사업 매칭 */}
+          <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 18, padding: "24px 26px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="#F59E0B"/></svg>
+              <span style={{ fontSize: 16, fontWeight: 800, color: "#1F2436" }}>지원사업 매칭</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: "#9198A6", marginLeft: 4 }}>현재 단계에 맞는 지원사업이 강조 표시됩니다</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 10 }}>
+              {SUPPORT_PROGRAMS.map((p, i) => {
+                const expired = isExpired(p.deadline);
+                const left = daysLeft(p.deadline);
+                const isMatched = p.steps.includes(nextStep);
+                return (
+                  <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                    style={{
+                      display: "block", padding: "13px 14px", borderRadius: 12,
+                      textDecoration: "none", transition: "all 0.15s",
+                      background: expired ? "#F9FAFB" : isMatched ? "#FFFBEB" : "#FAFAFA",
+                      border: `1.5px solid ${expired ? "#E8EAEE" : isMatched ? "#FDE68A" : "#ECEEF1"}`,
+                      opacity: expired ? 0.55 : 1,
+                      boxShadow: isMatched && !expired ? "0 2px 8px -4px rgba(245,158,11,0.3)" : "none",
+                    }}
+                    onMouseEnter={(e) => { if (!expired) e.currentTarget.style.borderColor = isMatched ? "#F59E0B" : "#C8D0DC"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = expired ? "#E8EAEE" : isMatched ? "#FDE68A" : "#ECEEF1"; }}
+                  >
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: expired ? "#9198A6" : isMatched ? "#1F2436" : "#42506B", lineHeight: 1.4 }}>{p.name}</div>
+                      {isMatched && !expired && (
+                        <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 800, background: "#F59E0B", color: "#fff", padding: "2px 7px", borderRadius: 100, whiteSpace: "nowrap" }}>현재 단계</span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 11.5, color: "#9198A6", lineHeight: 1.5, marginBottom: 8 }}>{p.description}</div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: expired ? "#9198A6" : left <= 7 ? "#DC2626" : isMatched ? "#92400E" : "#6B7280" }}>
+                        {expired ? "마감" : `D-${left} · ${p.deadline.slice(5).replace("-", "/")}`}
+                      </span>
+                      <span style={{ fontSize: 11, color: "#9198A6" }}>{p.maxSupport}</span>
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           </div>
 

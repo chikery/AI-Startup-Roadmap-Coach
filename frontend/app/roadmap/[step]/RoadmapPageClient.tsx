@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/app/lib/api";
+import { getProgramsForStep, isExpired, daysLeft } from "@/app/lib/support-programs";
 
 /* ------------------------------------------------------------------ */
 /* Step Metadata                                                         */
@@ -446,6 +447,41 @@ export default function RoadmapStepPage() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/></svg>
             AI 인사이트 받기
           </button>
+
+          {/* 지원사업 매칭 */}
+          {(() => {
+            const programs = getProgramsForStep(step);
+            if (!programs.length) return null;
+            return (
+              <div style={{ marginTop: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="#F59E0B"/></svg>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#92400E" }}>이 단계 추천 지원사업</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {programs.slice(0, 4).map((p, i) => {
+                    const expired = isExpired(p.deadline);
+                    const left = daysLeft(p.deadline);
+                    return (
+                      <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                        style={{
+                          display: "block", padding: "9px 10px", borderRadius: 9,
+                          background: expired ? "#F9FAFB" : "#FFFBEB",
+                          border: `1px solid ${expired ? "#E8EAEE" : "#FDE68A"}`,
+                          textDecoration: "none", opacity: expired ? 0.6 : 1,
+                        }}
+                      >
+                        <div style={{ fontSize: 11.5, fontWeight: 700, color: expired ? "#9198A6" : "#1F2436", lineHeight: 1.4, marginBottom: 4 }}>{p.name}</div>
+                        <div style={{ fontSize: 10.5, color: expired ? "#9198A6" : (left <= 7 ? "#DC2626" : "#92400E"), fontWeight: 600 }}>
+                          {expired ? "마감" : `D-${left} · ${p.deadline.slice(5).replace("-", "/")}`}
+                        </div>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 11px 4px" }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, color: "#9198A6" }}>
