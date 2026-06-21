@@ -302,7 +302,14 @@ export default function RoadmapStepPage() {
 
   const completedCount = progress.filter((p) => p.is_completed).length;
   const hasContent = content !== null;
-  const hasAnyField = meta.rows.some((r) => !!(content?.[r.key] as string)?.trim());
+  const hasAnyField = meta.rows.some((r) => {
+    const v = content?.[r.key];
+    if (v === null || v === undefined) return false;
+    if (typeof v === "string") return !!v.trim();
+    if (Array.isArray(v)) return v.length > 0;
+    if (typeof v === "object") return Object.keys(v).length > 0;
+    return !!v;
+  });
 
   const prevLink = step === 1 ? "/dashboard" : `/roadmap/${step - 1}`;
   const saveButtonLabel = saving
