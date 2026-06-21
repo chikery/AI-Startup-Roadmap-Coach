@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.api import auth, programs, roadmap, ai
 import app.models  # noqa: ensure models are registered
+import app.models.business_plan  # noqa
 
 Base.metadata.create_all(bind=engine)
 

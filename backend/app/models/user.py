@@ -18,3 +18,4 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     roadmap_progress = relationship("RoadmapProgress", back_populates="user")
+    business_plan = relationship("BusinessPlan", back_populates="user", uselist=False)

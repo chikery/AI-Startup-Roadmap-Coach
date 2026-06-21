@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.roadmap import RoadmapProgress
+from app.models.business_plan import BusinessPlan
 from app.schemas.roadmap import StepSave, StepResponse
 from app.api.auth import get_current_user
 
@@ -82,3 +83,25 @@ def save_step(step: int, body: StepSave, token: str, db: Session = Depends(get_d
         content=json.loads(row.content),
         ai_draft=json.loads(row.ai_draft) if row.ai_draft else None,
     )
+
+
+@router.get("/business-plan")
+def get_business_plan(token: str, db: Session = Depends(get_db)):
+    user = get_current_user(token, db)
+    row = db.query(BusinessPlan).filter(BusinessPlan.user_id == user.id).first()
+    if not row:
+        return {"content": None}
+    return {"content": row.content, "updated_at": row.updated_at}
+
+
+@router.post("/business-plan/save")
+def save_business_plan(token: str, body: dict, db: Session = Depends(get_db)):
+    user = get_current_user(token, db)
+    row = db.query(BusinessPlan).filter(BusinessPlan.user_id == user.id).first()
+    if row:
+        row.content = body.get("content", "")
+    else:
+        row = BusinessPlan(user_id=user.id, content=body.get("content", ""))
+        db.add(row)
+    db.commit()
+    return {"ok": True}

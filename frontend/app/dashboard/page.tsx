@@ -36,6 +36,9 @@ export default function DashboardPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [progress, setProgress] = useState<StepStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasPlan, setHasPlan] = useState(false);
+
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -48,6 +51,11 @@ export default function DashboardPage() {
         .then((data: any) => setProgress(data))
         .catch(() => {})
         .finally(() => setLoading(false));
+
+      fetch(`${BASE_URL}/roadmap/business-plan?token=${token}`)
+        .then(r => r.json())
+        .then(d => setHasPlan(!!d.content))
+        .catch(() => {});
     } else {
       setLoading(false);
     }
@@ -157,6 +165,26 @@ export default function DashboardPage() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3zM19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14z" fill="#fff"/></svg>
             AI 인사이트 받기
           </button>
+
+          <div style={{ borderTop: "1px solid #EEF0F3", margin: "8px 0" }}></div>
+
+          <Link
+            href="/business-plan"
+            style={{
+              display: "flex", alignItems: "center", gap: 11,
+              padding: "10px 11px", borderRadius: 10,
+              fontSize: 13.5, fontWeight: 600,
+              color: hasPlan ? "#15A06B" : "#9198A6",
+              background: hasPlan ? "#EDFAF4" : "transparent",
+              textDecoration: "none",
+            }}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            내 사업계획서 {hasPlan ? "보기" : "(미작성)"}
+          </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "14px 11px 4px", fontSize: 13, color: "#9198A6" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="#9198A6" strokeWidth="1.7"/><path d="M9.5 9.5a2.5 2.5 0 113.5 2.3c-.7.3-1 .8-1 1.7M12 17h.01" stroke="#9198A6" strokeWidth="1.7" strokeLinecap="round"/></svg>

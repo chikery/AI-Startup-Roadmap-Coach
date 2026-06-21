@@ -65,6 +65,28 @@ export default function BusinessPlanPage() {
     (async () => {
       try {
         setLoadingPlan(true);
+
+        // 저장된 사업계획서 먼저 확인
+        const savedRes = await fetch(`${BASE_URL}/roadmap/business-plan?token=${token}`);
+        if (savedRes.ok) {
+          const savedData = await savedRes.json();
+          if (savedData.content) {
+            setBusinessPlan(savedData.content);
+            setLoadingPlan(false);
+            // 피드백만 새로 생성
+            setLoadingFeedback(true);
+            const fbRes = await fetch(`${BASE_URL}/ai/business-plan/feedback`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ business_plan: savedData.content }),
+            });
+            if (fbRes.ok) setFeedback((await fbRes.json()).feedback);
+            setLoadingFeedback(false);
+            return;
+          }
+        }
+
+        // 저장된 계획 없으면 새로 생성
         const progress = await api.roadmap.getProgress() as any[];
         const all_content: Record<string, any> = {};
         for (const p of progress) {
@@ -81,16 +103,20 @@ export default function BusinessPlanPage() {
         setBusinessPlan(planData.business_plan);
         setLoadingPlan(false);
 
+        // 생성 즉시 저장
+        await fetch(`${BASE_URL}/roadmap/business-plan/save?token=${token}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: planData.business_plan }),
+        });
+
         setLoadingFeedback(true);
         const fbRes = await fetch(`${BASE_URL}/ai/business-plan/feedback`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ business_plan: planData.business_plan }),
         });
-        if (fbRes.ok) {
-          const fbData = await fbRes.json();
-          setFeedback(fbData.feedback);
-        }
+        if (fbRes.ok) setFeedback((await fbRes.json()).feedback);
       } catch (e: any) {
         setError(e.message || "오류가 발생했습니다");
         setLoadingPlan(false);
