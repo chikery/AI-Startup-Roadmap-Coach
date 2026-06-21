@@ -195,6 +195,36 @@ function StepIcon({ step, color = "currentColor" }: { step: number; color?: stri
 }
 
 /* ------------------------------------------------------------------ */
+/* Helpers                                                              */
+/* ------------------------------------------------------------------ */
+
+function formatValue(raw: unknown): string {
+  if (raw === null || raw === undefined) return "";
+  if (typeof raw === "string") return raw;
+  if (Array.isArray(raw)) {
+    return raw.map((item) =>
+      typeof item === "string" ? `- ${item}` : formatValue(item)
+    ).join("\n");
+  }
+  if (typeof raw === "object") {
+    return Object.entries(raw as Record<string, unknown>)
+      .map(([k, v]) => {
+        if (typeof v === "string") return `■ ${k}\n- ${v}`;
+        if (Array.isArray(v)) return `■ ${k}\n${v.map((i) => `- ${typeof i === "string" ? i : JSON.stringify(i)}`).join("\n")}`;
+        if (typeof v === "object" && v !== null) {
+          const sub = Object.entries(v as Record<string, unknown>)
+            .map(([sk, sv]) => `- ${sk}: ${sv}`)
+            .join("\n");
+          return `■ ${k}\n${sub}`;
+        }
+        return `■ ${k}\n- ${v}`;
+      })
+      .join("\n\n");
+  }
+  return String(raw);
+}
+
+/* ------------------------------------------------------------------ */
 /* Page Component                                                        */
 /* ------------------------------------------------------------------ */
 
@@ -526,7 +556,7 @@ export default function RoadmapStepPage() {
 
             {meta.rows.map((row, idx) => {
               const raw = content?.[row.key];
-              const val = raw === null || raw === undefined ? "" : typeof raw === "string" ? raw : JSON.stringify(raw, null, 2);
+              const val = formatValue(raw);
               const isLast = idx === meta.rows.length - 1;
               return (
                 <div key={row.key} style={{ display: "grid", gridTemplateColumns: "210px 1fr", borderBottom: isLast ? "none" : "1px solid #EEF0F3" }}>
