@@ -1,9 +1,23 @@
+import re
 from fastapi import APIRouter, HTTPException
 from openai import OpenAI
 from pydantic import BaseModel
 from typing import List, Optional
 from app.schemas.roadmap import AIDraftRequest
 from app.config import settings
+
+
+def strip_markdown(text: str) -> str:
+    text = re.sub(r'\*{1,3}(.+?)\*{1,3}', r'\1', text)   # **bold**, *italic*, ***both***
+    text = re.sub(r'_{1,2}(.+?)_{1,2}', r'\1', text)      # __bold__, _italic_
+    text = re.sub(r'^#{1,6}\s+', '', text, flags=re.MULTILINE)  # # 제목
+    text = re.sub(r'^\s*[-*+]\s+', '', text, flags=re.MULTILINE)  # - 목록
+    text = re.sub(r'^\s*\d+\.\s+', '', text, flags=re.MULTILINE)  # 1. 번호 목록
+    text = re.sub(r'`{1,3}(.+?)`{1,3}', r'\1', text, flags=re.DOTALL)  # `code`
+    text = re.sub(r'\[(.+?)\]\(.+?\)', r'\1', text)        # [링크](url)
+    text = re.sub(r'^>\s+', '', text, flags=re.MULTILINE)  # > 인용
+    text = re.sub(r'\n{3,}', '\n\n', text)                 # 3줄 이상 공백 → 2줄
+    return text.strip()
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 client = OpenAI(api_key=settings.openai_api_key)
@@ -440,6 +454,7 @@ def chat(body: ChatRequest):
             temperature=0.7,
             max_tokens=1024,
         )
-        return {"message": response.choices[0].message.content}
+        raw = response.choices[0].message.content or ""
+        return {"message": strip_markdown(raw)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
