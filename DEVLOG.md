@@ -4,6 +4,220 @@
 
 ---
 
+## 2026-07-14
+
+### AI 활용 깊이 강화 — 완성도 채점 · 근거 기반 피드백 · 이전/이후 비교
+
+**커밋:** `ac7c1da` — feat: AI 활용 깊이 강화  
+**변경 파일:** `backend/app/api/ai.py` · `frontend/app/lib/api.ts` · `frontend/app/roadmap/[step]/RoadmapPageClient.tsx`
+
+---
+
+### 문제 1 — 피드백이 "느낌" 수준이어서 설득력이 없었다
+
+**기존 방식의 한계:**  
+`/ai/feedback` 엔드포인트는 Solar에게 단순히 "잘된 점과 보완점을 2~3문장으로"만 요청했다. 피드백이 나오긴 했지만 "Target과 Problem의 연결이 명확하네요" 같은 선언에 그쳐 — '왜 그 기준으로 보는지', '어떤 원칙에서 비롯된 피드백인지'가 없었다. 심사위원 앞에서 코치가 근거 없이 말하는 것과 같다.
+
+**해결 방식 — METHODOLOGY_REFS 라이브러리 내장:**
+
+```python
+METHODOLOGY_REFS = {
+    1: {
+        "name": "린 스타트업 — 검증된 학습 원칙",
+        "principles": """
+[참조 방법론: 린 스타트업 (Eric Ries)]
+- "의견이 아닌 검증 가능한 가설로 시작하라"
+- "가족·친구의 호의적 반응은 증거가 아님, 낯선 사람의 행동 변화가 증거임"
+- Problem 진술은 '고객이 현재 어떻게 해결하고 있는가'를 포함해야 함 (Jobs-to-be-Done)
+""",
+    },
+    2: { "name": "블루오션 전략 — 가치 혁신 원칙", ... },
+    ...
+}
+```
+
+각 단계에 해당 방법론 원칙 전문을 프롬프트에 주입하고, 피드백 마지막 문장에 `[근거: 린 스타트업 — 검증된 학습 원칙]` 형태로 출처를 명시하도록 시스템 프롬프트에 강제했다:
+
+```python
+# STEP_FEEDBACK_PROMPTS[1] 중
+"마지막 문장은 반드시 '[근거: {methodology_name}]' 형태로 어떤 원칙에 근거한 피드백인지 명시하세요."
+```
+
+응답에도 `methodology_ref` 필드를 추가해 프론트가 별도 파싱 없이 출처를 바로 받도록 했다:
+
+```python
+return {
+    "feedback": raw,
+    "methodology_ref": ref["name"],   # 신규
+}
+```
+
+**프론트엔드:** 피드백 텍스트에서 `[근거: ...]` 패턴을 strip하고 별도 배지로 렌더링. 프론트가 텍스트 파싱에 의존하지 않고 `methodology_ref` 필드를 신뢰하도록 분리했다.
+
+```tsx
+{feedback.replace(/\[근거:.*?\]/g, "").trim()}
+{methodologyRef && (
+  <div style={{ background: "#2F3E72", color: "#A8B8D8", ... }}>
+    근거: {methodologyRef}
+  </div>
+)}
+```
+
+**7단계 방법론 매핑:**
+| 단계 | 방법론 |
+|------|--------|
+| STEP 1 | 린 스타트업 (Eric Ries) — 검증된 학습, JTBD |
+| STEP 2 | 블루오션 전략 (김위찬) + Zero to One (피터 틸) |
+| STEP 3 | Crossing the Chasm (제프리 무어) + 포터의 경쟁 우위론 |
+| STEP 4 | 단위 경제학 — LTV/CAC 황금률 + Zero to One |
+| STEP 5 | 린 스타트업 런웨이 최적화 + 한국 정부지원사업 생태계 |
+| STEP 6 | Team Canvas + High Output Management (엔드류 그로브) |
+| STEP 7 | Guy Kawasaki 10/20/30 Rule + Simon Sinek WHY 원칙 |
+
+---
+
+### 문제 2 — 대시보드 "완성도 %" 수치의 근거가 없었다
+
+**기존 방식의 한계:**  
+대시보드에서 보여주는 완성도 비율은 단순히 "완료된 STEP 수 / 7"이었다. 한 단계를 완료했다고 해서 그 내용이 충실한지는 별개 문제인데, 숫자가 표시되면 사용자는 그것을 품질 지표로 오해한다.
+
+**해결 방식 — `/ai/score` 신규 엔드포인트:**
+
+단계별 작성 내용을 Solar에게 해당 방법론 기준으로 채점하도록 요청. 점수·등급·잘된 점·보완 항목·개선 힌트를 JSON으로 반환받는다:
+
+```python
+@router.post("/score")
+def score_step(body: ScoreRequest):
+    # STEP_SCORE_PROMPTS[step]에 작성 내용을 삽입
+    # Solar에게 JSON 형식으로만 응답 요청
+    # 응답 파싱 후 반환
+    return {
+        "score": int(result.get("score", 0)),      # 0~100
+        "grade": result.get("grade", "D"),          # A/B/C/D
+        "strengths": result.get("strengths", []),
+        "missing_items": result.get("missing_items", []),
+        "improvement_hint": result.get("improvement_hint", ""),
+        "methodology_ref": METHODOLOGY_REFS.get(step, {}).get("name", ""),
+    }
+```
+
+채점 프롬프트는 방법론 기준을 명시하고 temperature를 0.3으로 낮춰 편차를 줄였다 (`/ai/feedback`은 0.7 — 표현은 유연하게):
+
+```python
+# STEP_SCORE_PROMPTS[1] 예시
+"""...린 스타트업 원칙으로 채점하세요.
+아래 JSON 형식으로만 응답하세요:
+{
+  "score": 0~100 사이 정수 (구체성·검증가능성·연결성 기준),
+  "grade": "A/B/C/D 중 하나 (90+: A, 70~89: B, 50~69: C, 50미만: D)",
+  ...
+}"""
+```
+
+**응답 파싱 로직:** Solar가 간혹 코드블록(```` ``` ````)을 붙이거나 JSON 앞뒤에 텍스트를 삽입하는 케이스가 있다. 기존 `/ai/generate`에서 검증된 파싱 패턴을 동일하게 적용했다:
+
+```python
+raw = response.choices[0].message.content.strip()
+if "```" in raw:
+    raw = re.sub(r"```(?:json)?", "", raw).replace("```", "").strip()
+start = raw.find("{")
+end = raw.rfind("}") + 1
+if start != -1 and end > start:
+    raw = raw[start:end]
+result = json.loads(raw)
+```
+
+**프론트엔드 UI — 완성도 카드:**
+- 점수 숫자 + 등급 배지 (A: 초록, B: 보라, C: 주황, D: 빨강)
+- 애니메이션 게이지 바 (CSS `transition: width 0.8s ease`)
+- 잘된 점 / 보완 필요 두 컬럼 그리드
+- 가장 시급한 개선 힌트 강조 배너
+
+---
+
+### 문제 3 — 재생성 후 "무엇이 나아졌는지" 알 수 없었다
+
+**기존 방식의 한계:**  
+"다시 생성하기" 버튼을 누르면 새 초안이 나오지만, 이전 것과 무엇이 달라졌는지는 사용자가 스스로 읽고 비교해야 했다. Build-Measure-Learn 사이클에서 Learn 단계가 없는 것과 같다.
+
+**해결 방식 — `/ai/compare` 신규 엔드포인트:**
+
+재생성 전 콘텐츠를 `before`, 새 콘텐츠를 `after`로 받아 Build-Measure-Learn 관점에서 비교 분석을 반환:
+
+```python
+@router.post("/compare")
+def compare_versions(body: CompareRequest):
+    # body.before, body.after를 프롬프트에 삽입
+    # 나아진 점·잔여 과제·전체 진전·progress_delta 반환
+    return {
+        "improvements": [...],        # 나아진 점 1~3가지
+        "remaining_issues": [...],    # 아직 보완 필요 1~2가지
+        "overall_progress": "...",    # 한 문장 총평
+        "progress_delta": 15,         # 이번 수정으로 향상된 포인트 추정
+    }
+```
+
+**호출 시점:** `handleGenerate()` 내에서 이전 content가 있을 때만 비교를 요청. 첫 생성 시에는 compare 호출을 건너뛴다 (비교 대상이 없으므로):
+
+```tsx
+const previousContent = content;  // 재생성 전 snapshot
+// ...AI 생성 완료 후...
+if (previousContent && Object.keys(previousContent).length > 0) {
+  setPrevContent(previousContent);
+  api.ai.compare(step, previousContent, res.draft)
+    .then(setCompareResult)
+    .catch(() => {});  // 비교 실패해도 재생성 자체는 영향 없음
+}
+```
+
+비교는 fire-and-forget으로 백그라운드에서 처리 — 재생성의 메인 흐름(초안 표시)을 막지 않는다.
+
+**프론트엔드 UI — 비교 분석 카드:**
+- 초록 배경 카드로 피드백 카드 위에 표시
+- "+N점 향상" 배지 (`progress_delta > 0`일 때만)
+- 나아진 점(▸) / 아직 보완 필요(△) 구분 표시
+- 전체 진전 총평을 이탤릭 인용 형식으로
+
+---
+
+### 전체 데이터 흐름
+
+```
+초안 생성(handleGenerate)
+  │
+  ├─ /ai/generate  → 새 초안 콘텐츠
+  ├─ /ai/feedback  → 피드백 + methodology_ref     (병렬)
+  ├─ /ai/score     → 점수·등급·잘된점·보완항목    (병렬)
+  └─ /ai/compare   → 이전/이후 비교 (이전 콘텐츠 있을 때만)
+
+페이지 첫 로딩(저장된 콘텐츠 있을 때)
+  ├─ /ai/feedback  → 기존 콘텐츠 기반 피드백
+  └─ /ai/score     → 기존 콘텐츠 기반 점수
+
+피드백 다시 받기 버튼
+  ├─ /ai/feedback  → 재요청
+  └─ /ai/score     → 재채점 (동시 호출)
+```
+
+---
+
+### 현재 구현 완료 기능 (누적)
+
+**AI 엔드포인트**
+- [x] `POST /ai/generate` — 7단계 전용 Solar 초안 생성
+- [x] `POST /ai/chat` — 단계별 코칭 챗봇 (Solar)
+- [x] `POST /ai/feedback` — 방법론 근거 기반 피드백 (방법론 출처 포함)
+- [x] `POST /ai/score` — 0~100점 완성도 채점 + A/B/C/D 등급
+- [x] `POST /ai/compare` — 재생성 전후 비교 분석
+
+**로드맵 스텝 페이지**
+- [x] 완성도 채점 카드 (게이지 바 + 잘된 점/보완 항목 그리드)
+- [x] 방법론 출처 배지 (피드백 하단)
+- [x] 재생성 비교 분석 카드 (+N점 향상 표시)
+- [x] 피드백 다시 받기 → 점수도 함께 갱신
+
+---
+
 ## 2026-06-21
 
 ### 백엔드 클라우드 배포 · 사업계획서 고도화 · 지원사업 매칭 · 발표 시연 스크립트
