@@ -244,7 +244,18 @@ export default function RoadmapStepPage() {
   const [saving, setSaving] = useState(false);
   const [draftGenerated, setDraftGenerated] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [methodologyRef, setMethodologyRef] = useState<string | null>(null);
   const [fetchingFeedback, setFetchingFeedback] = useState(false);
+  const [score, setScore] = useState<{
+    score: number; grade: string; strengths: string[];
+    missing_items: string[]; improvement_hint: string; methodology_ref: string;
+  } | null>(null);
+  const [fetchingScore, setFetchingScore] = useState(false);
+  const [compareResult, setCompareResult] = useState<{
+    improvements: string[]; remaining_issues: string[];
+    overall_progress: string; progress_delta: number;
+  } | null>(null);
+  const [prevContent, setPrevContent] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -261,6 +272,7 @@ export default function RoadmapStepPage() {
             setContent(data.content);
             setDraftGenerated(true);
             fetchFeedback(step, data.content);
+            fetchScore(step, data.content);
           }
         })
         .catch(() => {});
@@ -274,6 +286,7 @@ export default function RoadmapStepPage() {
   async function fetchFeedback(stepNum: number, stepContent: Record<string, unknown>) {
     setFetchingFeedback(true);
     setFeedback(null);
+    setMethodologyRef(null);
     try {
       const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const res = await fetch(`${BASE_URL}/ai/feedback`, {
@@ -284,6 +297,7 @@ export default function RoadmapStepPage() {
       if (!res.ok) throw new Error("피드백 오류");
       const data = await res.json();
       setFeedback(data.feedback);
+      setMethodologyRef(data.methodology_ref || null);
     } catch {
       setFeedback(null);
     } finally {
@@ -291,14 +305,40 @@ export default function RoadmapStepPage() {
     }
   }
 
+  async function fetchScore(stepNum: number, stepContent: Record<string, unknown>) {
+    setFetchingScore(true);
+    setScore(null);
+    try {
+      const result = await (api.ai.score(stepNum, stepContent) as Promise<{
+        score: number; grade: string; strengths: string[];
+        missing_items: string[]; improvement_hint: string; methodology_ref: string;
+      }>);
+      setScore(result);
+    } catch {
+      setScore(null);
+    } finally {
+      setFetchingScore(false);
+    }
+  }
+
   async function handleGenerate() {
     if (!user?.item_keyword) return;
     setGenerating(true);
+    const previousContent = content;
     try {
       const res = await (api.ai.generateDraft(step, user.item_keyword, content ?? undefined) as Promise<{ draft: Record<string, unknown> }>);
       setContent(res.draft);
       setDraftGenerated(true);
+      setCompareResult(null);
       fetchFeedback(step, res.draft);
+      fetchScore(step, res.draft);
+      if (previousContent && Object.keys(previousContent).length > 0) {
+        setPrevContent(previousContent);
+        (api.ai.compare(step, previousContent, res.draft) as Promise<{
+          improvements: string[]; remaining_issues: string[];
+          overall_progress: string; progress_delta: number;
+        }>).then(setCompareResult).catch(() => {});
+      }
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "오류가 발생했습니다");
     } finally {
@@ -657,50 +697,168 @@ export default function RoadmapStepPage() {
               <div style={{ fontSize: 13, color: "#9198A6", marginTop: 5, lineHeight: 1.6 }}>AI 초안을 생성하면 코치 요다가 작성된 내용을 분석해 피드백을 제시합니다.</div>
             </div>
           ) : (
-            <div style={{ background: "#EAF1FB", border: "1px solid #D9E6F7", borderRadius: 16, padding: "18px 20px", marginTop: 18 }}>
-              <div style={{ display: "flex", gap: 13, alignItems: "flex-start" }}>
-                <span style={{ width: 34, height: 34, borderRadius: 9, background: "#fff", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px -6px rgba(47,62,114,0.3)" }}>
-                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="3" stroke="#2F3E72" strokeWidth="1.7"/><path d="M12 8V4M9 4h6" stroke="#2F3E72" strokeWidth="1.7" strokeLinecap="round"/><circle cx="9" cy="14" r="1.2" fill="#2F3E72"/><circle cx="15" cy="14" r="1.2" fill="#2F3E72"/></svg>
-                </span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 800, color: "#2F3E72", display: "flex", alignItems: "center", gap: 8 }}>
-                    코치 요다의 피드백
-                    {fetchingFeedback && (
-                      <span style={{ display: "inline-flex", gap: 3 }}>
-                        {[0, 150, 300].map((d, i) => (
-                          <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "#5A5BD6", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
-                        ))}
+            <>
+              {/* 완성도 점수 카드 */}
+              <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 16, padding: "18px 20px", marginTop: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: fetchingScore ? 0 : (score ? 14 : 0) }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="#F59E0B"/></svg>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#1F2436" }}>완성도 채점</span>
+                    {score && (
+                      <span style={{ fontSize: 11, color: "#9198A6", fontWeight: 500 }}>— {score.methodology_ref}</span>
+                    )}
+                  </div>
+                  {fetchingScore ? (
+                    <span style={{ display: "inline-flex", gap: 3 }}>
+                      {[0, 150, 300].map((d, i) => (
+                        <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "#F59E0B", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
+                      ))}
+                    </span>
+                  ) : score ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{
+                        fontSize: 28, fontWeight: 900, color:
+                          score.score >= 90 ? "#15A06B" : score.score >= 70 ? "#5A5BD6" : score.score >= 50 ? "#F59E0B" : "#EF4444"
+                      }}>{score.score}</span>
+                      <span style={{
+                        fontSize: 13, fontWeight: 800, padding: "3px 10px", borderRadius: 100,
+                        background: score.grade === "A" ? "#D8EFE3" : score.grade === "B" ? "#ECECFB" : score.grade === "C" ? "#FEF3C7" : "#FEE2E2",
+                        color: score.grade === "A" ? "#15A06B" : score.grade === "B" ? "#5A5BD6" : score.grade === "C" ? "#92400E" : "#DC2626",
+                      }}>등급 {score.grade}</span>
+                    </div>
+                  ) : null}
+                </div>
+                {!fetchingScore && score && (
+                  <>
+                    <div style={{ height: 6, background: "#F0F1F5", borderRadius: 100, overflow: "hidden", marginBottom: 14 }}>
+                      <div style={{
+                        width: `${score.score}%`, height: "100%", borderRadius: 100, transition: "width 0.8s ease",
+                        background: score.score >= 90 ? "#15A06B" : score.score >= 70 ? "#5A5BD6" : score.score >= 50 ? "#F59E0B" : "#EF4444",
+                      }} />
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      {score.strengths.length > 0 && (
+                        <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "10px 12px" }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "#15A06B", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>잘된 점</div>
+                          {score.strengths.map((s, i) => (
+                            <div key={i} style={{ fontSize: 12.5, color: "#1F2436", lineHeight: 1.6 }}>✓ {s}</div>
+                          ))}
+                        </div>
+                      )}
+                      {score.missing_items.length > 0 && (
+                        <div style={{ background: "#FFF7ED", borderRadius: 10, padding: "10px 12px" }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "#C2410C", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>보완 필요</div>
+                          {score.missing_items.map((m, i) => (
+                            <div key={i} style={{ fontSize: 12.5, color: "#1F2436", lineHeight: 1.6 }}>△ {m}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {score.improvement_hint && (
+                      <div style={{ marginTop: 10, padding: "9px 12px", background: "#ECECFB", borderRadius: 9, fontSize: 12.5, color: "#3B3D8E", fontWeight: 600 }}>
+                        💡 {score.improvement_hint}
+                      </div>
+                    )}
+                  </>
+                )}
+                {!fetchingScore && !score && (
+                  <div style={{ fontSize: 13, color: "#9198A6" }}>채점 중 오류가 발생했습니다.</div>
+                )}
+              </div>
+
+              {/* 이전/이후 비교 결과 */}
+              {compareResult && prevContent && (
+                <div style={{ background: "#F0FDF4", border: "1px solid #CDEBDC", borderRadius: 16, padding: "18px 20px", marginTop: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#15A06B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#15803D" }}>수정 후 변화 분석</span>
+                    {compareResult.progress_delta > 0 && (
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#15A06B", background: "#D8EFE3", padding: "2px 8px", borderRadius: 100 }}>
+                        +{compareResult.progress_delta}점 향상
                       </span>
                     )}
                   </div>
-                  {fetchingFeedback ? (
-                    <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>작성된 내용을 분석 중입니다...</div>
-                  ) : feedback ? (
-                    <>
-                      <div style={{ fontSize: 13.5, lineHeight: 1.75, color: "#42506B", marginTop: 5, whiteSpace: "pre-line" }}>{feedback}</div>
-                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid #D9E6F7" }}>
-                        <div style={{ fontSize: 12, color: "#9198A6", marginBottom: 8 }}>내용을 수정했다면 피드백을 다시 받아보세요.</div>
-                        <button
-                          onClick={() => content && fetchFeedback(step, content)}
-                          style={{
-                            display: "inline-flex", alignItems: "center", gap: 6,
-                            fontSize: 12.5, fontWeight: 600, color: "#2F3E72",
-                            background: "#fff", border: "1px solid #C8D8F0", padding: "7px 14px", borderRadius: 8, cursor: "pointer",
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = "#EAF1FB"; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
-                        >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="#2F3E72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#2F3E72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          피드백 다시 받기
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>피드백을 불러오지 못했습니다.</div>
+                  {compareResult.improvements.length > 0 && (
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#15A06B", marginBottom: 5 }}>나아진 점</div>
+                      {compareResult.improvements.map((imp, i) => (
+                        <div key={i} style={{ fontSize: 12.5, color: "#1F2436", lineHeight: 1.6, paddingLeft: 12 }}>▸ {imp}</div>
+                      ))}
+                    </div>
+                  )}
+                  {compareResult.remaining_issues.length > 0 && (
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#92400E", marginBottom: 5 }}>아직 보완 필요</div>
+                      {compareResult.remaining_issues.map((issue, i) => (
+                        <div key={i} style={{ fontSize: 12.5, color: "#1F2436", lineHeight: 1.6, paddingLeft: 12 }}>△ {issue}</div>
+                      ))}
+                    </div>
+                  )}
+                  {compareResult.overall_progress && (
+                    <div style={{ fontSize: 13, color: "#15803D", fontWeight: 600, fontStyle: "italic" }}>"{compareResult.overall_progress}"</div>
                   )}
                 </div>
+              )}
+
+              {/* 피드백 카드 */}
+              <div style={{ background: "#EAF1FB", border: "1px solid #D9E6F7", borderRadius: 16, padding: "18px 20px", marginTop: 12 }}>
+                <div style={{ display: "flex", gap: 13, alignItems: "flex-start" }}>
+                  <span style={{ width: 34, height: 34, borderRadius: 9, background: "#fff", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px -6px rgba(47,62,114,0.3)" }}>
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="3" stroke="#2F3E72" strokeWidth="1.7"/><path d="M12 8V4M9 4h6" stroke="#2F3E72" strokeWidth="1.7" strokeLinecap="round"/><circle cx="9" cy="14" r="1.2" fill="#2F3E72"/><circle cx="15" cy="14" r="1.2" fill="#2F3E72"/></svg>
+                  </span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 800, color: "#2F3E72", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      코치 요다의 피드백
+                      {fetchingFeedback && (
+                        <span style={{ display: "inline-flex", gap: 3 }}>
+                          {[0, 150, 300].map((d, i) => (
+                            <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "#5A5BD6", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
+                          ))}
+                        </span>
+                      )}
+                    </div>
+                    {fetchingFeedback ? (
+                      <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>작성된 내용을 분석 중입니다...</div>
+                    ) : feedback ? (
+                      <>
+                        <div style={{ fontSize: 13.5, lineHeight: 1.75, color: "#42506B", marginTop: 5, whiteSpace: "pre-line" }}>
+                          {feedback.replace(/\[근거:.*?\]/g, "").trim()}
+                        </div>
+                        {methodologyRef && (
+                          <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 5, background: "#2F3E72", color: "#A8B8D8", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 100 }}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.5 4.6H18l-4 2.9 1.5 4.6L12 11.2l-3.5 2.9 1.5-4.6-4-2.9h4.5L12 2z" fill="#7DE0AE"/></svg>
+                            근거: {methodologyRef}
+                          </div>
+                        )}
+                        <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid #D9E6F7" }}>
+                          <div style={{ fontSize: 12, color: "#9198A6", marginBottom: 8 }}>내용을 수정했다면 피드백을 다시 받아보세요.</div>
+                          <button
+                            onClick={() => {
+                              if (content) {
+                                fetchFeedback(step, content);
+                                fetchScore(step, content);
+                              }
+                            }}
+                            style={{
+                              display: "inline-flex", alignItems: "center", gap: 6,
+                              fontSize: 12.5, fontWeight: 600, color: "#2F3E72",
+                              background: "#fff", border: "1px solid #C8D8F0", padding: "7px 14px", borderRadius: 8, cursor: "pointer",
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = "#EAF1FB"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="#2F3E72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#2F3E72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            피드백 다시 받기
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>피드백을 불러오지 못했습니다.</div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {/* Bottom Nav */}

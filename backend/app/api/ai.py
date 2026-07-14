@@ -232,7 +232,89 @@ DEFAULT_CHAT_PROMPT = _COACH_BASE + """
 어떤 단계인지, 어떤 고민인지 먼저 물어보고, 그에 맞는 코칭을 자연스럽게 이어가세요."""
 
 
-# ── 피드백 프롬프트 ───────────────────────────────────────────────────────
+# ── 방법론 참조 라이브러리 ───────────────────────────────────────────────
+METHODOLOGY_REFS = {
+    1: {
+        "name": "린 스타트업 — 검증된 학습 원칙",
+        "principles": """
+[참조 방법론: 린 스타트업 (Eric Ries)]
+핵심 원칙:
+- "의견이 아닌 검증 가능한 가설로 시작하라" — 고객이 '분명 있을 것'이라는 추측은 데이터가 아님
+- "가족·친구의 호의적 반응은 증거가 아님, 낯선 사람의 행동 변화가 증거임"
+- TPCS에서 Target과 Problem의 연결이 구체적일수록 Solution의 설득력이 높아짐
+- Problem 진술은 '고객이 현재 어떻게 해결하고 있는가'를 포함해야 함 (Jobs-to-be-Done 원칙)
+""",
+    },
+    2: {
+        "name": "블루오션 전략 — 가치 혁신 원칙",
+        "principles": """
+[참조 방법론: 블루오션 전략 (김위찬·르네 마보안) + Zero to One (피터 틸)]
+핵심 원칙:
+- "독창성은 '더 잘하는 것'이 아니라 '다르게 만드는 것'에서 나온다" (블루오션)
+- "경쟁하지 말고 독점하라 — 차별점이 없으면 가격 경쟁만 남는다" (Zero to One)
+- 브랜드 미학이 고객 행동으로 연결되는 고리(Relevance)가 없으면 예술이지 사업이 아님
+- '우리만의 비밀(Secret)'이 있어야 함 — 경쟁자가 10년 후에도 따라오기 어려운 것
+""",
+    },
+    3: {
+        "name": "캐즘 이론 — 시장 진입 전략",
+        "principles": """
+[참조 방법론: Crossing the Chasm (제프리 무어) + 포터의 경쟁 우위론]
+핵심 원칙:
+- "전체 시장이 아닌 좁은 틈새를 먼저 장악하라 — 볼링 핀 전략" (Crossing the Chasm)
+- TAM·SAM·SOM은 아래에서 위로 쌓는 것이 더 신뢰를 얻음 (SOM부터 구체적으로)
+- 경쟁 우위는 비용 우위 또는 차별화 중 하나에 집중해야 함 (포터의 본원적 경쟁 전략)
+- "모두를 위한 제품은 아무도 위한 제품이 아님" — 페르소나와 시장 진입점을 연결해야 함
+""",
+    },
+    4: {
+        "name": "단위 경제학 — 지속 가능한 수익 설계",
+        "principles": """
+[참조 방법론: Zero to One (피터 틸) + 린 스타트업 단위 경제학]
+핵심 원칙:
+- LTV > 3×CAC이어야 지속 가능한 사업 (업계 황금률)
+- "수익 모델은 하나를 깊게 파라 — 복잡한 수익 구조는 초기 스타트업의 적" (Zero to One)
+- 손익분기점 도달 시점을 숫자로 말할 수 없다면 아직 검증되지 않은 것
+- 가격 전략은 '원가+마진'이 아니라 '고객의 지불 의향(WTP)'에서 출발해야 함
+""",
+    },
+    5: {
+        "name": "린 스타트업 자금 전략 — 런웨이 최적화",
+        "principles": """
+[참조 방법론: 린 스타트업 + 한국 창업지원사업 생태계]
+핵심 원칙:
+- "런웨이(Runway) = 현금 잔액 ÷ 월간 번 레이트" — 최소 12~18개월 확보가 목표
+- 정부 지원사업은 희석 없는 자금이지만 '목적·자격·타이밍'이 전략적으로 맞아야 함
+- 마일스톤은 다음 자금 조달을 위한 증거가 되어야 함 — "다음 라운드에서 무엇을 증명했는가"
+- 예비창업패키지(1억)·초기창업패키지(1억)·도약패키지(3억)는 단계별 자격 조건이 다름
+""",
+    },
+    6: {
+        "name": "팀 캔버스 — 실행 조직 설계",
+        "principles": """
+[참조 방법론: Team Canvas + 하이어링 원칙 (엔드류 그로브, High Output Management)]
+핵심 원칙:
+- "투자자는 아이디어보다 팀을 보고 투자한다" — 팀의 실행력·보완성·신뢰가 핵심
+- 역할 공백 파악 → 언제 어떻게 채울지 계획 → 이것이 없으면 실행 불가
+- "A급 팀은 A급 사람을 채용하고, B급 팀은 C급 사람을 채용한다" (엔드류 그로브)
+- 혼자 창업자라도 '내가 잘하는 것 + 채워야 할 것 + 채울 방법'이 명확하면 강점
+""",
+    },
+    7: {
+        "name": "피치덱 원칙 — 3분 설득 구조",
+        "principles": """
+[참조 방법론: Guy Kawasaki 10/20/30 Rule + Simon Sinek의 WHY 원칙]
+핵심 원칙:
+- "10개 슬라이드, 20분, 30포인트 폰트" — 복잡함은 확신 없음의 표시 (Guy Kawasaki)
+- 피치의 순서: WHY(문제·사명) → HOW(솔루션) → WHAT(제품·수치), 거꾸로 하면 안 됨 (Simon Sinek)
+- "왜 이 사업인가, 왜 지금인가, 왜 당신인가" — 이 세 질문에 30초씩 답할 수 있어야 함
+- GTM 전략의 핵심은 '첫 100명'을 어떻게 확보하는가 — 채널과 전환율을 숫자로
+""",
+    },
+}
+
+
+# ── 피드백 프롬프트 (근거 기반 업그레이드) ────────────────────────────────
 STEP_FEEDBACK_PROMPTS = {
     1: """아래는 창업자가 작성한 TPCS 프레임워크 내용입니다.
 
@@ -241,9 +323,12 @@ Problem(문제): {problem}
 Cause(원인): {cause}
 Solution(해결책): {solution}
 
+{methodology}
+
 린 스타트업 코치로서 이 내용을 검토하고 구체적인 피드백을 2~3문장으로 작성하세요.
 잘된 점 1가지와 보완할 점 1~2가지를 콕 집어서 말하세요.
 칭찬으로 시작하되 날카롭게 짚어주세요. 근거 없는 낙관은 부추기지 마세요.
+마지막 문장은 반드시 "[근거: {methodology_name}]" 형태로 어떤 원칙에 근거한 피드백인지 명시하세요.
 반드시 자연스러운 한국어 문장으로만 작성하세요. **, ##, -, * 같은 마크다운 기호는 절대 사용하지 마세요.""",
 
     2: """아래는 창업자가 작성한 비전 캔버스 내용입니다.
@@ -253,8 +338,11 @@ Solution(해결책): {solution}
 미학 방향: {aesthetic}
 시장적 의미: {relevance}
 
+{methodology}
+
 코치로서 이 비전이 시장에서 설득력 있는지 검토하고 2~3문장으로 피드백하세요.
 '왜 당신이어야 하는가'에 대한 답이 명확한지 집중적으로 짚어주세요.
+마지막 문장은 반드시 "[근거: {methodology_name}]" 형태로 어떤 원칙에 근거한 피드백인지 명시하세요.
 반드시 자연스러운 한국어 문장으로만 작성하세요. **, ##, -, * 같은 마크다운 기호는 절대 사용하지 마세요.""",
 
     3: """아래는 창업자가 작성한 시장 분석 내용입니다.
@@ -264,8 +352,11 @@ SAM(유효 시장): {sam}
 SOM(점유 목표): {som}
 경쟁 우위: {competitive_edge}
 
+{methodology}
+
 시장 분석 전문가로서 숫자의 근거와 경쟁 우위의 설득력을 검토하고 2~3문장으로 피드백하세요.
 수치의 현실성과 경쟁사 대비 차별점이 명확한지 집중적으로 짚어주세요.
+마지막 문장은 반드시 "[근거: {methodology_name}]" 형태로 어떤 원칙에 근거한 피드백인지 명시하세요.
 반드시 자연스러운 한국어 문장으로만 작성하세요. **, ##, -, * 같은 마크다운 기호는 절대 사용하지 마세요.""",
 
     4: """아래는 창업자가 작성한 수익 모델 내용입니다.
@@ -275,8 +366,11 @@ SOM(점유 목표): {som}
 비용 구조: {cost}
 단위 경제: {unit_economics}
 
+{methodology}
+
 재무 코치로서 수익 구조의 지속 가능성을 검토하고 2~3문장으로 피드백하세요.
 손익분기점 도달 가능성과 단위 경제의 현실성을 집중적으로 짚어주세요.
+마지막 문장은 반드시 "[근거: {methodology_name}]" 형태로 어떤 원칙에 근거한 피드백인지 명시하세요.
 반드시 자연스러운 한국어 문장으로만 작성하세요. **, ##, -, * 같은 마크다운 기호는 절대 사용하지 마세요.""",
 
     5: """아래는 창업자가 작성한 자금 계획 내용입니다.
@@ -286,8 +380,11 @@ SOM(점유 목표): {som}
 마일스톤: {milestone}
 추천 지원사업: {matched_grants}
 
+{methodology}
+
 투자 코치로서 자금 계획의 현실성을 검토하고 2~3문장으로 피드백하세요.
 마일스톤과 자금 소진 계획의 연결고리, 지원사업 적합성을 집중적으로 짚어주세요.
+마지막 문장은 반드시 "[근거: {methodology_name}]" 형태로 어떤 원칙에 근거한 피드백인지 명시하세요.
 반드시 자연스러운 한국어 문장으로만 작성하세요. **, ##, -, * 같은 마크다운 기호는 절대 사용하지 마세요.""",
 
     6: """아래는 창업자가 작성한 팀 설계 내용입니다.
@@ -297,8 +394,11 @@ SOM(점유 목표): {som}
 보완 영역: {gaps}
 협업 방식: {collaboration}
 
+{methodology}
+
 팀 빌딩 코치로서 팀 구성의 실행 가능성을 검토하고 2~3문장으로 피드백하세요.
 역할 공백의 심각성과 충원 계획의 구체성을 집중적으로 짚어주세요.
+마지막 문장은 반드시 "[근거: {methodology_name}]" 형태로 어떤 원칙에 근거한 피드백인지 명시하세요.
 반드시 자연스러운 한국어 문장으로만 작성하세요. **, ##, -, * 같은 마크다운 기호는 절대 사용하지 마세요.""",
 
     7: """아래는 창업자가 작성한 런칭 준비 내용입니다.
@@ -308,9 +408,139 @@ SOM(점유 목표): {som}
 출시 계획(GTM): {gtm}
 핵심 지표(KPI): {kpi}
 
+{methodology}
+
 최종 코치로서 피치덱과 런칭 준비의 완성도를 검토하고 2~3문장으로 피드백하세요.
 '왜 이 사업, 왜 지금, 왜 당신'에 대한 답변이 명확한지 집중적으로 짚어주세요.
+마지막 문장은 반드시 "[근거: {methodology_name}]" 형태로 어떤 원칙에 근거한 피드백인지 명시하세요.
 반드시 자연스러운 한국어 문장으로만 작성하세요. **, ##, -, * 같은 마크다운 기호는 절대 사용하지 마세요.""",
+}
+
+
+# ── 완성도 채점 프롬프트 ─────────────────────────────────────────────────
+STEP_SCORE_PROMPTS = {
+    1: """창업자가 작성한 TPCS 프레임워크를 린 스타트업 원칙으로 채점하세요.
+
+Target: {target}
+Problem: {problem}
+Cause: {cause}
+Solution: {solution}
+
+아래 JSON 형식으로만 응답하세요:
+{{
+  "score": 0~100 사이 정수 (구체성·검증가능성·연결성 기준),
+  "grade": "A/B/C/D 중 하나 (90+: A, 70~89: B, 50~69: C, 50미만: D)",
+  "strengths": ["잘된 점 1가지를 한 문장으로"],
+  "missing_items": ["보완이 필요한 항목 1~3개, 각각 한 문장으로"],
+  "improvement_hint": "가장 시급한 개선 방향을 한 문장으로"
+}}""",
+
+    2: """창업자가 작성한 비전 캔버스를 블루오션 전략과 Zero to One 원칙으로 채점하세요.
+
+핵심 가치: {core_value}
+독창성: {originality}
+미학 방향: {aesthetic}
+시장적 의미: {relevance}
+
+아래 JSON 형식으로만 응답하세요:
+{{
+  "score": 0~100 사이 정수 (독창성·차별성·시장연결성 기준),
+  "grade": "A/B/C/D 중 하나 (90+: A, 70~89: B, 50~69: C, 50미만: D)",
+  "strengths": ["잘된 점 1가지를 한 문장으로"],
+  "missing_items": ["보완이 필요한 항목 1~3개, 각각 한 문장으로"],
+  "improvement_hint": "가장 시급한 개선 방향을 한 문장으로"
+}}""",
+
+    3: """창업자가 작성한 시장 분석을 캐즘 이론과 포터의 경쟁 우위론으로 채점하세요.
+
+TAM: {tam}
+SAM: {sam}
+SOM: {som}
+경쟁 우위: {competitive_edge}
+
+아래 JSON 형식으로만 응답하세요:
+{{
+  "score": 0~100 사이 정수 (수치근거·시장진입전략·경쟁우위 명확성 기준),
+  "grade": "A/B/C/D 중 하나 (90+: A, 70~89: B, 50~69: C, 50미만: D)",
+  "strengths": ["잘된 점 1가지를 한 문장으로"],
+  "missing_items": ["보완이 필요한 항목 1~3개, 각각 한 문장으로"],
+  "improvement_hint": "가장 시급한 개선 방향을 한 문장으로"
+}}""",
+
+    4: """창업자가 작성한 수익 모델을 단위 경제학 원칙으로 채점하세요.
+
+수익원: {revenue}
+가격 전략: {pricing}
+비용 구조: {cost}
+단위 경제: {unit_economics}
+
+아래 JSON 형식으로만 응답하세요:
+{{
+  "score": 0~100 사이 정수 (LTV/CAC비율·손익분기점명확성·지속가능성 기준),
+  "grade": "A/B/C/D 중 하나 (90+: A, 70~89: B, 50~69: C, 50미만: D)",
+  "strengths": ["잘된 점 1가지를 한 문장으로"],
+  "missing_items": ["보완이 필요한 항목 1~3개, 각각 한 문장으로"],
+  "improvement_hint": "가장 시급한 개선 방향을 한 문장으로"
+}}""",
+
+    5: """창업자가 작성한 자금 계획을 린 스타트업 런웨이 원칙으로 채점하세요.
+
+소요 자금: {funding_need}
+조달 전략: {funding_strategy}
+마일스톤: {milestone}
+추천 지원사업: {matched_grants}
+
+아래 JSON 형식으로만 응답하세요:
+{{
+  "score": 0~100 사이 정수 (런웨이계획·마일스톤연결·지원사업적합성 기준),
+  "grade": "A/B/C/D 중 하나 (90+: A, 70~89: B, 50~69: C, 50미만: D)",
+  "strengths": ["잘된 점 1가지를 한 문장으로"],
+  "missing_items": ["보완이 필요한 항목 1~3개, 각각 한 문장으로"],
+  "improvement_hint": "가장 시급한 개선 방향을 한 문장으로"
+}}""",
+
+    6: """창업자가 작성한 팀 설계를 팀 캔버스 원칙으로 채점하세요.
+
+핵심 역할: {roles}
+현재 팀: {current_team}
+보완 영역: {gaps}
+협업 방식: {collaboration}
+
+아래 JSON 형식으로만 응답하세요:
+{{
+  "score": 0~100 사이 정수 (역할명확성·공백인식·충원계획구체성 기준),
+  "grade": "A/B/C/D 중 하나 (90+: A, 70~89: B, 50~69: C, 50미만: D)",
+  "strengths": ["잘된 점 1가지를 한 문장으로"],
+  "missing_items": ["보완이 필요한 항목 1~3개, 각각 한 문장으로"],
+  "improvement_hint": "가장 시급한 개선 방향을 한 문장으로"
+}}""",
+
+    7: """창업자가 작성한 런칭 준비를 Guy Kawasaki와 Simon Sinek 원칙으로 채점하세요.
+
+피치덱 흐름: {pitch_deck}
+예상 Q&A: {qa}
+GTM: {gtm}
+KPI: {kpi}
+
+아래 JSON 형식으로만 응답하세요:
+{{
+  "score": 0~100 사이 정수 (스토리흐름·근거수치·실행가능성 기준),
+  "grade": "A/B/C/D 중 하나 (90+: A, 70~89: B, 50~69: C, 50미만: D)",
+  "strengths": ["잘된 점 1가지를 한 문장으로"],
+  "missing_items": ["보완이 필요한 항목 1~3개, 각각 한 문장으로"],
+  "improvement_hint": "가장 시급한 개선 방향을 한 문장으로"
+}}""",
+}
+
+# ── 이전/이후 비교 프롬프트 ──────────────────────────────────────────────
+STEP_COMPARE_PROMPTS = {
+    1: "TPCS 프레임워크 (Target·Problem·Cause·Solution)",
+    2: "비전 캔버스 (핵심가치·독창성·미학방향·시장적의미)",
+    3: "시장 분석 (TAM·SAM·SOM·경쟁우위)",
+    4: "수익 모델 (수익원·가격전략·비용구조·단위경제)",
+    5: "자금 계획 (소요자금·조달전략·마일스톤·추천지원사업)",
+    6: "팀 설계 (핵심역할·현재팀·보완영역·협업방식)",
+    7: "런칭 준비 (피치덱·Q&A·GTM·KPI)",
 }
 
 
@@ -324,23 +554,147 @@ def generate_feedback(body: FeedbackRequest):
     if body.step not in STEP_FEEDBACK_PROMPTS:
         raise HTTPException(status_code=400, detail="유효하지 않은 단계입니다")
 
+    ref = METHODOLOGY_REFS.get(body.step, {"name": "창업 방법론", "principles": ""})
     template = STEP_FEEDBACK_PROMPTS[body.step]
+    content_with_defaults = {k: (v or "미작성") for k, v in body.content.items()}
+    content_with_defaults["methodology"] = ref["principles"]
+    content_with_defaults["methodology_name"] = ref["name"]
+
     try:
-        prompt = template.format(**{k: (v or "미작성") for k, v in body.content.items()})
+        prompt = template.format(**content_with_defaults)
     except KeyError:
-        prompt = f"STEP {body.step} 작성 내용:\n{body.content}\n\n위 내용을 검토하고 2~3문장으로 구체적인 피드백을 주세요."
+        prompt = (
+            f"STEP {body.step} 작성 내용:\n{body.content}\n\n"
+            f"{ref['principles']}\n\n"
+            f"위 내용을 검토하고 2~3문장으로 구체적인 피드백을 주세요. "
+            f"마지막 문장은 '[근거: {ref['name']}]' 형태로 끝내세요."
+        )
 
     try:
         response = solar_client.chat.completions.create(
             model="solar-pro",
             messages=[
-                {"role": "system", "content": "당신은 StepUp의 AI 창업 코치 요다입니다. 날카롭지만 따뜻하게, 구체적이고 실용적인 피드백을 2~3문장으로 제공하세요. 한국어로만 답변하세요."},
+                {"role": "system", "content": "당신은 StepUp의 AI 창업 코치 요다입니다. 날카롭지만 따뜻하게, 구체적이고 실용적인 피드백을 2~3문장으로 제공하세요. 반드시 마지막 문장에 [근거: ...] 형태로 방법론 출처를 명시하세요. 한국어로만 답변하세요."},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.7,
-            max_tokens=300,
+            max_tokens=400,
         )
-        return {"feedback": response.choices[0].message.content.strip()}
+        raw = response.choices[0].message.content.strip()
+        return {
+            "feedback": raw,
+            "methodology_ref": ref["name"],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class ScoreRequest(BaseModel):
+    step: int
+    content: dict
+
+
+@router.post("/score")
+def score_step(body: ScoreRequest):
+    if body.step not in STEP_SCORE_PROMPTS:
+        raise HTTPException(status_code=400, detail="유효하지 않은 단계입니다")
+
+    template = STEP_SCORE_PROMPTS[body.step]
+    content_with_defaults = {k: (v or "미작성") for k, v in body.content.items()}
+
+    try:
+        prompt = template.format(**content_with_defaults)
+    except KeyError:
+        prompt = f"STEP {body.step} 내용:\n{body.content}\n\n위 내용을 0~100점으로 채점하고 JSON으로 응답하세요."
+
+    try:
+        import json as _json, re as _re
+        response = solar_client.chat.completions.create(
+            model="solar-pro",
+            messages=[
+                {"role": "system", "content": "창업 코치로서 작성 내용을 채점하세요. 반드시 유효한 JSON 객체만 응답하세요. 코드블록이나 다른 텍스트는 포함하지 마세요."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.3,
+            max_tokens=500,
+        )
+        raw = response.choices[0].message.content.strip()
+        if "```" in raw:
+            raw = _re.sub(r"```(?:json)?", "", raw).replace("```", "").strip()
+        start = raw.find("{")
+        end = raw.rfind("}") + 1
+        if start != -1 and end > start:
+            raw = raw[start:end]
+        result = _json.loads(raw)
+        return {
+            "score": int(result.get("score", 0)),
+            "grade": result.get("grade", "D"),
+            "strengths": result.get("strengths", []),
+            "missing_items": result.get("missing_items", []),
+            "improvement_hint": result.get("improvement_hint", ""),
+            "methodology_ref": METHODOLOGY_REFS.get(body.step, {}).get("name", ""),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class CompareRequest(BaseModel):
+    step: int
+    before: dict
+    after: dict
+
+
+@router.post("/compare")
+def compare_versions(body: CompareRequest):
+    if body.step not in STEP_COMPARE_PROMPTS:
+        raise HTTPException(status_code=400, detail="유효하지 않은 단계입니다")
+
+    framework_name = STEP_COMPARE_PROMPTS[body.step]
+    ref = METHODOLOGY_REFS.get(body.step, {"name": "창업 방법론", "principles": ""})
+
+    prompt = f"""창업자가 {framework_name} 내용을 수정했습니다.
+
+[수정 전]
+{body.before}
+
+[수정 후]
+{body.after}
+
+{ref['principles']}
+
+수정 전후를 비교해 Build-Measure-Learn 관점에서 JSON으로 응답하세요:
+{{
+  "improvements": ["나아진 점 1~3가지, 각각 한 문장으로 구체적으로"],
+  "remaining_issues": ["아직 보완이 필요한 점 1~2가지, 각각 한 문장으로"],
+  "overall_progress": "전체적인 진전을 한 문장으로 (격려와 다음 방향 포함)",
+  "progress_delta": 0~30 사이 정수 (이번 수정으로 향상된 완성도 포인트 추정)
+}}"""
+
+    try:
+        import json as _json, re as _re
+        response = solar_client.chat.completions.create(
+            model="solar-pro",
+            messages=[
+                {"role": "system", "content": "창업 코치로서 수정 전후를 비교하세요. 반드시 유효한 JSON 객체만 응답하세요. 코드블록이나 다른 텍스트는 포함하지 마세요."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.5,
+            max_tokens=600,
+        )
+        raw = response.choices[0].message.content.strip()
+        if "```" in raw:
+            raw = _re.sub(r"```(?:json)?", "", raw).replace("```", "").strip()
+        start = raw.find("{")
+        end = raw.rfind("}") + 1
+        if start != -1 and end > start:
+            raw = raw[start:end]
+        result = _json.loads(raw)
+        return {
+            "improvements": result.get("improvements", []),
+            "remaining_issues": result.get("remaining_issues", []),
+            "overall_progress": result.get("overall_progress", ""),
+            "progress_delta": int(result.get("progress_delta", 0)),
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -46,5 +46,9 @@ export const api = {
   ai: {
     generateDraft: (step: number, item_keyword: string, context?: object) =>
       request("/ai/generate", { method: "POST", body: JSON.stringify({ step, item_keyword, context }) }),
+    score: (step: number, content: object) =>
+      request("/ai/score", { method: "POST", body: JSON.stringify({ step, content }) }),
+    compare: (step: number, before: object, after: object) =>
+      request("/ai/compare", { method: "POST", body: JSON.stringify({ step, before, after }) }),
   },
 };
