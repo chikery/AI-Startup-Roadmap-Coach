@@ -16,6 +16,12 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     },
   });
   if (!res.ok) {
+    if (res.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user");
+      window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/login/";
+      throw new Error("세션이 만료되었습니다. 다시 로그인해 주세요.");
+    }
     const err = await res.json().catch(() => ({ detail: "오류가 발생했습니다" }));
     throw new Error(err.detail || "오류가 발생했습니다");
   }

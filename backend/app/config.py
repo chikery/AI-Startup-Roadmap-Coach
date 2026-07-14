@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     secret_key: str
     openai_api_key: str
     solar_api_key: str = ""
-    access_token_expire_minutes: int = 60
+    access_token_expire_minutes: int = 10080  # 7 days
     algorithm: str = "HS256"
 
     class Config:
