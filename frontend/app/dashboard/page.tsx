@@ -83,7 +83,7 @@ export default function DashboardPage() {
       <nav style={{ background: "#fff", borderBottom: "1px solid #E8EAEE" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", height: 64, padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
-            <Link href="/" style={{ fontFamily: "var(--font-bricolage, 'Bricolage Grotesque', sans-serif)", fontWeight: 800, fontSize: 21, color: "#2F3E72", letterSpacing: "-0.01em", textDecoration: "none" }}>StepUp</Link>
+            <Link href="/" style={{ fontFamily: "var(--font-geist, 'Geist', sans-serif)", fontWeight: 800, fontSize: 21, color: "#2F3E72", letterSpacing: "-0.01em", textDecoration: "none" }}>StepUp</Link>
             <div style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14.5, fontWeight: 600, color: "#8B92A0" }}>
               <span style={{ color: "#2F3E72", borderBottom: "2px solid #2F3E72", paddingBottom: 21, cursor: "default" }}>대시보드</span>
               <Link href="/programs" style={{ color: "inherit", textDecoration: "none" }}>나의 여정</Link>

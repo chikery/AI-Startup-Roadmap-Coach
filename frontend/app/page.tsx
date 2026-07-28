@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const bricolageFont = "var(--font-bricolage), 'Bricolage Grotesque', sans-serif";
+const bricolageFont = "var(--font-geist), 'Geist', sans-serif";
 
 export default function Home() {
   return (
