@@ -138,6 +138,71 @@ body {
   }
 }
 
+/* Roadmap step page: responsive layout — mobile stacks single-column with
+   task-first priority order; desktop keeps the original multi-column layout untouched. */
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  overflow-x: hidden;
+  padding: 18px 16px;
+}
+.roadmap-grid > aside { order: 2; min-width: 0; position: static !important; top: auto !important; padding-bottom: 84px !important; }
+.roadmap-grid > main { order: 1; min-width: 0; display: flex; flex-direction: column; }
+@media (min-width: 768px) {
+  .roadmap-grid {
+    grid-template-columns: 212px 1fr;
+    gap: 30px;
+    align-items: start;
+    padding: 26px 28px;
+  }
+  .roadmap-grid > aside { order: 1; position: sticky !important; top: 26px !important; }
+  .roadmap-grid > main { order: 2; }
+}
+
+.roadmap-section-header { order: 1; }
+.roadmap-section-work { order: 2; }
+.roadmap-section-coachfeedback { order: 3; }
+.roadmap-section-why { order: 4; }
+.roadmap-section-bottomnav { order: 5; }
+@media (min-width: 768px) {
+  .roadmap-grid > aside { padding-bottom: 20px !important; }
+  .roadmap-section-header { order: 1; }
+  .roadmap-section-why { order: 2; }
+  .roadmap-section-work { order: 3; }
+  .roadmap-section-coachfeedback { order: 4; }
+  .roadmap-section-bottomnav { order: 5; }
+}
+
+.roadmap-why-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .roadmap-why-row { grid-template-columns: 1fr 250px; }
+}
+
+.roadmap-table-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .roadmap-table-row { grid-template-columns: 210px 1fr; }
+}
+
+.roadmap-sticky-cta {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 20;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+  .roadmap-sticky-cta { display: none; }
+}
+
 ::selection { background: #B583E0; color: #16151C; }
 
 textarea:focus, input:focus { outline: none; }

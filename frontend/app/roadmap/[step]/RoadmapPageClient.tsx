@@ -423,27 +423,35 @@ export default function RoadmapStepPage() {
 
         {/* ── TOP NAV ── */}
         <nav className="glass" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none", position: "sticky", top: 0, zIndex: 10 }}>
-          <div style={{ maxWidth: 1180, margin: "0 auto", height: 64, padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-              <Link href="/" style={{ fontFamily: "var(--font-geist, 'Geist', sans-serif)", fontWeight: 800, fontSize: 21, color: "var(--color-text)", letterSpacing: "-0.01em", textDecoration: "none" }}>StepUp</Link>
-              <Link href="/dashboard" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "var(--color-primary)", textDecoration: "none", padding: "5px 12px", borderRadius: "var(--radius-sm)", background: TINT, transition: "background 0.15s" }}>
+          <div style={{ maxWidth: 1180, margin: "0 auto", height: 64, padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }} className="sm:px-7">
+            <div style={{ display: "flex", alignItems: "center", gap: 18, minWidth: 0 }}>
+              <Link href="/" style={{ fontFamily: "var(--font-geist, 'Geist', sans-serif)", fontWeight: 800, fontSize: 21, color: "var(--color-text)", letterSpacing: "-0.01em", textDecoration: "none", flexShrink: 0 }}>StepUp</Link>
+              {/* Desktop: full dashboard link + step name label */}
+              <Link href="/dashboard" className="hidden md:inline-flex" style={{ alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "var(--color-primary)", textDecoration: "none", padding: "5px 12px", borderRadius: "var(--radius-sm)", background: TINT, transition: "background 0.15s" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/></svg>
                 대시보드
               </Link>
-              <span style={{ fontSize: 13, color: "var(--color-muted)", paddingLeft: 18, borderLeft: "1px solid var(--color-border)" }}>{step}단계: {meta.name}</span>
+              <span className="hidden md:inline" style={{ fontSize: 13, color: "var(--color-muted)", paddingLeft: 18, borderLeft: "1px solid var(--color-border)" }}>{step}단계: {meta.name}</span>
+              {/* Mobile: icon-only dashboard shortcut */}
+              <Link href="/dashboard" aria-label="대시보드" className="flex md:hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full" style={{ background: TINT }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/></svg>
+              </Link>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }} className="sm:gap-4">
               <span style={{ display: "inline-flex", alignItems: "center", gap: 7, background: TINT, color: "var(--color-primary)", fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: "var(--radius-full)" }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="var(--color-primary)"/></svg>
                 {step}/7
               </span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="var(--color-muted)" strokeWidth="1.8"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round"/></svg>
-              <span style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", display: "inline-block", border: "1px solid var(--color-border)" }}></span>
+              {/* Decorative icons — desktop only, no behavior attached */}
+              <svg className="hidden md:block" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <svg className="hidden md:block" width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="var(--color-muted)" strokeWidth="1.8"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round"/></svg>
+              <span className="hidden sm:inline-block" style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", border: "1px solid var(--color-border)" }}></span>
               {isLoggedIn && (
                 <button
                   onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "var(--color-muted)", background: "none", border: "1px solid var(--color-border)", padding: "5px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer" }}
+                  aria-label="로그아웃"
+                  className="hidden md:inline-flex"
+                  style={{ alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "var(--color-muted)", background: "none", border: "1px solid var(--color-border)", padding: "5px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer" }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-error)"; e.currentTarget.style.borderColor = "var(--color-error)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; e.currentTarget.style.borderColor = "var(--color-border)"; }}
                 >
@@ -451,12 +459,22 @@ export default function RoadmapStepPage() {
                   로그아웃
                 </button>
               )}
+              {isLoggedIn && (
+                <button
+                  onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
+                  aria-label="로그아웃"
+                  className="flex md:hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
+                  style={{ color: "var(--color-muted)", background: "none", border: "none", cursor: "pointer" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+              )}
             </div>
           </div>
         </nav>
 
         {/* ── BODY GRID ── */}
-        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "26px 28px", display: "grid", gridTemplateColumns: "212px 1fr", gap: 30, alignItems: "start" }}>
+        <div className="roadmap-grid" style={{ maxWidth: 1180, margin: "0 auto" }}>
 
           {/* ── SIDEBAR ── */}
           <aside className="glass" style={{ position: "sticky", top: 26, borderRadius: "var(--radius-lg)", padding: "20px 16px" }}>
@@ -469,7 +487,8 @@ export default function RoadmapStepPage() {
               <div style={{ width: `${(completedCount / 7) * 100}%`, height: "100%", background: "var(--color-success)", borderRadius: "var(--radius-full)", transition: "width 0.5s" }}></div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {/* Desktop: full step list, always visible (unchanged) */}
+            <div className="hidden md:flex" style={{ flexDirection: "column", gap: 3 }}>
               {STEP_META.map((s) => {
                 const isActive = s.step === step;
                 const isDone = progress.find((p) => p.step === s.step)?.is_completed;
@@ -505,6 +524,48 @@ export default function RoadmapStepPage() {
               })}
             </div>
 
+            {/* Mobile: collapsed drawer — journey list is reference material, not the task at hand */}
+            <details className="md:hidden">
+              <summary style={{ cursor: "pointer", listStyle: "none", fontSize: 13, fontWeight: 700, color: "var(--color-muted)", padding: "8px 4px" }}>
+                전체 7단계 보기 ({completedCount}/7 완료)
+              </summary>
+              <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 6 }}>
+                {STEP_META.map((s) => {
+                  const isActive = s.step === step;
+                  const isDone = progress.find((p) => p.step === s.step)?.is_completed;
+                  return (
+                    <Link
+                      key={s.step}
+                      href={`/roadmap/${s.step}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 11,
+                        padding: "10px 11px",
+                        borderRadius: "var(--radius-sm)",
+                        fontSize: 13.5,
+                        fontWeight: isActive ? 700 : 600,
+                        color: isActive ? "var(--color-primary)" : "var(--color-muted)",
+                        background: isActive ? TINT : "transparent",
+                        textDecoration: "none",
+                      }}
+                    >
+                      {isDone && !isActive ? (
+                        <span style={{ width: 17, height: 17, borderRadius: "50%", background: SUCCESS_TINT, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="var(--color-success)" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        </span>
+                      ) : (
+                        <span style={{ flexShrink: 0, color: isActive ? "var(--color-primary)" : "var(--color-muted)" }}>
+                          <StepIcon step={s.step} color={isActive ? "var(--color-primary)" : "var(--color-muted)"} />
+                        </span>
+                      )}
+                      {s.name}
+                    </Link>
+                  );
+                })}
+              </div>
+            </details>
+
             <div style={{ borderTop: "1px solid var(--color-border)", margin: "22px 0 16px" }}></div>
 
             <button
@@ -519,34 +580,48 @@ export default function RoadmapStepPage() {
             {(() => {
               const programs = getProgramsForStep(step);
               if (!programs.length) return null;
-              return (
-                <div style={{ marginTop: 18 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-accent)" }}>이 단계 추천 지원사업</span>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {programs.slice(0, 4).map((p, i) => {
-                      const expired = isExpired(p.deadline);
-                      const left = daysLeft(p.deadline);
-                      return (
-                        <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
-                          style={{
-                            display: "block", padding: "9px 10px", borderRadius: "var(--radius-sm)",
-                            background: expired ? "transparent" : ACCENT_TINT,
-                            border: `1px solid ${expired ? "var(--color-border)" : ACCENT_BORDER}`,
-                            textDecoration: "none", opacity: expired ? 0.6 : 1,
-                          }}
-                        >
-                          <div style={{ fontSize: 11.5, fontWeight: 700, color: expired ? "var(--color-muted)" : "var(--color-text)", lineHeight: 1.4, marginBottom: 4 }}>{p.name}</div>
-                          <div style={{ fontSize: 10.5, color: expired ? "var(--color-muted)" : (left <= 7 ? "var(--color-error)" : "var(--color-accent)"), fontWeight: 600 }}>
-                            {expired ? "마감" : `D-${left} · ${p.deadline.slice(5).replace("-", "/")}`}
-                          </div>
-                        </a>
-                      );
-                    })}
-                  </div>
+              const list = (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {programs.slice(0, 4).map((p, i) => {
+                    const expired = isExpired(p.deadline);
+                    const left = daysLeft(p.deadline);
+                    return (
+                      <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                        style={{
+                          display: "block", padding: "9px 10px", borderRadius: "var(--radius-sm)",
+                          background: expired ? "transparent" : ACCENT_TINT,
+                          border: `1px solid ${expired ? "var(--color-border)" : ACCENT_BORDER}`,
+                          textDecoration: "none", opacity: expired ? 0.6 : 1,
+                        }}
+                      >
+                        <div style={{ fontSize: 11.5, fontWeight: 700, color: expired ? "var(--color-muted)" : "var(--color-text)", lineHeight: 1.4, marginBottom: 4 }}>{p.name}</div>
+                        <div style={{ fontSize: 10.5, color: expired ? "var(--color-muted)" : (left <= 7 ? "var(--color-error)" : "var(--color-accent)"), fontWeight: 600 }}>
+                          {expired ? "마감" : `D-${left} · ${p.deadline.slice(5).replace("-", "/")}`}
+                        </div>
+                      </a>
+                    );
+                  })}
                 </div>
+              );
+              return (
+                <>
+                  {/* Desktop: always expanded */}
+                  <div className="hidden md:block" style={{ marginTop: 18 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-accent)" }}>이 단계 추천 지원사업</span>
+                    </div>
+                    {list}
+                  </div>
+                  {/* Mobile: collapsed accordion */}
+                  <details className="md:hidden" style={{ marginTop: 12 }}>
+                    <summary style={{ cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 700, color: "var(--color-accent)", padding: "8px 4px" }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
+                      이 단계 추천 지원사업 ({programs.length})
+                    </summary>
+                    <div style={{ marginTop: 8 }}>{list}</div>
+                  </details>
+                </>
               );
             })()}
 
@@ -565,18 +640,40 @@ export default function RoadmapStepPage() {
           <main>
 
             {/* Step Header */}
-            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+            <div className="roadmap-section-header" style={{ display: "flex", gap: 16, alignItems: "flex-start", minWidth: 0 }}>
               <span style={{ width: 46, height: 46, borderRadius: "var(--radius-md)", background: TINT, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <StepIcon step={step} color="var(--color-primary)" />
               </span>
-              <div>
-                <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: "var(--color-text)" }}>{meta.heading}</h1>
-                <p style={{ fontSize: 14.5, color: "var(--color-muted)", margin: "7px 0 0" }}>{meta.description}</p>
+              <div style={{ minWidth: 0 }}>
+                <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: "var(--color-text)", wordBreak: "keep-all", overflowWrap: "break-word" }}>{meta.heading}</h1>
+                <p style={{ fontSize: 14.5, color: "var(--color-muted)", margin: "7px 0 0", wordBreak: "keep-all" }}>{meta.description}</p>
               </div>
             </div>
 
-            {/* Why + Coach two-column */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 250px", gap: 18, marginTop: 24 }}>
+            {/* Why + Coach two-column — collapsed by default on mobile (context reading, not the core task) */}
+            <details className="roadmap-section-why md:hidden" style={{ marginTop: 16 }}>
+              <summary
+                style={{ cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 700, color: "var(--color-primary)", padding: "12px 4px" }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M12 11v5M12 7.5h.01" stroke="var(--color-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                왜 이 단계가 필요한가 (펼쳐보기)
+              </summary>
+              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "18px 20px", marginTop: 8 }}>
+                {meta.whyText.map((text, i) => (
+                  <p key={i} style={{ fontSize: 13.5, lineHeight: 1.7, color: "var(--color-muted)", margin: i === 0 ? 0 : "12px 0 0" }}>{text}</p>
+                ))}
+                <div style={{ borderTop: "1px solid var(--color-border)", margin: "14px 0" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12.5, fontWeight: 800, color: "var(--color-primary)" }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3c-1 3-2 4-5 5 3 1 4 2 5 5 1-3 2-4 5-5-3-1-4-2-5-5z" fill="var(--color-accent)"/></svg>
+                  RK · AI 코치 요다
+                </div>
+                <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--color-text)", marginTop: 8 }}>"{meta.coachQuote}"</div>
+              </div>
+            </details>
+
+            {/* Desktop-only version — always visible, two-column, unchanged */}
+            <div className="roadmap-section-why hidden md:block" style={{ marginTop: 24 }}>
+            <div className="roadmap-why-row">
               {/* Why card */}
               <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "22px 24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 16, fontWeight: 800, color: "var(--color-primary)" }}>
@@ -610,6 +707,10 @@ export default function RoadmapStepPage() {
                 </div>
               </div>
             </div>
+            </div>
+
+            {/* Core task — AI draft generation + framework editing. This is the star of the page on mobile. */}
+            <div className="roadmap-section-work">
 
             {/* AI Draft Banner */}
             {!draftGenerated ? (
@@ -679,8 +780,8 @@ export default function RoadmapStepPage() {
             </div>
 
             <div className="glass" style={{ borderRadius: "var(--radius-md)", overflow: "hidden" }}>
-              {/* Table header */}
-              <div style={{ display: "grid", gridTemplateColumns: "210px 1fr", background: "color-mix(in srgb, var(--color-text) 4%, transparent)", borderBottom: "1px solid var(--color-border)" }}>
+              {/* Table header — hidden on mobile since the label already appears above each field in the stacked layout */}
+              <div className="roadmap-table-row hidden md:grid" style={{ background: "color-mix(in srgb, var(--color-text) 4%, transparent)", borderBottom: "1px solid var(--color-border)" }}>
                 <div style={{ padding: "13px 22px", fontSize: 12, fontWeight: 700, color: "var(--color-muted)" }}>구분</div>
                 <div style={{ padding: "13px 22px", fontSize: 12, fontWeight: 700, color: "var(--color-muted)" }}>상세 내용</div>
               </div>
@@ -690,7 +791,7 @@ export default function RoadmapStepPage() {
                 const val = formatValue(raw);
                 const isLast = idx === meta.rows.length - 1;
                 return (
-                  <div key={row.key} style={{ display: "grid", gridTemplateColumns: "210px 1fr", borderBottom: isLast ? "none" : "1px solid var(--color-border)" }}>
+                  <div key={row.key} className="roadmap-table-row" style={{ borderBottom: isLast ? "none" : "1px solid var(--color-border)" }}>
                     <div style={{ padding: "20px 22px", display: "flex", alignItems: "center", gap: 10, fontSize: 14, fontWeight: 700, color: "var(--color-text)" }}>
                       <span style={{ width: 8, height: 8, borderRadius: 3, background: "var(--color-primary)", flexShrink: 0 }}></span>
                       {row.label}
@@ -725,8 +826,10 @@ export default function RoadmapStepPage() {
                 );
               })}
             </div>
+            </div>
 
-            {/* Coaching Feedback */}
+            {/* Coaching Feedback — surfaced right after the work area on mobile so users see it without hunting */}
+            <div className="roadmap-section-coachfeedback">
             {!draftGenerated ? (
               <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: 34, marginTop: 18, textAlign: "center" }}>
                 <span style={{ width: 46, height: 46, borderRadius: "50%", background: "color-mix(in srgb, var(--color-muted) 15%, transparent)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
@@ -899,9 +1002,10 @@ export default function RoadmapStepPage() {
                 </div>
               </>
             )}
+            </div>
 
-            {/* Bottom Nav */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "26px 0 36px" }}>
+            {/* Bottom Nav — in-flow on desktop; on mobile the primary action moves to a sticky bar below instead */}
+            <div className="roadmap-section-bottomnav hidden md:flex" style={{ alignItems: "center", justifyContent: "space-between", margin: "26px 0 36px" }}>
               <Link href={prevLink} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "var(--color-muted)", textDecoration: "none" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 이전으로
@@ -928,6 +1032,20 @@ export default function RoadmapStepPage() {
             </div>
 
           </main>
+        </div>
+
+        {/* Mobile-only sticky primary CTA — always reachable regardless of scroll position */}
+        <div className="roadmap-sticky-cta glass md:hidden">
+          <button
+            onClick={() => handleSave(true)}
+            disabled={saving}
+            style={{ width: "100%", cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, background: "var(--color-text)", color: "var(--color-background)", border: "none", padding: "14px 20px", borderRadius: "var(--radius-sm)", fontSize: 15, fontWeight: 700, opacity: saving ? 0.7 : 1 }}
+          >
+            {saveButtonLabel}
+            {!saving && (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            )}
+          </button>
         </div>
       </div>
 
