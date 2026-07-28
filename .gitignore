@@ -27,6 +27,10 @@ backend/app/rag/faiss_index/
 *.jpeg
 mockup*
 
+# ...but favicon/app icons are real deployed assets, not loose design references
+!frontend/app/icon.png
+!frontend/app/apple-icon.png
+
 # Build
 dist/
 build/
