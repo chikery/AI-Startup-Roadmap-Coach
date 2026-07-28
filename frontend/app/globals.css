@@ -2,18 +2,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0F172A;
-  --color-surface: #1E293B;
-  --color-primary: #2563EB;
-  --color-secondary: #334155;
-  --color-accent: #DC2626;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
-  --color-text: #F8FAFC;
-  --color-muted: #94A3B8;
-  --color-border: color-mix(in srgb, #F8FAFC 12%, transparent);
-  --color-primary-hover: color-mix(in srgb, #2563EB 85%, black);
+  --color-background: #F2F1F7;
+  --color-surface: #FFFFFF;
+  --color-primary: #6C5CE7;
+  --color-secondary: #B583E0;
+  --color-accent: #F5A623;
+  --color-success: #34C759;
+  --color-warning: #FF9F0A;
+  --color-error: #FF3B30;
+  --color-text: #16151C;
+  --color-muted: #8B8894;
+  --color-border: rgba(22, 21, 28, 0.08);
+  --color-primary-hover: color-mix(in srgb, #6C5CE7 85%, black);
 
   --font-size-h1: 3rem;
   --font-size-h2: 2.25rem;
@@ -23,9 +23,65 @@
   --font-size-caption: 0.875rem;
   --font-size-button: 0.9375rem;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-full: 999px;
+}
+
+/* Glass material tokens (glassmorphism + fluent-style acrylic cards) */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-blur: 26px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #1C1B22;
+    --color-surface: #26252C;
+    --color-primary: #8C7DF2;
+    --color-secondary: #C9A6ED;
+    --color-accent: #F7B955;
+    --color-success: #30D158;
+    --color-warning: #FFB340;
+    --color-error: #FF6961;
+    --color-text: #F2F0F6;
+    --color-muted: #9D9AA6;
+    --color-border: rgba(242, 240, 246, 0.12);
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.14);
+  }
+}
+:root[data-theme="dark"] {
+  --color-background: #1C1B22;
+  --color-surface: #26252C;
+  --color-primary: #8C7DF2;
+  --color-secondary: #C9A6ED;
+  --color-accent: #F7B955;
+  --color-success: #30D158;
+  --color-warning: #FFB340;
+  --color-error: #FF6961;
+  --color-text: #F2F0F6;
+  --color-muted: #9D9AA6;
+  --color-border: rgba(242, 240, 246, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.14);
+}
+:root[data-theme="light"] {
+  --color-background: #F2F1F7;
+  --color-surface: #FFFFFF;
+  --color-primary: #6C5CE7;
+  --color-secondary: #B583E0;
+  --color-accent: #F5A623;
+  --color-success: #34C759;
+  --color-warning: #FF9F0A;
+  --color-error: #FF3B30;
+  --color-text: #16151C;
+  --color-muted: #8B8894;
+  --color-border: rgba(22, 21, 28, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.75);
 }
 
 * { box-sizing: border-box; }
@@ -46,6 +102,15 @@ body {
   font-family: 'Pretendard', -apple-system, sans-serif;
 }
 
-::selection { background: #8E8FF2; color: #2F3E72; }
+/* Glassmorphism / fluent acrylic card material — see native-mockup design direction */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 26px -14px rgba(22, 21, 28, 0.22);
+}
+
+::selection { background: #B583E0; color: #16151C; }
 
 textarea:focus, input:focus { outline: none; }
