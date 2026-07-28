@@ -8,6 +8,7 @@ import { api } from "@/app/lib/api";
 import { useToast } from "@/app/components/ui/Toast";
 import Button from "@/app/components/ui/Button";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
+import { cn } from "@/app/lib/cn";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -22,24 +23,19 @@ function renderPlan(text: string) {
 
     if (isSection) {
       elements.push(
-        <div key={key++} style={{ marginTop: i === 0 ? 0 : 28 }}>
-          <div style={{ borderTop: i === 0 ? "none" : "1px solid var(--color-border)", marginBottom: 12 }} />
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            fontSize: 15, fontWeight: 800, color: "var(--color-text)",
-            background: "color-mix(in srgb, var(--color-primary) 14%, var(--color-surface))", padding: "5px 14px", borderRadius: "var(--radius-sm)",
-            marginBottom: 10,
-          }}>
-            <span style={{ width: 6, height: 6, borderRadius: 2, background: "var(--color-primary)", flexShrink: 0, display: "inline-block" }} />
+        <div key={key++} className={i === 0 ? "mt-0" : "mt-7"}>
+          <div className={cn("mb-3", i === 0 ? "border-t-0" : "border-t border-border")} />
+          <div className="mb-2.5 inline-flex items-center gap-2 rounded-sm bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-[14px] py-[5px] text-[15px] font-extrabold text-text">
+            <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-[2px] bg-primary" />
             {line.trim().replace(/^\[|\]$/g, "")}
           </div>
         </div>
       );
     } else if (line.trim() === "") {
-      elements.push(<div key={key++} style={{ height: 6 }} />);
+      elements.push(<div key={key++} className="h-1.5" />);
     } else {
       elements.push(
-        <p key={key++} style={{ fontSize: 14, lineHeight: 1.85, color: "var(--color-muted)", margin: "0 0 4px 0" }}>
+        <p key={key++} className="mb-1 text-[14px] leading-[1.85] text-muted">
           {line}
         </p>
       );
@@ -49,11 +45,6 @@ function renderPlan(text: string) {
 }
 
 const INDIGO = "var(--color-primary)";
-const TINT = "color-mix(in srgb, var(--color-primary) 14%, var(--color-surface))";
-const TINT_HOVER = "color-mix(in srgb, var(--color-primary) 24%, var(--color-surface))";
-const MUTED_TINT = "color-mix(in srgb, var(--color-muted) 12%, var(--color-surface))";
-const SUCCESS_TINT = "color-mix(in srgb, var(--color-success) 16%, var(--color-surface))";
-const SUCCESS_TINT_STRONG = "color-mix(in srgb, var(--color-success) 26%, var(--color-surface))";
 
 export default function BusinessPlanPage() {
   const router = useRouter();
@@ -215,11 +206,11 @@ export default function BusinessPlanPage() {
   }
 
   return (
-    <div style={{ position: "relative", minHeight: "100vh", background: "var(--color-background)" }}>
+    <div className="relative min-h-screen bg-background">
       {/* Ambient blurred color blobs — kept subtle so the long-form document stays readable */}
       <div
+        className="pointer-events-none fixed inset-0 z-0"
         style={{
-          position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
           background:
             "radial-gradient(circle at 10% 4%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 40%)," +
             "radial-gradient(circle at 94% 10%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 38%)," +
@@ -227,36 +218,33 @@ export default function BusinessPlanPage() {
         }}
       />
 
-      <div style={{ position: "relative", zIndex: 1, fontFamily: "'Pretendard', sans-serif", color: "var(--color-text)" }}>
+      <div className="relative z-[1] font-['Pretendard',_sans-serif] text-text">
 
         {/* NAV */}
-        <nav className="glass" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none", position: "sticky", top: 0, zIndex: 10 }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto", height: 64, padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }} className="md:!px-7">
-            <div style={{ display: "flex", alignItems: "center", gap: 18, minWidth: 0 }}>
-              <Link href="/" style={{ fontFamily: "var(--font-geist,'Geist',sans-serif)", fontWeight: 800, fontSize: 21, color: "var(--color-text)", letterSpacing: "-0.01em", textDecoration: "none", flexShrink: 0 }}>StepUp</Link>
-              <Link href="/dashboard" className="hidden md:inline-flex" style={{ alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: INDIGO, textDecoration: "none", padding: "5px 12px", borderRadius: "var(--radius-sm)", background: TINT }}>
+        <nav className="glass sticky top-0 z-10 rounded-none! border-l-0! border-r-0! border-t-0!">
+          <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 md:px-7">
+            <div className="flex min-w-0 items-center gap-[18px]">
+              <Link href="/" className="shrink-0 [font-family:var(--font-geist)] text-[21px] font-extrabold tracking-[-0.01em] text-text no-underline">StepUp</Link>
+              <Link href="/dashboard" className="hidden items-center gap-1.5 rounded-sm bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-[5px] text-[13px] font-semibold text-primary no-underline md:inline-flex">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="3" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/></svg>
                 대시보드
               </Link>
-              <span className="hidden md:inline" style={{ fontSize: 13, color: "var(--color-muted)", paddingLeft: 18, borderLeft: "1px solid var(--color-border)" }}>사업계획서</span>
-              <Link href="/dashboard" aria-label="대시보드" className="flex md:hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full" style={{ background: TINT }}>
+              <span className="hidden border-l border-border pl-[18px] text-[13px] text-muted md:inline">사업계획서</span>
+              <Link href="/dashboard" aria-label="대시보드" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] md:hidden">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="3" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/></svg>
               </Link>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }} className="md:!gap-4">
-              <span className="hidden sm:inline-flex" style={{ alignItems: "center", gap: 6, background: TINT, color: INDIGO, fontWeight: 700, fontSize: 13, padding: "5px 12px", borderRadius: "var(--radius-full)" }}>
+            <div className="flex items-center gap-2.5 md:gap-4">
+              <span className="hidden items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-[5px] text-[13px] font-bold text-primary sm:inline-flex">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill={INDIGO}/></svg>
                 완성
               </span>
               <ThemeSwitcher />
-              <span className="hidden sm:inline-block" style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))" }} />
+              <span className="hidden h-8 w-8 rounded-full bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] sm:inline-block" />
               {isLoggedIn && (
                 <button
                   onClick={handleLogout}
-                  className="hidden md:inline-flex"
-                  style={{ alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "var(--color-muted)", background: "none", border: "1px solid var(--color-border)", padding: "5px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-error)"; e.currentTarget.style.borderColor = "var(--color-error)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; e.currentTarget.style.borderColor = "var(--color-border)"; }}
+                  className="hidden cursor-pointer items-center gap-[5px] rounded-sm border border-border bg-transparent px-3 py-[5px] text-[13px] font-semibold text-muted hover:border-error hover:text-error md:inline-flex"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   로그아웃
@@ -266,8 +254,7 @@ export default function BusinessPlanPage() {
                 <button
                   onClick={handleLogout}
                   aria-label="로그아웃"
-                  className="flex md:hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
-                  style={{ color: "var(--color-muted)", background: "none", border: "none", cursor: "pointer" }}
+                  className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-muted md:hidden"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
@@ -277,15 +264,15 @@ export default function BusinessPlanPage() {
         </nav>
 
         {/* BODY */}
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "24px 20px 60px" }} className="md:!px-7 md:!pt-8">
+        <div className="mx-auto max-w-[1280px] px-5 pt-6 pb-[60px] md:px-7 md:pt-8">
 
           {/* Page header */}
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: INDIGO, background: TINT, padding: "3px 10px", borderRadius: "var(--radius-full)", letterSpacing: "0.04em" }}>COMPLETE</span>
+          <div className="mb-5">
+            <div className="mb-1.5 flex items-center gap-2.5">
+              <span className="rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-2.5 py-[3px] text-[11px] font-bold tracking-[0.04em] text-primary">COMPLETE</span>
             </div>
-            <h1 style={{ fontSize: 24, fontWeight: 900, color: "var(--color-text)", margin: 0, letterSpacing: "-0.02em" }} className="md:!text-[26px]">나의 사업계획서</h1>
-            <p style={{ fontSize: 13.5, color: "var(--color-muted)", marginTop: 6 }}>7단계 로드맵을 바탕으로 AI가 작성한 사업계획서입니다. 자유롭게 수정해 활용하세요.</p>
+            <h1 className="m-0 text-[24px] font-black tracking-[-0.02em] text-text md:text-[26px]">나의 사업계획서</h1>
+            <p className="mt-1.5 text-[13.5px] text-muted">7단계 로드맵을 바탕으로 AI가 작성한 사업계획서입니다. 자유롭게 수정해 활용하세요.</p>
           </div>
 
           {/* Primary action — copying/exporting the plan is the one thing this screen exists for */}
@@ -303,20 +290,15 @@ export default function BusinessPlanPage() {
             {/* LEFT: 사업계획서 */}
             <div>
               {/* Toolbar — secondary actions only, copy CTA lives above as the primary action */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-text)" }}>전체 사업계획서</span>
-                <div style={{ display: "flex", gap: 8 }}>
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-[13px] font-bold text-text">전체 사업계획서</span>
+                <div className="flex gap-2">
                   {!isEditing ? (
                     <>
                       <button
                         onClick={handleEditStart}
                         disabled={!businessPlan}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: 6,
-                          fontSize: 13, fontWeight: 600, color: "var(--color-muted)",
-                          background: MUTED_TINT, border: "none", padding: "7px 16px", borderRadius: "var(--radius-sm)",
-                          cursor: businessPlan ? "pointer" : "not-allowed",
-                        }}
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-none bg-[color-mix(in_srgb,var(--color-muted)_12%,var(--color-surface))] px-4 py-[7px] text-[13px] font-semibold text-muted disabled:cursor-not-allowed"
                       >
                         <Pencil size={14} />
                         편집
@@ -324,14 +306,12 @@ export default function BusinessPlanPage() {
                       <button
                         onClick={() => handleSave()}
                         disabled={!businessPlan || saving}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: 6,
-                          fontSize: 13, fontWeight: 600,
-                          color: "var(--color-success)",
-                          background: savedOk ? SUCCESS_TINT_STRONG : SUCCESS_TINT,
-                          border: "none", padding: "7px 16px", borderRadius: "var(--radius-sm)",
-                          cursor: businessPlan && !saving ? "pointer" : "not-allowed",
-                        }}
+                        className={cn(
+                          "inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-none px-4 py-[7px] text-[13px] font-semibold text-success disabled:cursor-not-allowed",
+                          savedOk
+                            ? "bg-[color-mix(in_srgb,var(--color-success)_26%,var(--color-surface))]"
+                            : "bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))]"
+                        )}
                       >
                         {savedOk ? (<><Check size={14} />저장됨!</>) : (<><Save size={14} />{saving ? "저장 중..." : "저장"}</>)}
                       </button>
@@ -340,23 +320,14 @@ export default function BusinessPlanPage() {
                     <>
                       <button
                         onClick={handleEditCancel}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: 6,
-                          fontSize: 13, fontWeight: 600, color: "var(--color-muted)",
-                          background: MUTED_TINT, border: "none", padding: "7px 16px", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                        }}
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-none bg-[color-mix(in_srgb,var(--color-muted)_12%,var(--color-surface))] px-4 py-[7px] text-[13px] font-semibold text-muted"
                       >
                         취소
                       </button>
                       <button
                         onClick={handleEditSave}
                         disabled={saving}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: 6,
-                          fontSize: 13, fontWeight: 600, color: "var(--color-background)",
-                          background: "var(--color-text)", border: "none", padding: "7px 16px", borderRadius: "var(--radius-sm)",
-                          cursor: saving ? "not-allowed" : "pointer",
-                        }}
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-none bg-text px-4 py-[7px] text-[13px] font-semibold text-background disabled:cursor-not-allowed"
                       >
                         {savedOk ? (
                           <><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--color-background)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>저장됨!</>
@@ -369,38 +340,33 @@ export default function BusinessPlanPage() {
                 </div>
               </div>
 
-              <div className="glass" style={{ background: isEditing ? "var(--glass-bg)" : undefined, border: isEditing ? `2px solid ${INDIGO}` : undefined, borderRadius: "var(--radius-md)", padding: "28px 32px", minHeight: 500 }}>
+              <div className={cn("glass min-h-[500px] rounded-md px-8 py-7", isEditing && "border-2! border-primary!")}>
                 {loadingPlan ? (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 400, gap: 18 }}>
-                    <div style={{ display: "flex", gap: 6 }}>
+                  <div className="flex min-h-[400px] flex-col items-center justify-center gap-[18px]">
+                    <div className="flex gap-1.5">
                       {[0, 150, 300].map((d, i) => (
-                        <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: INDIGO, display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms`, opacity: 0.7 }} />
+                        <span key={i} className="inline-block h-2.5 w-2.5 animate-[bounce_1.2s_infinite] rounded-full bg-primary opacity-70" style={{ animationDelay: `${d}ms` }} />
                       ))}
                     </div>
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--color-text)", marginBottom: 6 }}>AI가 사업계획서를 작성 중입니다</div>
-                      <div style={{ fontSize: 13, color: "var(--color-muted)" }}>7단계 내용을 분석하고 있어요. 30초 정도 소요됩니다.</div>
+                    <div className="text-center">
+                      <div className="mb-1.5 text-[15px] font-bold text-text">AI가 사업계획서를 작성 중입니다</div>
+                      <div className="text-[13px] text-muted">7단계 내용을 분석하고 있어요. 30초 정도 소요됩니다.</div>
                     </div>
                   </div>
                 ) : error ? (
-                  <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--color-error)" }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>오류가 발생했습니다</div>
-                    <div style={{ fontSize: 13, color: "var(--color-muted)" }}>{error}</div>
-                    <button onClick={() => { hasFetched.current = false; window.location.reload(); }} style={{ marginTop: 16, fontSize: 13, fontWeight: 600, color: INDIGO, background: TINT, border: "none", padding: "8px 18px", borderRadius: "var(--radius-sm)", cursor: "pointer" }}>다시 시도</button>
+                  <div className="px-5 py-[60px] text-center text-error">
+                    <div className="mb-2 text-[15px] font-bold">오류가 발생했습니다</div>
+                    <div className="text-[13px] text-muted">{error}</div>
+                    <button onClick={() => { hasFetched.current = false; window.location.reload(); }} className="mt-4 cursor-pointer rounded-sm border-none bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-[18px] py-2 text-[13px] font-semibold text-primary">다시 시도</button>
                   </div>
                 ) : isEditing ? (
                   <textarea
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
-                    style={{
-                      width: "100%", minHeight: 600, border: "none", outline: "none",
-                      fontSize: 14, lineHeight: 1.85, color: "var(--color-muted)",
-                      fontFamily: "Pretendard, sans-serif", resize: "vertical",
-                      background: "transparent",
-                    }}
+                    className="min-h-[600px] w-full resize-y border-none bg-transparent text-[14px] leading-[1.85] text-muted outline-none font-[Pretendard,_sans-serif]"
                   />
                 ) : businessPlan ? (
-                  <div style={{ userSelect: "text" }}>
+                  <div className="select-text">
                     {renderPlan(businessPlan)}
                   </div>
                 ) : null}
@@ -408,20 +374,23 @@ export default function BusinessPlanPage() {
             </div>
 
             {/* RIGHT: 코치 요다 피드백 */}
-            <div style={{ position: "sticky", top: 88 }}>
-              <div className="glass" style={{ borderRadius: "var(--radius-md)", overflow: "hidden" }}>
+            <div className="sticky top-[88px]">
+              <div className="glass overflow-hidden rounded-md">
                 {/* Header — the one hero gradient moment on this page */}
-                <div style={{ position: "relative", overflow: "hidden", background: "linear-gradient(150deg, var(--color-primary) 0%, var(--color-secondary) 55%, var(--color-accent) 100%)", padding: "16px 20px" }}>
-                  <div style={{
-                    position: "absolute", inset: 0, pointerEvents: "none",
-                    background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)",
-                  }} />
-                  <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🤖</div>
+                <div
+                  className="relative overflow-hidden px-5 py-4"
+                  style={{ background: "linear-gradient(150deg, var(--color-primary) 0%, var(--color-secondary) 55%, var(--color-accent) 100%)" }}
+                >
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{ background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)" }}
+                  />
+                  <div className="relative flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.18] text-[18px]">🤖</div>
                     <div>
-                      <div style={{ color: "#fff", fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>코치 요다의 피드백</div>
-                      <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 11, display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
+                      <div className="text-[14px] font-bold leading-[1.2] text-white">코치 요다의 피드백</div>
+                      <div className="mt-0.5 flex items-center gap-1 text-[11px] text-white/75">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#4ade80]" />
                         전체 사업계획서 분석 중
                       </div>
                     </div>
@@ -429,40 +398,34 @@ export default function BusinessPlanPage() {
                 </div>
 
                 {/* Body */}
-                <div style={{ padding: "20px" }}>
+                <div className="p-5">
                   {loadingPlan || loadingFeedback ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center", padding: "24px 0" }}>
-                      <div style={{ display: "flex", gap: 5 }}>
+                    <div className="flex flex-col items-center gap-3 py-6">
+                      <div className="flex gap-[5px]">
                         {[0, 150, 300].map((d, i) => (
-                          <span key={i} style={{ width: 7, height: 7, borderRadius: "50%", background: INDIGO, display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms`, opacity: 0.6 }} />
+                          <span key={i} className="inline-block h-[7px] w-[7px] animate-[bounce_1.2s_infinite] rounded-full bg-primary opacity-60" style={{ animationDelay: `${d}ms` }} />
                         ))}
                       </div>
-                      <div style={{ fontSize: 13, color: "var(--color-muted)", textAlign: "center" }}>
+                      <div className="text-center text-[13px] text-muted">
                         {loadingPlan ? "사업계획서 생성 후 분석합니다" : "사업계획서를 꼼꼼히 읽는 중이에요..."}
                       </div>
                     </div>
                   ) : feedback ? (
-                    <p style={{ fontSize: 13.5, lineHeight: 1.8, color: "var(--color-muted)", margin: 0, whiteSpace: "pre-line" }}>{feedback}</p>
+                    <p className="m-0 whitespace-pre-line text-[13.5px] leading-[1.8] text-muted">{feedback}</p>
                   ) : (
-                    <p style={{ fontSize: 13, color: "var(--color-muted)", textAlign: "center", padding: "24px 0" }}>피드백을 불러오지 못했습니다.</p>
+                    <p className="py-6 text-center text-[13px] text-muted">피드백을 불러오지 못했습니다.</p>
                   )}
                 </div>
 
                 {/* Footer — 재요청 버튼 */}
                 {!loadingPlan && !loadingFeedback && (
-                  <div style={{ borderTop: "1px solid var(--color-border)", padding: "12px 20px", background: "color-mix(in srgb, var(--color-primary) 4%, transparent)" }}>
-                    <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.6, marginBottom: 8 }}>
+                  <div className="border-t border-border bg-[color-mix(in_srgb,var(--color-primary)_4%,transparent)] px-5 py-3">
+                    <div className="mb-2 text-[12px] leading-[1.6] text-muted">
                       사업계획서를 편집한 후 새 피드백을 받고 싶다면 아래 버튼을 눌러주세요.
                     </div>
                     <button
                       onClick={() => handleRefreshFeedback()}
-                      style={{
-                        width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-                        fontSize: 13, fontWeight: 600, color: INDIGO,
-                        background: TINT, border: "none", padding: "9px 0", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = TINT_HOVER; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = TINT; }}
+                      className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border-none bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] py-[9px] text-[13px] font-semibold text-primary hover:bg-[color-mix(in_srgb,var(--color-primary)_24%,var(--color-surface))]"
                     >
                       <RefreshCw size={14} />
                       피드백 다시 받기
@@ -472,9 +435,9 @@ export default function BusinessPlanPage() {
               </div>
 
               {/* Back to step 7 */}
-              <Link href="/roadmap/7" className="glass" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12, fontSize: 13, fontWeight: 600, color: "var(--color-muted)", textDecoration: "none", padding: "10px", borderRadius: "var(--radius-md)" }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = INDIGO; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
+              <Link
+                href="/roadmap/7"
+                className="glass mt-3 flex items-center justify-center gap-1.5 rounded-md p-2.5 text-[13px] font-semibold text-muted no-underline hover:text-primary"
               >
                 <ArrowLeft size={14} />
                 7단계로 돌아가기
