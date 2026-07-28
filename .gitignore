@@ -30,6 +30,7 @@ mockup*
 # ...but favicon/app icons are real deployed assets, not loose design references
 !frontend/app/icon.png
 !frontend/app/apple-icon.png
+!frontend/public/logo-icon.png
 
 # Build
 dist/

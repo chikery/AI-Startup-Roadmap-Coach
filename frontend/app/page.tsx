@@ -39,9 +39,13 @@ export default function Home() {
         <nav className="glass" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none", position: "sticky", top: 0, zIndex: 50 }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px" }} className="md:px-10">
             <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-              <span style={{ width: 32, height: 32, borderRadius: "var(--radius-sm)", background: "var(--color-primary)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21V11M12 11C12 7 9 4 4 4C4 9 8 11 12 11ZM12 11C12 6.5 15 3 21 3.5C20.5 9 16 11 12 11Z" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </span>
+              <img
+                src={(process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/logo-icon.png"}
+                alt="StepUp"
+                width={32}
+                height={32}
+                style={{ width: 32, height: 32, borderRadius: "var(--radius-sm)", display: "block" }}
+              />
               <span style={{ fontFamily: bricolageFont, fontWeight: 700, fontSize: 20, letterSpacing: "-0.01em" }}>Stepup</span>
             </div>
             <div className="landing-nav-links" style={{ alignItems: "center", gap: 28, fontSize: 15, fontWeight: 500, color: "var(--color-muted)", whiteSpace: "nowrap" }}>
@@ -339,9 +343,13 @@ export default function Home() {
         <footer style={{ borderTop: "1px solid var(--color-border)", padding: "32px 20px" }} className="md:!p-[48px_40px]">
           <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-              <span style={{ width: 28, height: 28, borderRadius: "var(--radius-sm)", background: "var(--color-primary)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21V11M12 11C12 7 9 4 4 4C4 9 8 11 12 11ZM12 11C12 6.5 15 3 21 3.5C20.5 9 16 11 12 11Z" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </span>
+              <img
+                src={(process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/logo-icon.png"}
+                alt="StepUp"
+                width={28}
+                height={28}
+                style={{ width: 28, height: 28, borderRadius: "var(--radius-sm)", display: "block" }}
+              />
               <span style={{ fontFamily: bricolageFont, fontWeight: 700, fontSize: 17 }}>Stepup</span>
               <span style={{ fontSize: 13, color: "var(--color-muted)", marginLeft: 8 }}>아이디어에서 사업계획서까지, AI 창업 로드맵 코치</span>
             </div>
