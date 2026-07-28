@@ -203,6 +203,36 @@ body {
   .roadmap-sticky-cta { display: none; }
 }
 
+/* Landing page: responsive breakpoints — mobile stacks single-column,
+   desktop keeps the original multi-column marketing layout untouched. */
+.landing-nav-links { display: none; }
+.landing-hero-grid { display: grid; grid-template-columns: 1fr; gap: 32px; padding: 44px 20px 56px !important; }
+.landing-hero-title { font-size: 38px !important; }
+.landing-hero-mockup { display: none; }
+.landing-feature-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.landing-how-row { grid-template-columns: 44px 1fr !important; gap: 14px !important; }
+.landing-how-inner { display: flex !important; flex-direction: column; align-items: flex-start !important; gap: 8px !important; }
+.landing-match-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+.landing-preview-grid { display: grid; grid-template-columns: 1fr; min-height: 0 !important; }
+.landing-preview-side { display: none; }
+.landing-section-pad { padding: 56px 20px !important; }
+.landing-cta-heading { font-size: 28px !important; }
+
+@media (min-width: 768px) {
+  .landing-nav-links { display: flex; }
+  .landing-hero-grid { grid-template-columns: 1fr 1.02fr; gap: 48px; padding: 72px 40px 88px !important; }
+  .landing-hero-title { font-size: 62px !important; }
+  .landing-hero-mockup { display: block; }
+  .landing-feature-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .landing-how-row { grid-template-columns: 64px 1fr !important; gap: 24px !important; }
+  .landing-how-inner { display: grid !important; flex-direction: row; align-items: center !important; gap: 20px !important; grid-template-columns: 1fr auto; }
+  .landing-match-grid { grid-template-columns: 0.92fr 1.08fr; gap: 56px; }
+  .landing-preview-grid { grid-template-columns: 210px 1fr 250px; min-height: 440px !important; }
+  .landing-preview-side { display: block; }
+  .landing-section-pad { padding: 104px 40px !important; }
+  .landing-cta-heading { font-size: 46px !important; }
+}
+
 ::selection { background: #B583E0; color: #16151C; }
 
 textarea:focus, input:focus { outline: none; }

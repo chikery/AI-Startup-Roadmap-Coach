@@ -36,19 +36,20 @@ export default function Home() {
 
         {/* NAV */}
         <nav className="glass" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none", position: "sticky", top: 0, zIndex: 50 }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 40px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px" }} className="md:px-10">
             <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
               <span style={{ width: 32, height: 32, borderRadius: "var(--radius-sm)", background: "var(--color-primary)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21V11M12 11C12 7 9 4 4 4C4 9 8 11 12 11ZM12 11C12 6.5 15 3 21 3.5C20.5 9 16 11 12 11Z" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </span>
               <span style={{ fontFamily: bricolageFont, fontWeight: 700, fontSize: 20, letterSpacing: "-0.01em" }}>Stepup</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 36, fontSize: 15, fontWeight: 500, color: "var(--color-muted)", whiteSpace: "nowrap" }}>
+            <div className="landing-nav-links" style={{ alignItems: "center", gap: 36, fontSize: 15, fontWeight: 500, color: "var(--color-muted)", whiteSpace: "nowrap" }}>
               <a href="#how" style={{ color: "inherit", textDecoration: "none" }}>작동 방식</a>
               <a href="#match" style={{ color: "inherit", textDecoration: "none" }}>지원사업 매칭</a>
               <a href="#preview" style={{ color: "inherit", textDecoration: "none" }}>작성 화면</a>
               <Link href="/dashboard" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "11px 20px", borderRadius: "var(--radius-full)", fontWeight: 600, textDecoration: "none", fontSize: 15 }}>무료로 시작하기</Link>
             </div>
+            <Link href="/dashboard" className="md:hidden" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "9px 16px", borderRadius: "var(--radius-full)", fontWeight: 600, textDecoration: "none", fontSize: 13.5, flexShrink: 0 }}>시작하기</Link>
           </div>
         </nav>
 
@@ -56,24 +57,24 @@ export default function Home() {
         <section style={{ position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -140, right: -60, width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--color-primary) 45%, transparent), transparent 70%)", filter: "blur(12px)", opacity: 0.75, animation: "floaty 9s ease-in-out infinite" }} />
           <div style={{ position: "absolute", bottom: -180, left: -80, width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-secondary) 40%, transparent), transparent 70%)", filter: "blur(16px)", opacity: 0.55, animation: "floaty2 11s ease-in-out infinite" }} />
-          <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1.02fr", gap: 48, alignItems: "center", padding: "72px 40px 88px" }}>
+          <div className="landing-hero-grid" style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", alignItems: "center" }}>
             <div>
               <div style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: bricolageFont, fontSize: 13.5, fontWeight: 600, letterSpacing: "0.06em", color: "var(--color-primary)", background: TINT, padding: "8px 15px", borderRadius: "var(--radius-full)" }}>IDEA → PLAN → FUND</div>
-              <h1 style={{ fontSize: 62, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-0.035em", margin: "24px 0 0", fontFamily: bricolageFont }}>아이디어를<br /><span style={{ color: "var(--color-primary)" }}>사업으로</span> 키우는<br />가장 빠른 길.</h1>
-              <p style={{ fontSize: 19, lineHeight: 1.6, color: "var(--color-muted)", maxWidth: 520, margin: "28px 0 0" }}>창업 아이디어만 있다면 충분해요. AI 코치가 <b style={{ color: "var(--color-text)" }}>7단계로 사업계획서</b>를 완성하고, 지금 신청 가능한 <b style={{ color: "var(--color-text)" }}>정부지원사업</b>까지 매칭해 드립니다.</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 13, marginTop: 36 }}>
-                <Link href="/dashboard" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "17px 30px", borderRadius: "var(--radius-full)", fontSize: 17, fontWeight: 600, boxShadow: "0 14px 30px -10px color-mix(in srgb, var(--color-text) 45%, transparent)", textDecoration: "none" }}>무료로 시작하기 →</Link>
-                <a href="#preview" style={{ padding: "17px 28px", borderRadius: "var(--radius-full)", fontSize: 17, fontWeight: 600, border: "1.5px solid var(--color-border)", color: "var(--color-text)", textDecoration: "none" }}>데모 둘러보기</a>
+              <h1 className="landing-hero-title" style={{ lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.03em", margin: "24px 0 0", fontFamily: bricolageFont }}>아이디어를<br /><span style={{ color: "var(--color-primary)" }}>사업으로</span> 키우는<br />가장 빠른 길.</h1>
+              <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--color-muted)", maxWidth: 520, margin: "24px 0 0" }}>창업 아이디어만 있다면 충분해요. AI 코치가 <b style={{ color: "var(--color-text)" }}>7단계로 사업계획서</b>를 완성하고, 지금 신청 가능한 <b style={{ color: "var(--color-text)" }}>정부지원사업</b>까지 매칭해 드립니다.</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 13, marginTop: 32, flexWrap: "wrap" }}>
+                <Link href="/dashboard" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "16px 28px", borderRadius: "var(--radius-full)", fontSize: 16, fontWeight: 600, boxShadow: "0 14px 30px -10px color-mix(in srgb, var(--color-text) 45%, transparent)", textDecoration: "none" }}>무료로 시작하기 →</Link>
+                <a href="#preview" style={{ padding: "16px 26px", borderRadius: "var(--radius-full)", fontSize: 16, fontWeight: 600, border: "1.5px solid var(--color-border)", color: "var(--color-text)", textDecoration: "none" }}>데모 둘러보기</a>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 40, fontSize: 14, color: "var(--color-muted)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 36, fontSize: 13.5, color: "var(--color-muted)", flexWrap: "wrap" }}>
                 <span style={{ display: "inline-flex" }}>
                   {(["var(--color-primary)", "var(--color-secondary)", "var(--color-error)"] as string[]).map((c, i) => <span key={i} style={{ width: 26, height: 26, borderRadius: "50%", background: c, border: "2px solid var(--color-background)", display: "inline-block", marginLeft: i > 0 ? -8 : 0 }} />)}
                 </span>
                 문체부 · 중기부 · 예술경영지원센터 공고 <b style={{ color: "var(--color-text)" }}>실시간 반영</b>
               </div>
             </div>
-            {/* Mockup */}
-            <div style={{ position: "relative" }}>
+            {/* Mockup — desktop only; too dense to responsively shrink, hidden on mobile */}
+            <div className="landing-hero-mockup" style={{ position: "relative" }}>
               <div className="glass" style={{ borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "13px 16px", background: "color-mix(in srgb, var(--color-text) 4%, transparent)", borderBottom: "1px solid var(--color-border)" }}>
                   {(["#E5675B", "#F4BE4F", "#61C554"] as string[]).map((c, i) => <span key={i} style={{ width: 11, height: 11, borderRadius: "50%", background: c }} />)}
@@ -137,11 +138,11 @@ export default function Home() {
         </section>
 
         {/* PROBLEM */}
-        <section style={{ maxWidth: 1200, margin: "0 auto", padding: "104px 40px 60px" }}>
+        <section className="landing-section-pad" style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ fontFamily: bricolageFont, fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", color: "var(--color-error)" }}>THE PROBLEM</div>
-          <h2 style={{ fontSize: 44, lineHeight: 1.15, fontWeight: 800, letterSpacing: "-0.03em", margin: "14px 0 0", maxWidth: 720, fontFamily: bricolageFont }}>좋은 아이디어는 있는데,<br />사업계획서 앞에서 멈춰 있나요?</h2>
-          <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--color-muted)", margin: "18px 0 0", maxWidth: 600 }}>예비 창업자 대부분이 같은 벽에 부딪혀요. Stepup은 이 네 가지를 정확히 풀어줍니다.</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18, marginTop: 48 }}>
+          <h2 className="landing-cta-heading" style={{ lineHeight: 1.18, fontWeight: 800, letterSpacing: "-0.03em", margin: "14px 0 0", maxWidth: 720, fontFamily: bricolageFont }}>좋은 아이디어는 있는데,<br />사업계획서 앞에서 멈춰 있나요?</h2>
+          <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--color-muted)", margin: "16px 0 0", maxWidth: 600 }}>예비 창업자 대부분이 같은 벽에 부딪혀요. Stepup은 이 네 가지를 정확히 풀어줍니다.</p>
+          <div className="landing-feature-grid" style={{ marginTop: 40 }}>
             {([
               { emoji: "🧭", title: "어디서부터 써야 할지 막막함", desc: "빈 문서 앞의 막막함. AI가 첫 질문부터 단계로 끌어줍니다." },
               { emoji: "📑", title: "낯선 양식과 어려운 용어", desc: "TAM·BM·피치덱… 용어를 몰라도 채워지는 검증된 프레임." },
@@ -158,16 +159,17 @@ export default function Home() {
         </section>
 
         {/* HOW IT WORKS */}
-        <section id="how" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "104px 0" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 40px" }}>
+        <section id="how" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "56px 0" }} className="md:!py-[104px]">
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px" }} className="md:!px-10">
             <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 30, flexWrap: "wrap" }}>
               <div>
                 <div style={{ fontFamily: bricolageFont, fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", color: "var(--color-secondary)" }}>HOW IT WORKS</div>
-                <h2 style={{ fontSize: 44, lineHeight: 1.15, fontWeight: 800, letterSpacing: "-0.03em", margin: "14px 0 0", fontFamily: bricolageFont }}>7단계만 따라오면,<br />사업계획서가 완성됩니다.</h2>
+                <h2 className="landing-cta-heading" style={{ lineHeight: 1.18, fontWeight: 800, letterSpacing: "-0.03em", margin: "14px 0 0", fontFamily: bricolageFont }}>7단계만 따라오면,<br />사업계획서가 완성됩니다.</h2>
               </div>
-              <p style={{ fontSize: 17, lineHeight: 1.6, color: ON_DARK_65, maxWidth: 360, margin: 0 }}>각 단계에서 AI가 질문하고 초안을 씁니다. 단계를 마칠 때마다 그 내용에 맞는 지원사업이 자동으로 매칭돼요.</p>
+              <p style={{ fontSize: 16, lineHeight: 1.6, color: ON_DARK_65, maxWidth: 360, margin: 0 }}>각 단계에서 AI가 질문하고 초안을 씁니다. 단계를 마칠 때마다 그 내용에 맞는 지원사업이 자동으로 매칭돼요.</p>
             </div>
-            <div style={{ marginTop: 64, display: "flex", flexDirection: "column" }}>
+            <div style={{ marginTop: 48 }} className="md:!mt-16" >
+            <div style={{ display: "flex", flexDirection: "column" }}>
               {([
                 { n: 1, title: "문제 발견", sub: "Problem", desc: "해결할 문제와 진짜 고객이 누구인지 명확히 합니다.", grant: "+ 예비창업패키지", isFirst: true, isLast: false },
                 { n: 2, title: "시장·고객 리서치", sub: "Research", desc: "시장 규모(TAM·SAM·SOM)와 경쟁사를 데이터 기반으로 정리합니다.", grant: "+ 청년창업사관학교", isFirst: false, isLast: false },
@@ -177,35 +179,36 @@ export default function Home() {
                 { n: 6, title: "재무 계획", sub: "Financials", desc: "추정 매출과 자금 소요·조달 계획을 작성합니다.", grant: "+ 예술인 창업지원", isFirst: false, isLast: false },
                 { n: 7, title: "피치덱 완성", sub: "Pitch Deck", desc: "앞선 6단계가 자동으로 통합된 발표자료가 완성됩니다.", grant: "최종 산출물", isFirst: false, isLast: true },
               ] as Array<{n:number;title:string;sub:string;desc:string;grant:string;isFirst:boolean;isLast:boolean}>).map((s) => (
-                <div key={s.n} style={{ display: "grid", gridTemplateColumns: "64px 1fr", gap: 24 }}>
+                <div key={s.n} className="landing-how-row" style={{ display: "grid" }}>
                   <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <span style={{ width: 52, height: 52, borderRadius: "50%", background: s.isFirst ? "var(--color-secondary)" : s.isLast ? "var(--color-error)" : SECONDARY_TINT, color: s.isFirst ? "var(--color-text)" : s.isLast ? "var(--color-background)" : "var(--color-secondary)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: bricolageFont, fontWeight: 700, fontSize: 20, position: "relative", zIndex: 2, border: (!s.isFirst && !s.isLast) ? `1px solid ${SECONDARY_BORDER_30}` : "none" }}>{s.n}</span>
-                    {!s.isLast && <span style={{ position: "absolute", left: 31, top: 26, bottom: -26, width: 2, background: s.isFirst ? `linear-gradient(var(--color-secondary), ${ON_DARK_14})` : ON_DARK_14, zIndex: 0 }} />}
+                    <span style={{ width: 40, height: 40, borderRadius: "50%", background: s.isFirst ? "var(--color-secondary)" : s.isLast ? "var(--color-error)" : SECONDARY_TINT, color: s.isFirst ? "var(--color-text)" : s.isLast ? "var(--color-background)" : "var(--color-secondary)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: bricolageFont, fontWeight: 700, fontSize: 17, position: "relative", zIndex: 2, border: (!s.isFirst && !s.isLast) ? `1px solid ${SECONDARY_BORDER_30}` : "none", flexShrink: 0 }} className="md:!w-[52px] md:!h-[52px] md:!text-xl">{s.n}</span>
+                    {!s.isLast && <span style={{ position: "absolute", left: 19, top: 20, bottom: -20, width: 2, background: s.isFirst ? `linear-gradient(var(--color-secondary), ${ON_DARK_14})` : ON_DARK_14, zIndex: 0 }} className="md:!left-[31px]" />}
                   </div>
-                  <div style={{ paddingBottom: s.isLast ? 0 : 28, display: "grid", gridTemplateColumns: "1fr auto", gap: 20, alignItems: "center" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <h3 style={{ fontSize: 22, fontWeight: 700, margin: 0, whiteSpace: "nowrap" }}>{s.title}</h3>
+                  <div className="landing-how-inner" style={{ paddingBottom: s.isLast ? 0 : 28, minWidth: 0 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                        <h3 style={{ fontSize: 20, fontWeight: 700, margin: 0, wordBreak: "keep-all" }}>{s.title}</h3>
                         <span style={{ fontFamily: bricolageFont, fontSize: 13, color: ON_DARK_45 }}>{s.sub}</span>
                       </div>
-                      <p style={{ fontSize: 15, lineHeight: 1.6, color: ON_DARK_65, margin: "8px 0 0", maxWidth: 560 }}>{s.desc}</p>
+                      <p style={{ fontSize: 14.5, lineHeight: 1.6, color: ON_DARK_65, margin: "8px 0 0", maxWidth: 560 }}>{s.desc}</p>
                     </div>
-                    <span style={{ fontSize: 12.5, fontWeight: s.isLast ? 700 : 600, color: s.isLast ? "var(--color-background)" : "var(--color-secondary)", background: s.isLast ? "var(--color-error)" : "transparent", border: s.isLast ? "none" : `1px solid ${SECONDARY_BORDER_35}`, padding: "7px 13px", borderRadius: "var(--radius-full)", whiteSpace: "nowrap" }}>{s.grant}</span>
+                    <span style={{ fontSize: 12.5, fontWeight: s.isLast ? 700 : 600, color: s.isLast ? "var(--color-background)" : "var(--color-secondary)", background: s.isLast ? "var(--color-error)" : "transparent", border: s.isLast ? "none" : `1px solid ${SECONDARY_BORDER_35}`, padding: "6px 12px", borderRadius: "var(--radius-full)", whiteSpace: "nowrap", flexShrink: 0 }}>{s.grant}</span>
                   </div>
                 </div>
               ))}
+            </div>
             </div>
           </div>
         </section>
 
         {/* MATCHING */}
-        <section id="match" style={{ maxWidth: 1200, margin: "0 auto", padding: "104px 40px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "0.92fr 1.08fr", gap: 56, alignItems: "center" }}>
+        <section id="match" className="landing-section-pad" style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div className="landing-match-grid" style={{ alignItems: "center" }}>
             <div>
               <div style={{ fontFamily: bricolageFont, fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", color: "var(--color-error)" }}>SMART MATCHING</div>
-              <h2 style={{ fontSize: 44, lineHeight: 1.15, fontWeight: 800, letterSpacing: "-0.03em", margin: "14px 0 0", fontFamily: bricolageFont }}>계획서를 쓰는 동안,<br />지원금이 찾아옵니다.</h2>
-              <p style={{ fontSize: 18, lineHeight: 1.65, color: "var(--color-muted)", margin: "20px 0 0" }}>아이템 분야·창업 단계·지역을 입력하면 RAG 엔진이 수백 개 공고를 분석해 <b style={{ color: "var(--color-text)" }}>적합도 순으로</b> 추천해요.</p>
-              <div style={{ display: "flex", gap: 40, marginTop: 36 }}>
+              <h2 className="landing-cta-heading" style={{ lineHeight: 1.18, fontWeight: 800, letterSpacing: "-0.03em", margin: "14px 0 0", fontFamily: bricolageFont }}>계획서를 쓰는 동안,<br />지원금이 찾아옵니다.</h2>
+              <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--color-muted)", margin: "18px 0 0" }}>아이템 분야·창업 단계·지역을 입력하면 RAG 엔진이 수백 개 공고를 분석해 <b style={{ color: "var(--color-text)" }}>적합도 순으로</b> 추천해요.</p>
+              <div style={{ display: "flex", gap: 32, marginTop: 32, flexWrap: "wrap" }}>
                 {([{ n: "340+", label: "실시간 추적 공고" }, { n: "7개", label: "연동 정부·기관" }, { n: "94%", label: "상위 추천 적합도" }] as Array<{n:string;label:string}>).map((s) => (
                   <div key={s.label}>
                     <div style={{ fontFamily: bricolageFont, fontSize: 38, fontWeight: 800, color: "var(--color-primary)", lineHeight: 1 }}>{s.n}</div>
@@ -237,20 +240,20 @@ export default function Home() {
         </section>
 
         {/* PRODUCT PREVIEW */}
-        <section id="preview" style={{ borderTop: "1px solid var(--color-border)", padding: "104px 0" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 40px", textAlign: "center" }}>
+        <section id="preview" className="landing-section-pad" style={{ borderTop: "1px solid var(--color-border)" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px", textAlign: "center" }} className="md:!px-10">
             <div style={{ fontFamily: bricolageFont, fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", color: "var(--color-primary)" }}>THE PRODUCT</div>
-            <h2 style={{ fontSize: 44, lineHeight: 1.15, fontWeight: 800, letterSpacing: "-0.03em", margin: "14px 0 0", fontFamily: bricolageFont }}>AI와 대화하듯, 한 단계씩.</h2>
-            <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--color-muted)", margin: "16px auto 0", maxWidth: 560 }}>질문에 답하면 AI가 초안을 쓰고, 당신은 다듬기만 하면 됩니다.</p>
+            <h2 className="landing-cta-heading" style={{ lineHeight: 1.18, fontWeight: 800, letterSpacing: "-0.03em", margin: "14px 0 0", fontFamily: bricolageFont }}>AI와 대화하듯, 한 단계씩.</h2>
+            <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--color-muted)", margin: "14px auto 0", maxWidth: 560 }}>질문에 답하면 AI가 초안을 쓰고, 당신은 다듬기만 하면 됩니다.</p>
           </div>
-          <div style={{ maxWidth: 1080, margin: "52px auto 0", padding: "0 40px" }}>
+          <div style={{ maxWidth: 1080, margin: "40px auto 0", padding: "0 20px" }} className="md:!px-10 md:!mt-[52px]">
             <div className="glass" style={{ borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px 18px", background: "color-mix(in srgb, var(--color-text) 4%, transparent)", borderBottom: "1px solid var(--color-border)" }}>
                 {(["#E5675B","#F4BE4F","#61C554"] as string[]).map((c,i) => <span key={i} style={{ width: 12, height: 12, borderRadius: "50%", background: c }} />)}
                 <span style={{ flex: 1, textAlign: "center", fontSize: 12.5, color: "var(--color-muted)" }}>app.stepup.kr / write</span>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "210px 1fr 250px", minHeight: 440 }}>
-                <div style={{ background: "var(--color-text)", padding: "22px 16px", color: ON_DARK_70 }}>
+              <div className="landing-preview-grid">
+                <div className="landing-preview-side" style={{ background: "var(--color-text)", padding: "22px 16px", color: ON_DARK_70 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: ON_DARK_45, marginBottom: 14 }}>로드맵 진행률 · 43%</div>
                   <div style={{ height: 5, background: ON_DARK_12, borderRadius: "var(--radius-full)", overflow: "hidden", marginBottom: 18 }}><div style={{ width: "43%", height: "100%", background: "var(--color-secondary)", borderRadius: "var(--radius-full)" }} /></div>
                   {([
@@ -287,7 +290,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div style={{ borderLeft: "1px solid var(--color-border)", padding: "22px 18px", textAlign: "left" }}>
+                <div className="landing-preview-side" style={{ borderLeft: "1px solid var(--color-border)", padding: "22px 18px", textAlign: "left" }}>
                   <div style={{ fontSize: 11.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", marginBottom: 14 }}>🎯 이 단계 추천 지원사업</div>
                   {([
                     { pct: "매칭 94%", name: "예비창업패키지 2026", org: "중기부 · 최대 1억원", d: "D-12", urgent: true },
@@ -313,22 +316,22 @@ export default function Home() {
         </section>
 
         {/* CTA */}
-        <section id="pricing" style={{ maxWidth: 1200, margin: "0 auto", padding: "104px 40px" }}>
-          <div style={{ background: "var(--color-text)", borderRadius: "var(--radius-lg)", padding: "72px 40px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+        <section id="pricing" className="landing-section-pad" style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ background: "var(--color-text)", borderRadius: "var(--radius-lg)", padding: "48px 24px", textAlign: "center", position: "relative", overflow: "hidden" }} className="md:!p-[72px]">
             <div style={{ position: "absolute", top: -100, right: "10%", width: 320, height: 320, borderRadius: "50%", background: "radial-gradient(circle, color-mix(in srgb, var(--color-secondary) 22%, transparent), transparent 70%)", filter: "blur(8px)" }} />
             <div style={{ position: "relative", zIndex: 2 }}>
-              <h2 style={{ fontSize: 46, lineHeight: 1.12, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--color-background)", margin: 0, fontFamily: bricolageFont }}>오늘 아이디어를 적으면,<br />이번 주에 지원사업에 신청할 수 있어요.</h2>
-              <p style={{ fontSize: 18, color: ON_DARK_65, margin: "22px 0 0" }}>가입 후 7단계 전부 무료. 카드 등록 없이 바로 시작하세요.</p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 13, marginTop: 38 }}>
-                <Link href="/dashboard" style={{ background: "var(--color-background)", color: "var(--color-text)", padding: "18px 34px", borderRadius: "var(--radius-full)", fontSize: 17, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>무료로 시작하기 →</Link>
-                <a href="#how" style={{ padding: "18px 30px", borderRadius: "var(--radius-full)", fontSize: 17, fontWeight: 600, border: `1.5px solid ${ON_DARK_45}`, color: "var(--color-background)", textDecoration: "none", whiteSpace: "nowrap" }}>작동 방식 보기</a>
+              <h2 className="landing-cta-heading" style={{ lineHeight: 1.2, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--color-background)", margin: 0, fontFamily: bricolageFont }}>오늘 아이디어를 적으면,<br />이번 주에 지원사업에 신청할 수 있어요.</h2>
+              <p style={{ fontSize: 16, color: ON_DARK_65, margin: "20px 0 0" }}>가입 후 7단계 전부 무료. 카드 등록 없이 바로 시작하세요.</p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 13, marginTop: 32, flexWrap: "wrap" }}>
+                <Link href="/dashboard" style={{ background: "var(--color-background)", color: "var(--color-text)", padding: "16px 30px", borderRadius: "var(--radius-full)", fontSize: 16, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>무료로 시작하기 →</Link>
+                <a href="#how" style={{ padding: "16px 26px", borderRadius: "var(--radius-full)", fontSize: 16, fontWeight: 600, border: `1.5px solid ${ON_DARK_45}`, color: "var(--color-background)", textDecoration: "none", whiteSpace: "nowrap" }}>작동 방식 보기</a>
               </div>
             </div>
           </div>
         </section>
 
         {/* FOOTER */}
-        <footer style={{ borderTop: "1px solid var(--color-border)", padding: "48px 40px" }}>
+        <footer style={{ borderTop: "1px solid var(--color-border)", padding: "32px 20px" }} className="md:!p-[48px_40px]">
           <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
               <span style={{ width: 28, height: 28, borderRadius: "var(--radius-sm)", background: "var(--color-primary)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
