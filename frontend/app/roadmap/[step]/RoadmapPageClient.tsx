@@ -7,6 +7,7 @@ import { api } from "@/app/lib/api";
 import { getProgramsForStep, isExpired, daysLeft } from "@/app/lib/support-programs";
 import { useToast } from "@/app/components/ui/Toast";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
+import { cn } from "@/app/lib/cn";
 
 /* ------------------------------------------------------------------ */
 /* Step Metadata                                                         */
@@ -228,21 +229,6 @@ function formatValue(raw: unknown): string {
 }
 
 /* ------------------------------------------------------------------ */
-/* Design tokens / tints (matches app-wide glassmorphism system)         */
-/* ------------------------------------------------------------------ */
-
-const TINT = "color-mix(in srgb, var(--color-primary) 14%, var(--color-surface))";
-const TINT_BORDER = "color-mix(in srgb, var(--color-primary) 30%, transparent)";
-const SUCCESS_TINT = "color-mix(in srgb, var(--color-success) 16%, var(--color-surface))";
-const SUCCESS_BORDER = "color-mix(in srgb, var(--color-success) 32%, transparent)";
-const ACCENT_TINT = "color-mix(in srgb, var(--color-accent) 18%, var(--color-surface))";
-const ACCENT_BORDER = "color-mix(in srgb, var(--color-accent) 45%, transparent)";
-const ERROR_TINT = "color-mix(in srgb, var(--color-error) 16%, var(--color-surface))";
-const FEEDBACK_TINT = "color-mix(in srgb, var(--color-primary) 10%, var(--color-surface))";
-const FEEDBACK_BORDER = "color-mix(in srgb, var(--color-primary) 22%, transparent)";
-const TRACK_BG = "color-mix(in srgb, var(--color-text) 8%, transparent)";
-
-/* ------------------------------------------------------------------ */
 /* Page Component                                                        */
 /* ------------------------------------------------------------------ */
 
@@ -387,7 +373,7 @@ export default function RoadmapStepPage() {
   }
 
   if (!meta) {
-    return <div style={{ padding: 40, textAlign: "center", color: "var(--color-muted)", background: "var(--color-background)", minHeight: "100vh" }}>존재하지 않는 단계입니다</div>;
+    return <div className="min-h-screen bg-background p-10 text-center text-muted">존재하지 않는 단계입니다</div>;
   }
 
   const completedCount = progress.filter((p) => p.is_completed).length;
@@ -411,11 +397,11 @@ export default function RoadmapStepPage() {
     : "저장 후 다음 단계";
 
   return (
-    <div style={{ position: "relative", minHeight: "100vh", background: "var(--color-background)" }}>
+    <div className="relative min-h-screen bg-background">
       {/* Ambient blurred color blobs — kept subtle since this page is text/form-dense */}
       <div
+        className="pointer-events-none fixed inset-0 z-0"
         style={{
-          position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
           background:
             "radial-gradient(circle at 10% 6%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 40%)," +
             "radial-gradient(circle at 94% 10%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 38%)," +
@@ -423,41 +409,38 @@ export default function RoadmapStepPage() {
         }}
       />
 
-      <div style={{ position: "relative", zIndex: 1, fontFamily: "'Pretendard', sans-serif", color: "var(--color-text)" }}>
+      <div className="relative z-[1] font-['Pretendard',_sans-serif] text-text">
 
         {/* ── TOP NAV ── */}
-        <nav className="glass" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none", position: "sticky", top: 0, zIndex: 10 }}>
-          <div style={{ maxWidth: 1180, margin: "0 auto", height: 64, padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }} className="sm:px-7">
-            <div style={{ display: "flex", alignItems: "center", gap: 18, minWidth: 0 }}>
-              <Link href="/" style={{ fontFamily: "var(--font-geist, 'Geist', sans-serif)", fontWeight: 800, fontSize: 21, color: "var(--color-text)", letterSpacing: "-0.01em", textDecoration: "none", flexShrink: 0 }}>StepUp</Link>
+        <nav className="glass sticky top-0 z-10 rounded-none! border-l-0! border-r-0! border-t-0!">
+          <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between px-4 sm:px-7">
+            <div className="flex min-w-0 items-center gap-[18px]">
+              <Link href="/" className="shrink-0 [font-family:var(--font-geist)] text-[21px] font-extrabold tracking-[-0.01em] text-text no-underline">StepUp</Link>
               {/* Desktop: full dashboard link + step name label */}
-              <Link href="/dashboard" className="hidden md:inline-flex" style={{ alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "var(--color-primary)", textDecoration: "none", padding: "5px 12px", borderRadius: "var(--radius-sm)", background: TINT, transition: "background 0.15s" }}>
+              <Link href="/dashboard" className="hidden items-center gap-1.5 rounded-sm bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-[5px] text-[13px] font-semibold text-primary no-underline transition-[background] duration-150 md:inline-flex">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/></svg>
                 대시보드
               </Link>
-              <span className="hidden md:inline" style={{ fontSize: 13, color: "var(--color-muted)", paddingLeft: 18, borderLeft: "1px solid var(--color-border)" }}>{step}단계: {meta.name}</span>
+              <span className="hidden border-l border-border pl-[18px] text-[13px] text-muted md:inline">{step}단계: {meta.name}</span>
               {/* Mobile: icon-only dashboard shortcut */}
-              <Link href="/dashboard" aria-label="대시보드" className="flex md:hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full" style={{ background: TINT }}>
+              <Link href="/dashboard" aria-label="대시보드" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] md:hidden">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/></svg>
               </Link>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }} className="sm:gap-4">
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 7, background: TINT, color: "var(--color-primary)", fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: "var(--radius-full)" }}>
+            <div className="flex items-center gap-2.5 sm:gap-4">
+              <span className="inline-flex items-center gap-[7px] rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-1.5 text-[13px] font-bold text-primary">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="var(--color-primary)"/></svg>
                 {step}/7
               </span>
               {/* Decorative bell — desktop only, no behavior attached */}
               <svg className="hidden md:block" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
               <ThemeSwitcher />
-              <span className="hidden sm:inline-block" style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", border: "1px solid var(--color-border)" }}></span>
+              <span className="hidden h-8 w-8 rounded-full border border-border bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] sm:inline-block"></span>
               {isLoggedIn && (
                 <button
                   onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
                   aria-label="로그아웃"
-                  className="hidden md:inline-flex"
-                  style={{ alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "var(--color-muted)", background: "none", border: "1px solid var(--color-border)", padding: "5px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-error)"; e.currentTarget.style.borderColor = "var(--color-error)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; e.currentTarget.style.borderColor = "var(--color-border)"; }}
+                  className="hidden cursor-pointer items-center gap-[5px] rounded-sm border border-border bg-transparent px-3 py-[5px] text-[13px] font-semibold text-muted hover:border-error hover:text-error md:inline-flex"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   로그아웃
@@ -467,8 +450,7 @@ export default function RoadmapStepPage() {
                 <button
                   onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
                   aria-label="로그아웃"
-                  className="flex md:hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
-                  style={{ color: "var(--color-muted)", background: "none", border: "none", cursor: "pointer" }}
+                  className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-muted md:hidden"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
@@ -478,21 +460,21 @@ export default function RoadmapStepPage() {
         </nav>
 
         {/* ── BODY GRID ── */}
-        <div className="roadmap-grid" style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <div className="roadmap-grid mx-auto max-w-[1180px]">
 
           {/* ── SIDEBAR ── */}
-          <aside className="glass" style={{ position: "sticky", top: 26, borderRadius: "var(--radius-lg)", padding: "20px 16px" }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "var(--color-primary)" }}>창업 여정</div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "9px 0 8px" }}>
-              <span style={{ fontSize: 12.5, color: "var(--color-muted)", fontWeight: 600 }}>진행률</span>
-              <span style={{ fontSize: 12.5, color: "var(--color-muted)", fontWeight: 700 }}>{completedCount}/7</span>
+          <aside className="glass sticky top-[26px] rounded-lg px-4 py-5">
+            <div className="text-[18px] font-extrabold text-primary">창업 여정</div>
+            <div className="mt-[9px] mb-2 flex items-center justify-between">
+              <span className="text-[12.5px] font-semibold text-muted">진행률</span>
+              <span className="text-[12.5px] font-bold text-muted">{completedCount}/7</span>
             </div>
-            <div style={{ height: 7, background: TRACK_BG, borderRadius: "var(--radius-full)", overflow: "hidden", marginBottom: 24 }}>
-              <div style={{ width: `${(completedCount / 7) * 100}%`, height: "100%", background: "var(--color-success)", borderRadius: "var(--radius-full)", transition: "width 0.5s" }}></div>
+            <div className="mb-6 h-[7px] overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-text)_8%,transparent)]">
+              <div className="h-full rounded-full bg-success [transition:width_0.5s]" style={{ width: `${(completedCount / 7) * 100}%` }}></div>
             </div>
 
             {/* Desktop: full step list, always visible (unchanged) */}
-            <div className="hidden md:flex" style={{ flexDirection: "column", gap: 3 }}>
+            <div className="hidden flex-col gap-[3px] md:flex">
               {STEP_META.map((s) => {
                 const isActive = s.step === step;
                 const isDone = progress.find((p) => p.step === s.step)?.is_completed;
@@ -500,25 +482,19 @@ export default function RoadmapStepPage() {
                   <Link
                     key={s.step}
                     href={`/roadmap/${s.step}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 11,
-                      padding: "10px 11px",
-                      borderRadius: "var(--radius-sm)",
-                      fontSize: 13.5,
-                      fontWeight: isActive ? 700 : 600,
-                      color: isActive ? "var(--color-primary)" : "var(--color-muted)",
-                      background: isActive ? TINT : "transparent",
-                      textDecoration: "none",
-                    }}
+                    className={cn(
+                      "flex items-center gap-[11px] rounded-sm px-[11px] py-2.5 text-[13.5px] no-underline",
+                      isActive
+                        ? "bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] font-bold text-primary"
+                        : "font-semibold text-muted"
+                    )}
                   >
                     {isDone && !isActive ? (
-                      <span style={{ width: 17, height: 17, borderRadius: "50%", background: SUCCESS_TINT, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <span className="inline-flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))]">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="var(--color-success)" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </span>
                     ) : (
-                      <span style={{ flexShrink: 0, color: isActive ? "var(--color-primary)" : "var(--color-muted)" }}>
+                      <span className={cn("shrink-0", isActive ? "text-primary" : "text-muted")}>
                         <StepIcon step={s.step} color={isActive ? "var(--color-primary)" : "var(--color-muted)"} />
                       </span>
                     )}
@@ -530,10 +506,10 @@ export default function RoadmapStepPage() {
 
             {/* Mobile: collapsed drawer — journey list is reference material, not the task at hand */}
             <details className="md:hidden">
-              <summary style={{ cursor: "pointer", listStyle: "none", fontSize: 13, fontWeight: 700, color: "var(--color-muted)", padding: "8px 4px" }}>
+              <summary className="cursor-pointer list-none px-1 py-2 text-[13px] font-bold text-muted">
                 전체 7단계 보기 ({completedCount}/7 완료)
               </summary>
-              <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 6 }}>
+              <div className="mt-1.5 flex flex-col gap-[3px]">
                 {STEP_META.map((s) => {
                   const isActive = s.step === step;
                   const isDone = progress.find((p) => p.step === s.step)?.is_completed;
@@ -541,25 +517,19 @@ export default function RoadmapStepPage() {
                     <Link
                       key={s.step}
                       href={`/roadmap/${s.step}`}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 11,
-                        padding: "10px 11px",
-                        borderRadius: "var(--radius-sm)",
-                        fontSize: 13.5,
-                        fontWeight: isActive ? 700 : 600,
-                        color: isActive ? "var(--color-primary)" : "var(--color-muted)",
-                        background: isActive ? TINT : "transparent",
-                        textDecoration: "none",
-                      }}
+                      className={cn(
+                        "flex items-center gap-[11px] rounded-sm px-[11px] py-2.5 text-[13.5px] no-underline",
+                        isActive
+                          ? "bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] font-bold text-primary"
+                          : "font-semibold text-muted"
+                      )}
                     >
                       {isDone && !isActive ? (
-                        <span style={{ width: 17, height: 17, borderRadius: "50%", background: SUCCESS_TINT, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span className="inline-flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))]">
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="var(--color-success)" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         </span>
                       ) : (
-                        <span style={{ flexShrink: 0, color: isActive ? "var(--color-primary)" : "var(--color-muted)" }}>
+                        <span className={cn("shrink-0", isActive ? "text-primary" : "text-muted")}>
                           <StepIcon step={s.step} color={isActive ? "var(--color-primary)" : "var(--color-muted)"} />
                         </span>
                       )}
@@ -570,11 +540,11 @@ export default function RoadmapStepPage() {
               </div>
             </details>
 
-            <div style={{ borderTop: "1px solid var(--color-border)", margin: "22px 0 16px" }}></div>
+            <div className="mt-[22px] mb-4 border-t border-border"></div>
 
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("open-chat"))}
-              style={{ width: "100%", cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, background: "var(--color-text)", color: "var(--color-background)", border: "none", padding: 12, borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: 700 }}
+              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border-none bg-text p-3 text-[14px] font-bold text-background [font-family:inherit]"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="currentColor"/></svg>
               AI 인사이트 받기
@@ -585,21 +555,22 @@ export default function RoadmapStepPage() {
               const programs = getProgramsForStep(step);
               if (!programs.length) return null;
               const list = (
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <div className="flex flex-col gap-1.5">
                   {programs.slice(0, 4).map((p, i) => {
                     const expired = isExpired(p.deadline);
                     const left = daysLeft(p.deadline);
                     return (
-                      <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
-                        style={{
-                          display: "block", padding: "9px 10px", borderRadius: "var(--radius-sm)",
-                          background: expired ? "transparent" : ACCENT_TINT,
-                          border: `1px solid ${expired ? "var(--color-border)" : ACCENT_BORDER}`,
-                          textDecoration: "none", opacity: expired ? 0.6 : 1,
-                        }}
+                      <a
+                        key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                        className={cn(
+                          "block rounded-sm border px-2.5 py-[9px] no-underline",
+                          expired
+                            ? "border-border opacity-60"
+                            : "border-[color-mix(in_srgb,var(--color-accent)_45%,transparent)] bg-[color-mix(in_srgb,var(--color-accent)_18%,var(--color-surface))]"
+                        )}
                       >
-                        <div style={{ fontSize: 11.5, fontWeight: 700, color: expired ? "var(--color-muted)" : "var(--color-text)", lineHeight: 1.4, marginBottom: 4 }}>{p.name}</div>
-                        <div style={{ fontSize: 10.5, color: expired ? "var(--color-muted)" : (left <= 7 ? "var(--color-error)" : "var(--color-accent)"), fontWeight: 600 }}>
+                        <div className={cn("mb-1 text-[11.5px] font-bold leading-[1.4]", expired ? "text-muted" : "text-text")}>{p.name}</div>
+                        <div className={cn("text-[10.5px] font-semibold", expired ? "text-muted" : left <= 7 ? "text-error" : "text-accent")}>
                           {expired ? "마감" : `D-${left} · ${p.deadline.slice(5).replace("-", "/")}`}
                         </div>
                       </a>
@@ -610,27 +581,27 @@ export default function RoadmapStepPage() {
               return (
                 <>
                   {/* Desktop: always expanded */}
-                  <div className="hidden md:block" style={{ marginTop: 18 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                  <div className="mt-[18px] hidden md:block">
+                    <div className="mb-2.5 flex items-center gap-1.5">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-accent)" }}>이 단계 추천 지원사업</span>
+                      <span className="text-[12px] font-bold text-accent">이 단계 추천 지원사업</span>
                     </div>
                     {list}
                   </div>
                   {/* Mobile: collapsed accordion */}
-                  <details className="md:hidden" style={{ marginTop: 12 }}>
-                    <summary style={{ cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 700, color: "var(--color-accent)", padding: "8px 4px" }}>
+                  <details className="mt-3 md:hidden">
+                    <summary className="flex cursor-pointer list-none items-center gap-1.5 px-1 py-2 text-[12.5px] font-bold text-accent">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
                       이 단계 추천 지원사업 ({programs.length})
                     </summary>
-                    <div style={{ marginTop: 8 }}>{list}</div>
+                    <div className="mt-2">{list}</div>
                   </details>
                 </>
               );
             })()}
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 11px 4px" }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--color-muted)" }}>
+            <div className="flex items-center justify-between px-[11px] pt-3.5 pb-1">
+              <span className="inline-flex items-center gap-2 text-[13px] text-muted">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-muted)" strokeWidth="1.7"/><path d="M9.5 9.5a2.5 2.5 0 113.5 2.3c-.7.3-1 .8-1 1.7M12 17h.01" stroke="var(--color-muted)" strokeWidth="1.7" strokeLinecap="round"/></svg>
                 도움말
               </span>
@@ -644,52 +615,50 @@ export default function RoadmapStepPage() {
           <main>
 
             {/* Step Header */}
-            <div className="roadmap-section-header" style={{ display: "flex", gap: 16, alignItems: "flex-start", minWidth: 0 }}>
-              <span style={{ width: 46, height: 46, borderRadius: "var(--radius-md)", background: TINT, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div className="roadmap-section-header flex min-w-0 items-start gap-4">
+              <span className="inline-flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-md bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))]">
                 <StepIcon step={step} color="var(--color-primary)" />
               </span>
-              <div style={{ minWidth: 0 }}>
-                <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: "var(--color-text)", wordBreak: "keep-all", overflowWrap: "break-word" }}>{meta.heading}</h1>
-                <p style={{ fontSize: 14.5, color: "var(--color-muted)", margin: "7px 0 0", wordBreak: "keep-all" }}>{meta.description}</p>
+              <div className="min-w-0">
+                <h1 className="m-0 text-[26px] font-extrabold tracking-[-0.02em] text-text [word-break:keep-all] [overflow-wrap:break-word]">{meta.heading}</h1>
+                <p className="mt-[7px] text-[14.5px] text-muted [word-break:keep-all]">{meta.description}</p>
               </div>
             </div>
 
             {/* Why + Coach two-column — collapsed by default on mobile (context reading, not the core task) */}
-            <details className="roadmap-section-why md:hidden" style={{ marginTop: 16 }}>
-              <summary
-                style={{ cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 700, color: "var(--color-primary)", padding: "12px 4px" }}
-              >
+            <details className="roadmap-section-why mt-4 md:hidden">
+              <summary className="flex cursor-pointer list-none items-center gap-2 px-1 py-3 text-[14px] font-bold text-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M12 11v5M12 7.5h.01" stroke="var(--color-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
                 왜 이 단계가 필요한가 (펼쳐보기)
               </summary>
-              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "18px 20px", marginTop: 8 }}>
+              <div className="glass mt-2 rounded-md px-5 py-[18px]">
                 {meta.whyText.map((text, i) => (
-                  <p key={i} style={{ fontSize: 13.5, lineHeight: 1.7, color: "var(--color-muted)", margin: i === 0 ? 0 : "12px 0 0" }}>{text}</p>
+                  <p key={i} className={cn("text-[13.5px] leading-[1.7] text-muted", i === 0 ? "m-0" : "mt-3")}>{text}</p>
                 ))}
-                <div style={{ borderTop: "1px solid var(--color-border)", margin: "14px 0" }} />
-                <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12.5, fontWeight: 800, color: "var(--color-primary)" }}>
+                <div className="my-[14px] border-t border-border" />
+                <div className="flex items-center gap-[7px] text-[12.5px] font-extrabold text-primary">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3c-1 3-2 4-5 5 3 1 4 2 5 5 1-3 2-4 5-5-3-1-4-2-5-5z" fill="var(--color-accent)"/></svg>
                   RK · AI 코치 요다
                 </div>
-                <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--color-text)", marginTop: 8 }}>"{meta.coachQuote}"</div>
+                <div className="mt-2 text-[13px] leading-[1.7] text-text">"{meta.coachQuote}"</div>
               </div>
             </details>
 
             {/* Desktop-only version — always visible, two-column, unchanged */}
-            <div className="roadmap-section-why hidden md:block" style={{ marginTop: 24 }}>
+            <div className="roadmap-section-why mt-6 hidden md:block">
             <div className="roadmap-why-row">
               {/* Why card */}
-              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "22px 24px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 16, fontWeight: 800, color: "var(--color-primary)" }}>
+              <div className="glass rounded-md px-6 py-[22px]">
+                <div className="flex items-center gap-2 text-[16px] font-extrabold text-primary">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M12 11v5M12 7.5h.01" stroke="var(--color-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
                   왜 이 단계가 필요한가
                 </div>
                 {meta.whyText.map((text, i) => (
-                  <p key={i} style={{ fontSize: 13.8, lineHeight: 1.7, color: "var(--color-muted)", margin: i === 0 ? "13px 0 0" : "12px 0 0" }}>{text}</p>
+                  <p key={i} className={cn("text-[13.8px] leading-[1.7] text-muted", i === 0 ? "mt-[13px]" : "mt-3")}>{text}</p>
                 ))}
-                <div style={{ display: "flex", gap: 10, marginTop: 18, flexWrap: "wrap" }}>
+                <div className="mt-[18px] flex flex-wrap gap-2.5">
                   {meta.tags.map((tag) => (
-                    <span key={tag} style={{ display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--color-border)", borderRadius: "var(--radius-full)", padding: "7px 14px", fontSize: 12.5, fontWeight: 600, color: "var(--color-muted)" }}>
+                    <span key={tag} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-[7px] text-[12.5px] font-semibold text-muted">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="var(--color-success)" strokeWidth="1.8"/><path d="M8 12l3 3 5-6" stroke="var(--color-success)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       {tag}
                     </span>
@@ -698,15 +667,15 @@ export default function RoadmapStepPage() {
               </div>
 
               {/* Coach card — primary-tinted glass, distinct from neutral cards */}
-              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: 20, background: TINT, display: "flex", flexDirection: "column" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, fontWeight: 800, color: "var(--color-primary)" }}>
+              <div className="glass flex flex-col rounded-md bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] p-5">
+                <div className="flex items-center gap-[7px] text-[13px] font-extrabold text-primary">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3c-1 3-2 4-5 5 3 1 4 2 5 5 1-3 2-4 5-5-3-1-4-2-5-5z" fill="var(--color-accent)"/></svg>
                   RK · AI 코치 요다
                 </div>
-                <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--color-text)", marginTop: 13, flex: 1 }}>
+                <div className="mt-[13px] flex-1 text-[13px] leading-[1.7] text-text">
                   "{meta.coachQuote}"
                 </div>
-                <div style={{ borderTop: "1px solid var(--color-border)", marginTop: 14, paddingTop: 11, fontSize: 11, color: "var(--color-muted)" }}>
+                <div className="mt-3.5 border-t border-border pt-[11px] text-[11px] text-muted">
                   실시간 분석 · 피드백 활성
                 </div>
               </div>
@@ -719,34 +688,36 @@ export default function RoadmapStepPage() {
             {/* AI Draft Banner */}
             {!draftGenerated ? (
               /* Hero gradient moment — the page's one call-to-action highlight */
-              <div style={{
-                position: "relative", overflow: "hidden",
-                background: "linear-gradient(150deg, var(--color-primary) 0%, var(--color-secondary) 55%, var(--color-accent) 100%)",
-                border: "1px solid rgba(255,255,255,0.3)",
-                borderRadius: "var(--radius-lg)", padding: "18px 22px", marginTop: 18,
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), 0 20px 40px -20px color-mix(in srgb, var(--color-primary) 55%, transparent)",
-                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18,
-              }}>
-                <div style={{
-                  position: "absolute", inset: 0, pointerEvents: "none",
-                  background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)",
-                }} />
-                <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 13 }}>
-                  <span style={{ width: 40, height: 40, borderRadius: "var(--radius-sm)", background: "rgba(255,255,255,0.22)", border: "1px solid rgba(255,255,255,0.3)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div
+                className="relative mt-[18px] flex items-center justify-between gap-[18px] overflow-hidden rounded-lg border border-white/30 px-[22px] py-[18px]"
+                style={{
+                  background: "linear-gradient(150deg, var(--color-primary) 0%, var(--color-secondary) 55%, var(--color-accent) 100%)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), 0 20px 40px -20px color-mix(in srgb, var(--color-primary) 55%, transparent)",
+                }}
+              >
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{ background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)" }}
+                />
+                <div className="relative flex items-center gap-[13px]">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-white/30 bg-white/[0.22]">
                     <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/></svg>
                   </span>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 800, color: "#fff" }}>AI 초안 생성이 준비되었습니다</div>
-                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", marginTop: 3 }}>{meta.frameworkDesc}</div>
+                    <div className="text-[15px] font-extrabold text-white">AI 초안 생성이 준비되었습니다</div>
+                    <div className="mt-[3px] text-[13px] text-white/85">{meta.frameworkDesc}</div>
                   </div>
                 </div>
                 <button
                   onClick={handleGenerate}
                   disabled={generating || !user?.item_keyword}
-                  style={{ position: "relative", cursor: generating || !user?.item_keyword ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "var(--color-text)", color: "var(--color-background)", border: "none", padding: "13px 22px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: 700, opacity: generating || !user?.item_keyword ? 0.6 : 1 }}
+                  className="relative inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-sm border-none bg-text px-[22px] py-[13px] text-[14px] font-bold text-background [font-family:inherit] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {generating ? (
-                    <span style={{ display: "inline-block", width: 15, height: 15, border: "2px solid color-mix(in srgb, var(--color-background) 40%, transparent)", borderTopColor: "var(--color-background)", borderRadius: "50%", animation: "spin 0.7s linear infinite" }}></span>
+                    <span
+                      className="inline-block h-[15px] w-[15px] animate-[spin_0.7s_linear_infinite] rounded-full border-2"
+                      style={{ borderColor: "color-mix(in srgb, var(--color-background) 40%, transparent)", borderTopColor: "var(--color-background)" }}
+                    ></span>
                   ) : (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 12.5h6L9 22l9-11h-6L13 2z" fill="currentColor"/></svg>
                   )}
@@ -754,20 +725,20 @@ export default function RoadmapStepPage() {
                 </button>
               </div>
             ) : (
-              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "16px 20px", marginTop: 18, background: SUCCESS_TINT, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-                  <span style={{ width: 40, height: 40, borderRadius: "var(--radius-sm)", background: "var(--color-success)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div className="glass mt-[18px] flex items-center justify-between gap-[18px] rounded-md bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-5 py-4">
+                <div className="flex items-center gap-[13px]">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-success">
                     <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </span>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 800, color: "var(--color-success)" }}>AI 초안이 생성되었습니다</div>
-                    <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 3 }}>각 항목을 검토하고 다듬은 뒤 저장 후 다음 단계로 진행하세요.</div>
+                    <div className="text-[15px] font-extrabold text-success">AI 초안이 생성되었습니다</div>
+                    <div className="mt-[3px] text-[13px] text-muted">각 항목을 검토하고 다듬은 뒤 저장 후 다음 단계로 진행하세요.</div>
                   </div>
                 </div>
                 <button
                   onClick={handleGenerate}
                   disabled={generating || !user?.item_keyword}
-                  style={{ cursor: generating || !user?.item_keyword ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "var(--color-success)", color: "#fff", border: "none", padding: "11px 18px", borderRadius: "var(--radius-sm)", fontSize: 13, fontWeight: 700, opacity: generating || !user?.item_keyword ? 0.6 : 1 }}
+                  className="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-sm border-none bg-success px-[18px] py-[11px] text-[13px] font-bold text-white [font-family:inherit] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {generating ? "생성 중..." : "다시 생성하기"}
                 </button>
@@ -775,19 +746,19 @@ export default function RoadmapStepPage() {
             )}
 
             {/* Framework Table */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "28px 2px 14px" }}>
-              <h2 style={{ fontSize: 19, fontWeight: 800, margin: 0, color: "var(--color-text)" }}>{meta.frameworkTitle}</h2>
-              <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, color: "var(--color-primary)", textDecoration: "none" }}>
+            <div className="mx-0.5 mt-7 mb-3.5 flex items-center justify-between">
+              <h2 className="m-0 text-[19px] font-extrabold text-text">{meta.frameworkTitle}</h2>
+              <a href="#" className="inline-flex items-center gap-1.5 text-[13px] font-bold text-primary no-underline">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M9.5 9.5a2.5 2.5 0 113.5 2.3c-.7.3-1 .8-1 1.7M12 17h.01" stroke="var(--color-primary)" strokeWidth="1.7" strokeLinecap="round"/></svg>
                 프레임워크 가이드 보기
               </a>
             </div>
 
-            <div className="glass" style={{ borderRadius: "var(--radius-md)", overflow: "hidden" }}>
+            <div className="glass overflow-hidden rounded-md">
               {/* Table header — hidden on mobile since the label already appears above each field in the stacked layout */}
-              <div className="roadmap-table-row hidden md:grid" style={{ background: "color-mix(in srgb, var(--color-text) 4%, transparent)", borderBottom: "1px solid var(--color-border)" }}>
-                <div style={{ padding: "13px 22px", fontSize: 12, fontWeight: 700, color: "var(--color-muted)" }}>구분</div>
-                <div style={{ padding: "13px 22px", fontSize: 12, fontWeight: 700, color: "var(--color-muted)" }}>상세 내용</div>
+              <div className="roadmap-table-row hidden border-b border-border bg-[color-mix(in_srgb,var(--color-text)_4%,transparent)] md:grid">
+                <div className="px-[22px] py-[13px] text-[12px] font-bold text-muted">구분</div>
+                <div className="px-[22px] py-[13px] text-[12px] font-bold text-muted">상세 내용</div>
               </div>
 
               {meta.rows.map((row, idx) => {
@@ -795,14 +766,14 @@ export default function RoadmapStepPage() {
                 const val = formatValue(raw);
                 const isLast = idx === meta.rows.length - 1;
                 return (
-                  <div key={row.key} className="roadmap-table-row" style={{ borderBottom: isLast ? "none" : "1px solid var(--color-border)" }}>
-                    <div style={{ padding: "20px 22px", display: "flex", alignItems: "center", gap: 10, fontSize: 14, fontWeight: 700, color: "var(--color-text)" }}>
-                      <span style={{ width: 8, height: 8, borderRadius: 3, background: "var(--color-primary)", flexShrink: 0 }}></span>
+                  <div key={row.key} className={cn("roadmap-table-row", !isLast && "border-b border-border")}>
+                    <div className="flex items-center gap-2.5 px-[22px] py-5 text-[14px] font-bold text-text">
+                      <span className="h-2 w-2 shrink-0 rounded-[3px] bg-primary"></span>
                       {row.label}
                     </div>
-                    <div style={{ padding: "16px 22px", fontSize: 13.5, lineHeight: 1.6 }}>
+                    <div className="px-[22px] py-4 text-[13.5px] leading-[1.6]">
                       {val && (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 10.5, fontWeight: 700, color: "var(--color-primary)", background: TINT, padding: "3px 8px", borderRadius: "var(--radius-full)", marginBottom: 8 }}>
+                        <span className="mb-2 inline-flex items-center gap-[5px] rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-2 py-[3px] text-[10.5px] font-bold text-primary">
                           ✦ AI 초안
                         </span>
                       )}
@@ -811,19 +782,10 @@ export default function RoadmapStepPage() {
                         placeholder={row.placeholder}
                         onChange={(e) => setContent((prev) => ({ ...(prev || {}), [row.key]: e.target.value }))}
                         rows={val ? Math.max(2, val.split("\n").length + 1) : 2}
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          border: "none",
-                          outline: "none",
-                          resize: "none",
-                          fontFamily: "'Pretendard', sans-serif",
-                          fontSize: 13.5,
-                          lineHeight: 1.6,
-                          color: val ? "var(--color-text)" : "var(--color-muted)",
-                          background: "transparent",
-                          padding: 0,
-                        }}
+                        className={cn(
+                          "block w-full resize-none border-none bg-transparent p-0 text-[13.5px] leading-[1.6] outline-none font-['Pretendard',_sans-serif]",
+                          val ? "text-text" : "text-muted"
+                        )}
                       />
                     </div>
                   </div>
@@ -835,149 +797,164 @@ export default function RoadmapStepPage() {
             {/* Coaching Feedback — surfaced right after the work area on mobile so users see it without hunting */}
             <div className="roadmap-section-coachfeedback">
             {!draftGenerated ? (
-              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: 34, marginTop: 18, textAlign: "center" }}>
-                <span style={{ width: 46, height: 46, borderRadius: "50%", background: "color-mix(in srgb, var(--color-muted) 15%, transparent)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+              <div className="glass mt-[18px] rounded-md p-[34px] text-center">
+                <span className="inline-flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-muted)_15%,transparent)]">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.5 8.5 0 01-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1121 11.5z" stroke="var(--color-muted)" strokeWidth="1.7" strokeLinejoin="round"/></svg>
                 </span>
-                <div style={{ fontSize: 15, fontWeight: 800, color: "var(--color-muted)", marginTop: 14 }}>코칭 피드백 대기 중</div>
-                <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 5, lineHeight: 1.6 }}>AI 초안을 생성하면 코치 요다가 작성된 내용을 분석해 피드백을 제시합니다.</div>
+                <div className="mt-3.5 text-[15px] font-extrabold text-muted">코칭 피드백 대기 중</div>
+                <div className="mt-[5px] text-[13px] leading-[1.6] text-muted">AI 초안을 생성하면 코치 요다가 작성된 내용을 분석해 피드백을 제시합니다.</div>
               </div>
             ) : (
               <>
                 {/* 완성도 점수 카드 */}
-                <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "18px 20px", marginTop: 18 }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: fetchingScore ? 0 : (score ? 14 : 0) }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div className="glass mt-[18px] rounded-md px-5 py-[18px]">
+                  <div className={cn("flex items-center justify-between", !fetchingScore && score && "mb-3.5")}>
+                    <div className="flex items-center gap-2">
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-text)" }}>완성도 채점</span>
+                      <span className="text-[14px] font-extrabold text-text">완성도 채점</span>
                       {score && (
-                        <span style={{ fontSize: 11, color: "var(--color-muted)", fontWeight: 500 }}>— {score.methodology_ref}</span>
+                        <span className="text-[11px] font-medium text-muted">— {score.methodology_ref}</span>
                       )}
                     </div>
                     {fetchingScore ? (
-                      <span style={{ display: "inline-flex", gap: 3 }}>
+                      <span className="inline-flex gap-[3px]">
                         {[0, 150, 300].map((d, i) => (
-                          <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--color-accent)", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
+                          <span key={i} className="inline-block h-[5px] w-[5px] animate-[bounce_1.2s_infinite] rounded-full bg-accent" style={{ animationDelay: `${d}ms` }} />
                         ))}
                       </span>
                     ) : score ? (
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{
-                          fontSize: 28, fontWeight: 900, color:
-                            score.score >= 90 ? "var(--color-success)" : score.score >= 70 ? "var(--color-primary)" : score.score >= 50 ? "var(--color-accent)" : "var(--color-error)"
-                        }}>{score.score}</span>
-                        <span style={{
-                          fontSize: 13, fontWeight: 800, padding: "3px 10px", borderRadius: "var(--radius-full)",
-                          background: score.grade === "A" ? SUCCESS_TINT : score.grade === "B" ? TINT : score.grade === "C" ? ACCENT_TINT : ERROR_TINT,
-                          color: score.grade === "A" ? "var(--color-success)" : score.grade === "B" ? "var(--color-primary)" : score.grade === "C" ? "var(--color-accent)" : "var(--color-error)",
-                        }}>등급 {score.grade}</span>
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className={cn(
+                            "text-[28px] font-black",
+                            score.score >= 90 ? "text-success" : score.score >= 70 ? "text-primary" : score.score >= 50 ? "text-accent" : "text-error"
+                          )}
+                        >{score.score}</span>
+                        <span
+                          className={cn(
+                            "rounded-full px-2.5 py-[3px] text-[13px] font-extrabold",
+                            score.grade === "A"
+                              ? "bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] text-success"
+                              : score.grade === "B"
+                              ? "bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] text-primary"
+                              : score.grade === "C"
+                              ? "bg-[color-mix(in_srgb,var(--color-accent)_18%,var(--color-surface))] text-accent"
+                              : "bg-[color-mix(in_srgb,var(--color-error)_16%,var(--color-surface))] text-error"
+                          )}
+                        >등급 {score.grade}</span>
                       </div>
                     ) : null}
                   </div>
                   {!fetchingScore && score && (
                     <>
-                      <div style={{ height: 6, background: TRACK_BG, borderRadius: "var(--radius-full)", overflow: "hidden", marginBottom: 14 }}>
-                        <div style={{
-                          width: `${score.score}%`, height: "100%", borderRadius: "var(--radius-full)", transition: "width 0.8s ease",
-                          background: score.score >= 90 ? "var(--color-success)" : score.score >= 70 ? "var(--color-primary)" : score.score >= 50 ? "var(--color-accent)" : "var(--color-error)",
-                        }} />
+                      <div className="mb-3.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-text)_8%,transparent)]">
+                        <div
+                          className={cn(
+                            "h-full rounded-full [transition:width_0.8s_ease]",
+                            score.score >= 90 ? "bg-success" : score.score >= 70 ? "bg-primary" : score.score >= 50 ? "bg-accent" : "bg-error"
+                          )}
+                          style={{ width: `${score.score}%` }}
+                        />
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      <div className="grid grid-cols-2 gap-3">
                         {score.strengths.length > 0 && (
-                          <div style={{ background: SUCCESS_TINT, borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-success)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>잘된 점</div>
+                          <div className="rounded-sm bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-3 py-2.5">
+                            <div className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.05em] text-success">잘된 점</div>
                             {score.strengths.map((s, i) => (
-                              <div key={i} style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.6 }}>✓ {s}</div>
+                              <div key={i} className="text-[12.5px] leading-[1.6] text-text">✓ {s}</div>
                             ))}
                           </div>
                         )}
                         {score.missing_items.length > 0 && (
-                          <div style={{ background: ACCENT_TINT, borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-accent)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>보완 필요</div>
+                          <div className="rounded-sm bg-[color-mix(in_srgb,var(--color-accent)_18%,var(--color-surface))] px-3 py-2.5">
+                            <div className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.05em] text-accent">보완 필요</div>
                             {score.missing_items.map((m, i) => (
-                              <div key={i} style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.6 }}>△ {m}</div>
+                              <div key={i} className="text-[12.5px] leading-[1.6] text-text">△ {m}</div>
                             ))}
                           </div>
                         )}
                       </div>
                       {score.improvement_hint && (
-                        <div style={{ marginTop: 10, padding: "9px 12px", background: TINT, borderRadius: "var(--radius-sm)", fontSize: 12.5, color: "var(--color-primary)", fontWeight: 600 }}>
+                        <div className="mt-2.5 rounded-sm bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-[9px] text-[12.5px] font-semibold text-primary">
                           💡 {score.improvement_hint}
                         </div>
                       )}
                     </>
                   )}
                   {!fetchingScore && !score && (
-                    <div style={{ fontSize: 13, color: "var(--color-muted)" }}>채점 중 오류가 발생했습니다.</div>
+                    <div className="text-[13px] text-muted">채점 중 오류가 발생했습니다.</div>
                   )}
                 </div>
 
                 {/* 이전/이후 비교 결과 */}
                 {compareResult && prevContent && (
-                  <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "18px 20px", marginTop: 12, background: SUCCESS_TINT }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <div className="glass mt-3 rounded-md bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-5 py-[18px]">
+                    <div className="mb-3 flex items-center gap-2">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-success)" }}>수정 후 변화 분석</span>
+                      <span className="text-[14px] font-extrabold text-success">수정 후 변화 분석</span>
                       {compareResult.progress_delta > 0 && (
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-success)", background: "color-mix(in srgb, var(--color-success) 26%, var(--color-surface))", padding: "2px 8px", borderRadius: "var(--radius-full)" }}>
+                        <span className="rounded-full bg-[color-mix(in_srgb,var(--color-success)_26%,var(--color-surface))] px-2 py-0.5 text-[12px] font-bold text-success">
                           +{compareResult.progress_delta}점 향상
                         </span>
                       )}
                     </div>
                     {compareResult.improvements.length > 0 && (
-                      <div style={{ marginBottom: 10 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-success)", marginBottom: 5 }}>나아진 점</div>
+                      <div className="mb-2.5">
+                        <div className="mb-[5px] text-[11px] font-bold text-success">나아진 점</div>
                         {compareResult.improvements.map((imp, i) => (
-                          <div key={i} style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.6, paddingLeft: 12 }}>▸ {imp}</div>
+                          <div key={i} className="pl-3 text-[12.5px] leading-[1.6] text-text">▸ {imp}</div>
                         ))}
                       </div>
                     )}
                     {compareResult.remaining_issues.length > 0 && (
-                      <div style={{ marginBottom: 10 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-accent)", marginBottom: 5 }}>아직 보완 필요</div>
+                      <div className="mb-2.5">
+                        <div className="mb-[5px] text-[11px] font-bold text-accent">아직 보완 필요</div>
                         {compareResult.remaining_issues.map((issue, i) => (
-                          <div key={i} style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.6, paddingLeft: 12 }}>△ {issue}</div>
+                          <div key={i} className="pl-3 text-[12.5px] leading-[1.6] text-text">△ {issue}</div>
                         ))}
                       </div>
                     )}
                     {compareResult.overall_progress && (
-                      <div style={{ fontSize: 13, color: "var(--color-success)", fontWeight: 600, fontStyle: "italic" }}>"{compareResult.overall_progress}"</div>
+                      <div className="text-[13px] font-semibold italic text-success">"{compareResult.overall_progress}"</div>
                     )}
                   </div>
                 )}
 
                 {/* 피드백 카드 */}
-                <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "18px 20px", marginTop: 12, background: FEEDBACK_TINT }}>
-                  <div style={{ display: "flex", gap: 13, alignItems: "flex-start" }}>
-                    <span style={{ width: 34, height: 34, borderRadius: "var(--radius-sm)", background: "var(--color-surface)", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px -6px color-mix(in srgb, var(--color-primary) 30%, transparent)" }}>
+                <div className="glass mt-3 rounded-md bg-[color-mix(in_srgb,var(--color-primary)_10%,var(--color-surface))] px-5 py-[18px]">
+                  <div className="flex items-start gap-[13px]">
+                    <span
+                      className="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-sm bg-surface"
+                      style={{ boxShadow: "0 4px 12px -6px color-mix(in srgb, var(--color-primary) 30%, transparent)" }}
+                    >
                       <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="3" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M12 8V4M9 4h6" stroke="var(--color-primary)" strokeWidth="1.7" strokeLinecap="round"/><circle cx="9" cy="14" r="1.2" fill="var(--color-primary)"/><circle cx="15" cy="14" r="1.2" fill="var(--color-primary)"/></svg>
                     </span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13.5, fontWeight: 800, color: "var(--color-primary)", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-2 text-[13.5px] font-extrabold text-primary">
                         코치 요다의 피드백
                         {fetchingFeedback && (
-                          <span style={{ display: "inline-flex", gap: 3 }}>
+                          <span className="inline-flex gap-[3px]">
                             {[0, 150, 300].map((d, i) => (
-                              <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--color-primary)", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
+                              <span key={i} className="inline-block h-[5px] w-[5px] animate-[bounce_1.2s_infinite] rounded-full bg-primary" style={{ animationDelay: `${d}ms` }} />
                             ))}
                           </span>
                         )}
                       </div>
                       {fetchingFeedback ? (
-                        <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 6 }}>작성된 내용을 분석 중입니다...</div>
+                        <div className="mt-1.5 text-[13px] text-muted">작성된 내용을 분석 중입니다...</div>
                       ) : feedback ? (
                         <>
-                          <div style={{ fontSize: 13.5, lineHeight: 1.75, color: "var(--color-muted)", marginTop: 5, whiteSpace: "pre-line" }}>
+                          <div className="mt-[5px] whitespace-pre-line text-[13.5px] leading-[1.75] text-muted">
                             {feedback.replace(/\[근거:.*?\]/g, "").trim()}
                           </div>
                           {methodologyRef && (
-                            <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 5, background: "var(--color-text)", color: "var(--color-background)", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: "var(--radius-full)" }}>
+                            <div className="mt-2 inline-flex items-center gap-[5px] rounded-full bg-text px-2.5 py-1 text-[11px] font-semibold text-background">
                               <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.5 4.6H18l-4 2.9 1.5 4.6L12 11.2l-3.5 2.9 1.5-4.6-4-2.9h4.5L12 2z" fill="var(--color-accent)"/></svg>
                               근거: {methodologyRef}
                             </div>
                           )}
-                          <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid var(--color-border)" }}>
-                            <div style={{ fontSize: 12, color: "var(--color-muted)", marginBottom: 8 }}>내용을 수정했다면 피드백을 다시 받아보세요.</div>
+                          <div className="mt-3.5 border-t border-border pt-3">
+                            <div className="mb-2 text-[12px] text-muted">내용을 수정했다면 피드백을 다시 받아보세요.</div>
                             <button
                               onClick={() => {
                                 if (content) {
@@ -985,13 +962,7 @@ export default function RoadmapStepPage() {
                                   fetchScore(step, content);
                                 }
                               }}
-                              style={{
-                                display: "inline-flex", alignItems: "center", gap: 6,
-                                fontSize: 12.5, fontWeight: 600, color: "var(--color-primary)",
-                                background: "var(--color-surface)", border: `1px solid ${FEEDBACK_BORDER}`, padding: "7px 14px", borderRadius: "var(--radius-sm)", cursor: "pointer",
-                              }}
-                              onMouseEnter={(e) => { e.currentTarget.style.background = FEEDBACK_TINT; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-surface)"; }}
+                              className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border border-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] bg-surface px-3.5 py-[7px] text-[12.5px] font-semibold text-primary hover:bg-[color-mix(in_srgb,var(--color-primary)_10%,var(--color-surface))]"
                             >
                               <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                               피드백 다시 받기
@@ -999,7 +970,7 @@ export default function RoadmapStepPage() {
                           </div>
                         </>
                       ) : (
-                        <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 6 }}>피드백을 불러오지 못했습니다.</div>
+                        <div className="mt-1.5 text-[13px] text-muted">피드백을 불러오지 못했습니다.</div>
                       )}
                     </div>
                   </div>
@@ -1009,23 +980,26 @@ export default function RoadmapStepPage() {
             </div>
 
             {/* Bottom Nav — in-flow on desktop; on mobile the primary action moves to a sticky bar below instead */}
-            <div className="roadmap-section-bottomnav hidden md:flex" style={{ alignItems: "center", justifyContent: "space-between", margin: "26px 0 36px" }}>
-              <Link href={prevLink} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "var(--color-muted)", textDecoration: "none" }}>
+            <div className="roadmap-section-bottomnav hidden items-center justify-between mt-[26px] mb-9 md:flex">
+              <Link href={prevLink} className="inline-flex items-center gap-2 text-[14px] font-semibold text-muted no-underline">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 이전으로
               </Link>
-              <div style={{ display: "flex", gap: 11 }}>
+              <div className="flex gap-[11px]">
                 <button
                   onClick={() => handleSave(false)}
                   disabled={saving || !hasContent}
-                  style={{ cursor: "pointer", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-text)", border: "1.5px solid var(--color-border)", padding: "13px 22px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: 700, opacity: !hasContent ? 0.5 : 1 }}
+                  className={cn(
+                    "cursor-pointer rounded-sm border-[1.5px] border-border bg-surface px-[22px] py-[13px] text-[14px] font-bold text-text [font-family:inherit]",
+                    !hasContent && "opacity-50"
+                  )}
                 >
                   임시 저장
                 </button>
                 <button
                   onClick={() => handleSave(true)}
                   disabled={saving}
-                  style={{ cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", gap: 8, background: "var(--color-text)", color: "var(--color-background)", border: "none", padding: "13px 24px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: 700, opacity: saving ? 0.7 : 1 }}
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-sm border-none bg-text px-6 py-[13px] text-[14px] font-bold text-background [font-family:inherit] disabled:opacity-70"
                 >
                   {saveButtonLabel}
                   {!saving && (
@@ -1043,7 +1017,7 @@ export default function RoadmapStepPage() {
           <button
             onClick={() => handleSave(true)}
             disabled={saving}
-            style={{ width: "100%", cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, background: "var(--color-text)", color: "var(--color-background)", border: "none", padding: "14px 20px", borderRadius: "var(--radius-sm)", fontSize: 15, fontWeight: 700, opacity: saving ? 0.7 : 1 }}
+            className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border-none bg-text px-5 py-3.5 text-[15px] font-bold text-background [font-family:inherit] disabled:opacity-70"
           >
             {saveButtonLabel}
             {!saving && (
