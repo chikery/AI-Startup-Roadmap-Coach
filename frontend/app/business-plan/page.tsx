@@ -3,7 +3,10 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Copy, Check, Pencil, Save, RefreshCw, ArrowLeft } from "lucide-react";
 import { api } from "@/app/lib/api";
+import { useToast } from "@/app/components/ui/Toast";
+import Button from "@/app/components/ui/Button";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -53,6 +56,7 @@ const SUCCESS_TINT_STRONG = "color-mix(in srgb, var(--color-success) 26%, var(--
 
 export default function BusinessPlanPage() {
   const router = useRouter();
+  const toast = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [businessPlan, setBusinessPlan] = useState<string | null>(null);
   const [editText, setEditText] = useState<string>("");
@@ -141,6 +145,7 @@ export default function BusinessPlanPage() {
     if (!businessPlan) return;
     navigator.clipboard.writeText(businessPlan).then(() => {
       setCopied(true);
+      toast.show("사업계획서가 복사되었습니다");
       setTimeout(() => setCopied(false), 2000);
     });
   }
@@ -159,7 +164,10 @@ export default function BusinessPlanPage() {
       });
       if (res.ok) {
         setSavedOk(true);
+        toast.show("저장되었습니다");
         setTimeout(() => setSavedOk(false), 2000);
+      } else {
+        toast.show("저장에 실패했습니다", "error");
       }
     } finally {
       setSaving(false);
@@ -222,25 +230,29 @@ export default function BusinessPlanPage() {
 
         {/* NAV */}
         <nav className="glass" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none", position: "sticky", top: 0, zIndex: 10 }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto", height: 64, padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-              <Link href="/" style={{ fontFamily: "var(--font-geist,'Geist',sans-serif)", fontWeight: 800, fontSize: 21, color: "var(--color-text)", letterSpacing: "-0.01em", textDecoration: "none" }}>StepUp</Link>
-              <Link href="/dashboard" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: INDIGO, textDecoration: "none", padding: "5px 12px", borderRadius: "var(--radius-sm)", background: TINT }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto", height: 64, padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }} className="md:!px-7">
+            <div style={{ display: "flex", alignItems: "center", gap: 18, minWidth: 0 }}>
+              <Link href="/" style={{ fontFamily: "var(--font-geist,'Geist',sans-serif)", fontWeight: 800, fontSize: 21, color: "var(--color-text)", letterSpacing: "-0.01em", textDecoration: "none", flexShrink: 0 }}>StepUp</Link>
+              <Link href="/dashboard" className="hidden md:inline-flex" style={{ alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: INDIGO, textDecoration: "none", padding: "5px 12px", borderRadius: "var(--radius-sm)", background: TINT }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="3" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/></svg>
                 대시보드
               </Link>
-              <span style={{ fontSize: 13, color: "var(--color-muted)", paddingLeft: 18, borderLeft: "1px solid var(--color-border)" }}>사업계획서</span>
+              <span className="hidden md:inline" style={{ fontSize: 13, color: "var(--color-muted)", paddingLeft: 18, borderLeft: "1px solid var(--color-border)" }}>사업계획서</span>
+              <Link href="/dashboard" aria-label="대시보드" className="flex md:hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full" style={{ background: TINT }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="3" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/></svg>
+              </Link>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: TINT, color: INDIGO, fontWeight: 700, fontSize: 13, padding: "5px 12px", borderRadius: "var(--radius-full)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }} className="md:!gap-4">
+              <span className="hidden sm:inline-flex" style={{ alignItems: "center", gap: 6, background: TINT, color: INDIGO, fontWeight: 700, fontSize: 13, padding: "5px 12px", borderRadius: "var(--radius-full)" }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill={INDIGO}/></svg>
                 완성
               </span>
-              <span style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", display: "inline-block" }} />
+              <span className="hidden sm:inline-block" style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))" }} />
               {isLoggedIn && (
                 <button
                   onClick={handleLogout}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "var(--color-muted)", background: "none", border: "1px solid var(--color-border)", padding: "5px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer" }}
+                  className="hidden md:inline-flex"
+                  style={{ alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "var(--color-muted)", background: "none", border: "1px solid var(--color-border)", padding: "5px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer" }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-error)"; e.currentTarget.style.borderColor = "var(--color-error)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; e.currentTarget.style.borderColor = "var(--color-border)"; }}
                 >
@@ -248,27 +260,47 @@ export default function BusinessPlanPage() {
                   로그아웃
                 </button>
               )}
+              {isLoggedIn && (
+                <button
+                  onClick={handleLogout}
+                  aria-label="로그아웃"
+                  className="flex md:hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
+                  style={{ color: "var(--color-muted)", background: "none", border: "none", cursor: "pointer" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+              )}
             </div>
           </div>
         </nav>
 
         {/* BODY */}
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 28px 60px" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "24px 20px 60px" }} className="md:!px-7 md:!pt-8">
 
           {/* Page header */}
-          <div style={{ marginBottom: 24 }}>
+          <div style={{ marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: INDIGO, background: TINT, padding: "3px 10px", borderRadius: "var(--radius-full)", letterSpacing: "0.04em" }}>COMPLETE</span>
             </div>
-            <h1 style={{ fontSize: 26, fontWeight: 900, color: "var(--color-text)", margin: 0, letterSpacing: "-0.02em" }}>나의 사업계획서</h1>
-            <p style={{ fontSize: 14, color: "var(--color-muted)", marginTop: 6 }}>7단계 로드맵을 바탕으로 AI가 작성한 사업계획서입니다. 자유롭게 수정해 활용하세요.</p>
+            <h1 style={{ fontSize: 24, fontWeight: 900, color: "var(--color-text)", margin: 0, letterSpacing: "-0.02em" }} className="md:!text-[26px]">나의 사업계획서</h1>
+            <p style={{ fontSize: 13.5, color: "var(--color-muted)", marginTop: 6 }}>7단계 로드맵을 바탕으로 AI가 작성한 사업계획서입니다. 자유롭게 수정해 활용하세요.</p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 24, alignItems: "start" }}>
+          {/* Primary action — copying/exporting the plan is the one thing this screen exists for */}
+          {!isEditing && (
+            <div className="mb-5">
+              <Button variant="primary" size="lg" onClick={handleCopy} disabled={!businessPlan} className="w-full sm:w-auto rounded-full">
+                {copied ? <Check size={17} /> : <Copy size={17} />}
+                {copied ? "복사됨!" : "사업계획서 복사하기"}
+              </Button>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_340px] gap-6 items-start">
 
             {/* LEFT: 사업계획서 */}
             <div>
-              {/* Toolbar */}
+              {/* Toolbar — secondary actions only, copy CTA lives above as the primary action */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-text)" }}>전체 사업계획서</span>
                 <div style={{ display: "flex", gap: 8 }}>
@@ -284,7 +316,7 @@ export default function BusinessPlanPage() {
                           cursor: businessPlan ? "pointer" : "not-allowed",
                         }}
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <Pencil size={14} />
                         편집
                       </button>
                       <button
@@ -299,29 +331,7 @@ export default function BusinessPlanPage() {
                           cursor: businessPlan && !saving ? "pointer" : "not-allowed",
                         }}
                       >
-                        {savedOk ? (
-                          <><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--color-success)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>저장됨!</>
-                        ) : (
-                          <><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="var(--color-success)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M17 21v-8H7v8M7 3v5h8" stroke="var(--color-success)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>{saving ? "저장 중..." : "저장"}</>
-                        )}
-                      </button>
-                      <button
-                        onClick={handleCopy}
-                        disabled={!businessPlan}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: 6,
-                          fontSize: 13, fontWeight: 600,
-                          color: copied ? "var(--color-success)" : INDIGO,
-                          background: copied ? SUCCESS_TINT : TINT,
-                          border: "none", padding: "7px 16px", borderRadius: "var(--radius-sm)",
-                          cursor: businessPlan ? "pointer" : "not-allowed",
-                        }}
-                      >
-                        {copied ? (
-                          <><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--color-success)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>복사됨!</>
-                        ) : (
-                          <><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke={INDIGO} strokeWidth="1.8"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round"/></svg>전체 복사</>
-                        )}
+                        {savedOk ? (<><Check size={14} />저장됨!</>) : (<><Save size={14} />{saving ? "저장 중..." : "저장"}</>)}
                       </button>
                     </>
                   ) : (
@@ -452,7 +462,7 @@ export default function BusinessPlanPage() {
                       onMouseEnter={(e) => { e.currentTarget.style.background = TINT_HOVER; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = TINT; }}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke={INDIGO} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke={INDIGO} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <RefreshCw size={14} />
                       피드백 다시 받기
                     </button>
                   </div>
@@ -464,7 +474,7 @@ export default function BusinessPlanPage() {
                 onMouseEnter={(e) => { e.currentTarget.style.color = INDIGO; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <ArrowLeft size={14} />
                 7단계로 돌아가기
               </Link>
             </div>

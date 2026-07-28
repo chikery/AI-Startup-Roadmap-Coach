@@ -10,11 +10,17 @@
   --color-success: #34C759;
   --color-warning: #FF9F0A;
   --color-error: #FF3B30;
+  --color-info: #0EA5E9;
   --color-text: #16151C;
   --color-muted: #8B8894;
+  --color-text-tertiary: #B4B1BC;
   --color-border: rgba(22, 21, 28, 0.08);
+  --color-border-strong: rgba(22, 21, 28, 0.16);
   --color-primary-hover: color-mix(in srgb, #6C5CE7 85%, black);
+  --color-primary-subtle: color-mix(in srgb, #6C5CE7 14%, #FFFFFF);
 
+  /* Type scale — weight is deliberately limited to 2 tiers: 600 (semibold, labels/body-emphasis)
+     and 800 (extrabold, headings/hero numbers) to match the brand's existing bold tone. */
   --font-size-h1: 3rem;
   --font-size-h2: 2.25rem;
   --font-size-h3: 1.875rem;
@@ -22,11 +28,16 @@
   --font-size-body: 1rem;
   --font-size-caption: 0.875rem;
   --font-size-button: 0.9375rem;
+  --font-weight-emphasis: 600;
+  --font-weight-heading: 800;
 
   --radius-sm: 12px;
   --radius-md: 20px;
   --radius-lg: 28px;
   --radius-full: 999px;
+
+  --shadow-sm: 0 10px 26px -14px rgba(22, 21, 28, 0.22);
+  --shadow-md: 0 20px 48px -16px rgba(22, 21, 28, 0.32);
 }
 
 /* Glass material tokens (glassmorphism + fluent-style acrylic cards) */
@@ -46,9 +57,13 @@
     --color-success: #30D158;
     --color-warning: #FFB340;
     --color-error: #FF6961;
+    --color-info: #38BDF8;
     --color-text: #F2F0F6;
     --color-muted: #9D9AA6;
+    --color-text-tertiary: #6E6B77;
     --color-border: rgba(242, 240, 246, 0.12);
+    --color-border-strong: rgba(242, 240, 246, 0.22);
+    --color-primary-subtle: color-mix(in srgb, #8C7DF2 18%, #26252C);
     --glass-bg: rgba(255, 255, 255, 0.08);
     --glass-border: rgba(255, 255, 255, 0.14);
   }
@@ -62,9 +77,13 @@
   --color-success: #30D158;
   --color-warning: #FFB340;
   --color-error: #FF6961;
+  --color-info: #38BDF8;
   --color-text: #F2F0F6;
   --color-muted: #9D9AA6;
+  --color-text-tertiary: #6E6B77;
   --color-border: rgba(242, 240, 246, 0.12);
+  --color-border-strong: rgba(242, 240, 246, 0.22);
+  --color-primary-subtle: color-mix(in srgb, #8C7DF2 18%, #26252C);
   --glass-bg: rgba(255, 255, 255, 0.08);
   --glass-border: rgba(255, 255, 255, 0.14);
 }
@@ -77,9 +96,13 @@
   --color-success: #34C759;
   --color-warning: #FF9F0A;
   --color-error: #FF3B30;
+  --color-info: #0EA5E9;
   --color-text: #16151C;
   --color-muted: #8B8894;
+  --color-text-tertiary: #B4B1BC;
   --color-border: rgba(22, 21, 28, 0.08);
+  --color-border-strong: rgba(22, 21, 28, 0.16);
+  --color-primary-subtle: color-mix(in srgb, #6C5CE7 14%, #FFFFFF);
   --glass-bg: rgba(255, 255, 255, 0.5);
   --glass-border: rgba(255, 255, 255, 0.75);
 }

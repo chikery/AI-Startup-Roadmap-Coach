@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ChatPopup from "./components/ChatPopup";
+import { ToastProvider } from "./components/ui/Toast";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -37,8 +38,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         ` }} />
       </head>
       <body className="min-h-full flex flex-col">
-        {children}
-        <ChatPopup />
+        <ToastProvider>
+          {children}
+          <ChatPopup />
+        </ToastProvider>
       </body>
     </html>
   );

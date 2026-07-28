@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/app/lib/api";
 import { getProgramsForStep, isExpired, daysLeft } from "@/app/lib/support-programs";
+import { useToast } from "@/app/components/ui/Toast";
 
 /* ------------------------------------------------------------------ */
 /* Step Metadata                                                         */
@@ -248,6 +249,7 @@ export default function RoadmapStepPage() {
   const { step: stepParam } = useParams();
   const step = parseInt(stepParam as string);
   const router = useRouter();
+  const toast = useToast();
   const meta = STEP_META[step - 1];
 
   const [user, setUser] = useState<Record<string, string> | null>(null);
@@ -355,7 +357,7 @@ export default function RoadmapStepPage() {
         }>).then(setCompareResult).catch(() => {});
       }
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "오류가 발생했습니다");
+      toast.show(err instanceof Error ? err.message : "오류가 발생했습니다", "error");
     } finally {
       setGenerating(false);
     }
@@ -371,12 +373,13 @@ export default function RoadmapStepPage() {
     try {
       if (!content) throw new Error("내용을 먼저 생성해주세요");
       await api.roadmap.saveStep(step, content);
+      toast.show(navigate ? "저장되었습니다" : "임시 저장되었습니다");
       if (navigate) {
         if (step < 7) router.push(`/roadmap/${step + 1}`);
         else router.push("/business-plan");
       }
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "저장에 실패했습니다");
+      toast.show(err instanceof Error ? err.message : "저장에 실패했습니다", "error");
     } finally {
       setSaving(false);
     }
