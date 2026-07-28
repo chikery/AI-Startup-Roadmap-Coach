@@ -226,6 +226,21 @@ function formatValue(raw: unknown): string {
 }
 
 /* ------------------------------------------------------------------ */
+/* Design tokens / tints (matches app-wide glassmorphism system)         */
+/* ------------------------------------------------------------------ */
+
+const TINT = "color-mix(in srgb, var(--color-primary) 14%, var(--color-surface))";
+const TINT_BORDER = "color-mix(in srgb, var(--color-primary) 30%, transparent)";
+const SUCCESS_TINT = "color-mix(in srgb, var(--color-success) 16%, var(--color-surface))";
+const SUCCESS_BORDER = "color-mix(in srgb, var(--color-success) 32%, transparent)";
+const ACCENT_TINT = "color-mix(in srgb, var(--color-accent) 18%, var(--color-surface))";
+const ACCENT_BORDER = "color-mix(in srgb, var(--color-accent) 45%, transparent)";
+const ERROR_TINT = "color-mix(in srgb, var(--color-error) 16%, var(--color-surface))";
+const FEEDBACK_TINT = "color-mix(in srgb, var(--color-primary) 10%, var(--color-surface))";
+const FEEDBACK_BORDER = "color-mix(in srgb, var(--color-primary) 22%, transparent)";
+const TRACK_BG = "color-mix(in srgb, var(--color-text) 8%, transparent)";
+
+/* ------------------------------------------------------------------ */
 /* Page Component                                                        */
 /* ------------------------------------------------------------------ */
 
@@ -368,7 +383,7 @@ export default function RoadmapStepPage() {
   }
 
   if (!meta) {
-    return <div style={{ padding: 40, textAlign: "center", color: "#9198A6" }}>존재하지 않는 단계입니다</div>;
+    return <div style={{ padding: 40, textAlign: "center", color: "var(--color-muted)", background: "var(--color-background)", minHeight: "100vh" }}>존재하지 않는 단계입니다</div>;
   }
 
   const completedCount = progress.filter((p) => p.is_completed).length;
@@ -392,503 +407,528 @@ export default function RoadmapStepPage() {
     : "저장 후 다음 단계";
 
   return (
-    <div style={{ fontFamily: "'Pretendard', sans-serif", background: "#F5F6F8", color: "#1F2436", minHeight: "100vh" }}>
+    <div style={{ position: "relative", minHeight: "100vh", background: "var(--color-background)" }}>
+      {/* Ambient blurred color blobs — kept subtle since this page is text/form-dense */}
+      <div
+        style={{
+          position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+          background:
+            "radial-gradient(circle at 10% 6%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 40%)," +
+            "radial-gradient(circle at 94% 10%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 38%)," +
+            "radial-gradient(circle at 18% 98%, color-mix(in srgb, var(--color-secondary) 10%, transparent) 0%, transparent 44%)",
+        }}
+      />
 
-      {/* ── TOP NAV ── */}
-      <nav style={{ background: "#fff", borderBottom: "1px solid #E8EAEE" }}>
-        <div style={{ maxWidth: 1180, margin: "0 auto", height: 64, padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-            <Link href="/" style={{ fontFamily: "var(--font-geist, 'Geist', sans-serif)", fontWeight: 800, fontSize: 21, color: "#2F3E72", letterSpacing: "-0.01em", textDecoration: "none" }}>StepUp</Link>
-            <Link href="/dashboard" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#5A5BD6", textDecoration: "none", padding: "5px 12px", borderRadius: 8, background: "#ECECFB", transition: "background 0.15s" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#5A5BD6"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#5A5BD6"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#5A5BD6"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#5A5BD6"/></svg>
-              대시보드
-            </Link>
-            <span style={{ fontSize: 13, color: "#9198A6", paddingLeft: 18, borderLeft: "1px solid #E8EAEE" }}>{step}단계: {meta.name}</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "#ECECFB", color: "#5A5BD6", fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 100 }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="#5A5BD6"/></svg>
-              {step}/7
-            </span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="#9198A6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="#9198A6" strokeWidth="1.8"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3" stroke="#9198A6" strokeWidth="1.8" strokeLinecap="round"/></svg>
-            <span style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#8E9BD6,#5A5BD6)", display: "inline-block" }}></span>
-            {isLoggedIn && (
-              <button
-                onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
-                style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "#9198A6", background: "none", border: "1px solid #E8EAEE", padding: "5px 12px", borderRadius: 8, cursor: "pointer" }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "#E53E3E"; e.currentTarget.style.borderColor = "#E53E3E"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "#9198A6"; e.currentTarget.style.borderColor = "#E8EAEE"; }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                로그아웃
-              </button>
-            )}
-          </div>
-        </div>
-      </nav>
+      <div style={{ position: "relative", zIndex: 1, fontFamily: "'Pretendard', sans-serif", color: "var(--color-text)" }}>
 
-      {/* ── BODY GRID ── */}
-      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "26px 28px", display: "grid", gridTemplateColumns: "212px 1fr", gap: 30, alignItems: "start" }}>
-
-        {/* ── SIDEBAR ── */}
-        <aside style={{ position: "sticky", top: 26 }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#5A5BD6" }}>창업 여정</div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "9px 0 8px" }}>
-            <span style={{ fontSize: 12.5, color: "#9198A6", fontWeight: 600 }}>진행률</span>
-            <span style={{ fontSize: 12.5, color: "#9198A6", fontWeight: 700 }}>{completedCount}/7</span>
-          </div>
-          <div style={{ height: 7, background: "#EEF0F3", borderRadius: 100, overflow: "hidden", marginBottom: 24 }}>
-            <div style={{ width: `${(completedCount / 7) * 100}%`, height: "100%", background: "#15A06B", borderRadius: 100, transition: "width 0.5s" }}></div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {STEP_META.map((s) => {
-              const isActive = s.step === step;
-              const isDone = progress.find((p) => p.step === s.step)?.is_completed;
-              return (
-                <Link
-                  key={s.step}
-                  href={`/roadmap/${s.step}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 11,
-                    padding: "10px 11px",
-                    borderRadius: 10,
-                    fontSize: 13.5,
-                    fontWeight: isActive ? 700 : 600,
-                    color: isActive ? "#5A5BD6" : "#6B7280",
-                    background: isActive ? "#ECECFB" : "transparent",
-                    textDecoration: "none",
-                  }}
-                >
-                  {isDone && !isActive ? (
-                    <span style={{ width: 17, height: 17, borderRadius: "50%", background: "#D8EFE3", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#15A06B" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </span>
-                  ) : (
-                    <span style={{ flexShrink: 0, color: isActive ? "#5A5BD6" : "#9198A6" }}>
-                      <StepIcon step={s.step} color={isActive ? "#5A5BD6" : "#9198A6"} />
-                    </span>
-                  )}
-                  {s.name}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div style={{ borderTop: "1px solid #E4E7ED", margin: "22px 0 16px" }}></div>
-
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent("open-chat"))}
-            style={{ width: "100%", cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#5A5BD6", color: "#fff", border: "none", padding: 12, borderRadius: 11, fontSize: 14, fontWeight: 700 }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/></svg>
-            AI 인사이트 받기
-          </button>
-
-          {/* 지원사업 매칭 */}
-          {(() => {
-            const programs = getProgramsForStep(step);
-            if (!programs.length) return null;
-            return (
-              <div style={{ marginTop: 18 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="#F59E0B"/></svg>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#92400E" }}>이 단계 추천 지원사업</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  {programs.slice(0, 4).map((p, i) => {
-                    const expired = isExpired(p.deadline);
-                    const left = daysLeft(p.deadline);
-                    return (
-                      <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
-                        style={{
-                          display: "block", padding: "9px 10px", borderRadius: 9,
-                          background: expired ? "#F9FAFB" : "#FFFBEB",
-                          border: `1px solid ${expired ? "#E8EAEE" : "#FDE68A"}`,
-                          textDecoration: "none", opacity: expired ? 0.6 : 1,
-                        }}
-                      >
-                        <div style={{ fontSize: 11.5, fontWeight: 700, color: expired ? "#9198A6" : "#1F2436", lineHeight: 1.4, marginBottom: 4 }}>{p.name}</div>
-                        <div style={{ fontSize: 10.5, color: expired ? "#9198A6" : (left <= 7 ? "#DC2626" : "#92400E"), fontWeight: 600 }}>
-                          {expired ? "마감" : `D-${left} · ${p.deadline.slice(5).replace("-", "/")}`}
-                        </div>
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })()}
-
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 11px 4px" }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, color: "#9198A6" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="#9198A6" strokeWidth="1.7"/><path d="M9.5 9.5a2.5 2.5 0 113.5 2.3c-.7.3-1 .8-1 1.7M12 17h.01" stroke="#9198A6" strokeWidth="1.7" strokeLinecap="round"/></svg>
-              도움말
-            </span>
-            <Link href="/">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="#9198A6" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </Link>
-          </div>
-        </aside>
-
-        {/* ── MAIN ── */}
-        <main>
-
-          {/* Step Header */}
-          <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-            <span style={{ width: 46, height: 46, borderRadius: 13, background: "#ECECFB", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <StepIcon step={step} color="#5A5BD6" />
-            </span>
-            <div>
-              <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, letterSpacing: "-0.02em" }}>{meta.heading}</h1>
-              <p style={{ fontSize: 14.5, color: "#6B7280", margin: "7px 0 0" }}>{meta.description}</p>
+        {/* ── TOP NAV ── */}
+        <nav className="glass" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none", position: "sticky", top: 0, zIndex: 10 }}>
+          <div style={{ maxWidth: 1180, margin: "0 auto", height: 64, padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+              <Link href="/" style={{ fontFamily: "var(--font-geist, 'Geist', sans-serif)", fontWeight: 800, fontSize: 21, color: "var(--color-text)", letterSpacing: "-0.01em", textDecoration: "none" }}>StepUp</Link>
+              <Link href="/dashboard" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "var(--color-primary)", textDecoration: "none", padding: "5px 12px", borderRadius: "var(--radius-sm)", background: TINT, transition: "background 0.15s" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/></svg>
+                대시보드
+              </Link>
+              <span style={{ fontSize: 13, color: "var(--color-muted)", paddingLeft: 18, borderLeft: "1px solid var(--color-border)" }}>{step}단계: {meta.name}</span>
             </div>
-          </div>
-
-          {/* Why + Coach two-column */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 250px", gap: 18, marginTop: 24 }}>
-            {/* Why card */}
-            <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 16, padding: "22px 24px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 16, fontWeight: 800, color: "#5A5BD6" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="#5A5BD6" strokeWidth="1.7"/><path d="M12 11v5M12 7.5h.01" stroke="#5A5BD6" strokeWidth="1.8" strokeLinecap="round"/></svg>
-                왜 이 단계가 필요한가
-              </div>
-              {meta.whyText.map((text, i) => (
-                <p key={i} style={{ fontSize: 13.8, lineHeight: 1.7, color: "#5A6273", margin: i === 0 ? "13px 0 0" : "12px 0 0" }}>{text}</p>
-              ))}
-              <div style={{ display: "flex", gap: 10, marginTop: 18, flexWrap: "wrap" }}>
-                {meta.tags.map((tag) => (
-                  <span key={tag} style={{ display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid #E4E7ED", borderRadius: 100, padding: "7px 14px", fontSize: 12.5, fontWeight: 600, color: "#42506B" }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#15A06B" strokeWidth="1.8"/><path d="M8 12l3 3 5-6" stroke="#15A06B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Coach card */}
-            <div style={{ background: "#2F3E72", borderRadius: 16, padding: 20, color: "#D5DBEC", display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, fontWeight: 800, color: "#fff" }}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3c-1 3-2 4-5 5 3 1 4 2 5 5 1-3 2-4 5-5-3-1-4-2-5-5z" fill="#7DE0AE"/></svg>
-                RK · AI 코치 요다
-              </div>
-              <div style={{ fontSize: 13, lineHeight: 1.7, color: "#C2CAE2", marginTop: 13, flex: 1 }}>
-                "{meta.coachQuote}"
-              </div>
-              <div style={{ borderTop: "1px solid rgba(255,255,255,0.14)", marginTop: 14, paddingTop: 11, fontSize: 11, color: "#8E97B8" }}>
-                실시간 분석 · 피드백 활성
-              </div>
-            </div>
-          </div>
-
-          {/* AI Draft Banner */}
-          {!draftGenerated ? (
-            <div style={{ background: "#ECECFB", border: "1px solid #DCDCF6", borderRadius: 14, padding: "16px 20px", marginTop: 18, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-                <span style={{ width: 40, height: 40, borderRadius: 11, background: "#5A5BD6", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/></svg>
-                </span>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#2F3E72" }}>AI 초안 생성이 준비되었습니다</div>
-                  <div style={{ fontSize: 13, color: "#5C5F8F", marginTop: 3 }}>{meta.frameworkDesc}</div>
-                </div>
-              </div>
-              <button
-                onClick={handleGenerate}
-                disabled={generating || !user?.item_keyword}
-                style={{ cursor: generating || !user?.item_keyword ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "#5A5BD6", color: "#fff", border: "none", padding: "13px 22px", borderRadius: 11, fontSize: 14, fontWeight: 700, opacity: generating || !user?.item_keyword ? 0.6 : 1 }}
-              >
-                {generating ? (
-                  <span style={{ display: "inline-block", width: 15, height: 15, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }}></span>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 12.5h6L9 22l9-11h-6L13 2z" fill="#fff"/></svg>
-                )}
-                {generating ? "생성 중..." : "AI 초안 생성 시작"}
-              </button>
-            </div>
-          ) : (
-            <div style={{ background: "#E7F5EE", border: "1px solid #CDEBDC", borderRadius: 14, padding: "16px 20px", marginTop: 18, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-                <span style={{ width: 40, height: 40, borderRadius: 11, background: "#15A06B", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </span>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#15803D" }}>AI 초안이 생성되었습니다</div>
-                  <div style={{ fontSize: 13, color: "#3F7A5A", marginTop: 3 }}>각 항목을 검토하고 다듬은 뒤 저장 후 다음 단계로 진행하세요.</div>
-                </div>
-              </div>
-              <button
-                onClick={handleGenerate}
-                disabled={generating || !user?.item_keyword}
-                style={{ cursor: generating || !user?.item_keyword ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "#15A06B", color: "#fff", border: "none", padding: "11px 18px", borderRadius: 11, fontSize: 13, fontWeight: 700, opacity: generating || !user?.item_keyword ? 0.6 : 1 }}
-              >
-                {generating ? "생성 중..." : "다시 생성하기"}
-              </button>
-            </div>
-          )}
-
-          {/* Framework Table */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "28px 2px 14px" }}>
-            <h2 style={{ fontSize: 19, fontWeight: 800, margin: 0 }}>{meta.frameworkTitle}</h2>
-            <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, color: "#5A5BD6", textDecoration: "none" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="#5A5BD6" strokeWidth="1.7"/><path d="M9.5 9.5a2.5 2.5 0 113.5 2.3c-.7.3-1 .8-1 1.7M12 17h.01" stroke="#5A5BD6" strokeWidth="1.7" strokeLinecap="round"/></svg>
-              프레임워크 가이드 보기
-            </a>
-          </div>
-
-          <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 16, overflow: "hidden" }}>
-            {/* Table header */}
-            <div style={{ display: "grid", gridTemplateColumns: "210px 1fr", background: "#F4F5F8", borderBottom: "1px solid #E8EAEE" }}>
-              <div style={{ padding: "13px 22px", fontSize: 12, fontWeight: 700, color: "#9198A6" }}>구분</div>
-              <div style={{ padding: "13px 22px", fontSize: 12, fontWeight: 700, color: "#9198A6" }}>상세 내용</div>
-            </div>
-
-            {meta.rows.map((row, idx) => {
-              const raw = content?.[row.key];
-              const val = formatValue(raw);
-              const isLast = idx === meta.rows.length - 1;
-              return (
-                <div key={row.key} style={{ display: "grid", gridTemplateColumns: "210px 1fr", borderBottom: isLast ? "none" : "1px solid #EEF0F3" }}>
-                  <div style={{ padding: "20px 22px", display: "flex", alignItems: "center", gap: 10, fontSize: 14, fontWeight: 700, color: "#2F3E72" }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 3, background: "#5A5BD6", flexShrink: 0 }}></span>
-                    {row.label}
-                  </div>
-                  <div style={{ padding: "16px 22px", fontSize: 13.5, lineHeight: 1.6 }}>
-                    {val && (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 10.5, fontWeight: 700, color: "#5A5BD6", background: "#ECECFB", padding: "3px 8px", borderRadius: 100, marginBottom: 8 }}>
-                        ✦ AI 초안
-                      </span>
-                    )}
-                    <textarea
-                      value={val}
-                      placeholder={row.placeholder}
-                      onChange={(e) => setContent((prev) => ({ ...(prev || {}), [row.key]: e.target.value }))}
-                      rows={val ? Math.max(2, val.split("\n").length + 1) : 2}
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        border: "none",
-                        outline: "none",
-                        resize: "none",
-                        fontFamily: "'Pretendard', sans-serif",
-                        fontSize: 13.5,
-                        lineHeight: 1.6,
-                        color: val ? "#1F2436" : "#A6ACB8",
-                        background: "transparent",
-                        padding: 0,
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Coaching Feedback */}
-          {!draftGenerated ? (
-            <div style={{ border: "1.5px dashed #D5D9E2", borderRadius: 16, padding: 34, marginTop: 18, textAlign: "center" }}>
-              <span style={{ width: 46, height: 46, borderRadius: "50%", background: "#F0F1F5", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.5 8.5 0 01-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1121 11.5z" stroke="#9198A6" strokeWidth="1.7" strokeLinejoin="round"/></svg>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 7, background: TINT, color: "var(--color-primary)", fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: "var(--radius-full)" }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="var(--color-primary)"/></svg>
+                {step}/7
               </span>
-              <div style={{ fontSize: 15, fontWeight: 800, color: "#6B7280", marginTop: 14 }}>코칭 피드백 대기 중</div>
-              <div style={{ fontSize: 13, color: "#9198A6", marginTop: 5, lineHeight: 1.6 }}>AI 초안을 생성하면 코치 요다가 작성된 내용을 분석해 피드백을 제시합니다.</div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="var(--color-muted)" strokeWidth="1.8"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round"/></svg>
+              <span style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", display: "inline-block", border: "1px solid var(--color-border)" }}></span>
+              {isLoggedIn && (
+                <button
+                  onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: "var(--color-muted)", background: "none", border: "1px solid var(--color-border)", padding: "5px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-error)"; e.currentTarget.style.borderColor = "var(--color-error)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; e.currentTarget.style.borderColor = "var(--color-border)"; }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  로그아웃
+                </button>
+              )}
             </div>
-          ) : (
-            <>
-              {/* 완성도 점수 카드 */}
-              <div style={{ background: "#fff", border: "1px solid #E8EAEE", borderRadius: 16, padding: "18px 20px", marginTop: 18 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: fetchingScore ? 0 : (score ? 14 : 0) }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="#F59E0B"/></svg>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#1F2436" }}>완성도 채점</span>
-                    {score && (
-                      <span style={{ fontSize: 11, color: "#9198A6", fontWeight: 500 }}>— {score.methodology_ref}</span>
-                    )}
-                  </div>
-                  {fetchingScore ? (
-                    <span style={{ display: "inline-flex", gap: 3 }}>
-                      {[0, 150, 300].map((d, i) => (
-                        <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "#F59E0B", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
-                      ))}
-                    </span>
-                  ) : score ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{
-                        fontSize: 28, fontWeight: 900, color:
-                          score.score >= 90 ? "#15A06B" : score.score >= 70 ? "#5A5BD6" : score.score >= 50 ? "#F59E0B" : "#EF4444"
-                      }}>{score.score}</span>
-                      <span style={{
-                        fontSize: 13, fontWeight: 800, padding: "3px 10px", borderRadius: 100,
-                        background: score.grade === "A" ? "#D8EFE3" : score.grade === "B" ? "#ECECFB" : score.grade === "C" ? "#FEF3C7" : "#FEE2E2",
-                        color: score.grade === "A" ? "#15A06B" : score.grade === "B" ? "#5A5BD6" : score.grade === "C" ? "#92400E" : "#DC2626",
-                      }}>등급 {score.grade}</span>
-                    </div>
-                  ) : null}
-                </div>
-                {!fetchingScore && score && (
-                  <>
-                    <div style={{ height: 6, background: "#F0F1F5", borderRadius: 100, overflow: "hidden", marginBottom: 14 }}>
-                      <div style={{
-                        width: `${score.score}%`, height: "100%", borderRadius: 100, transition: "width 0.8s ease",
-                        background: score.score >= 90 ? "#15A06B" : score.score >= 70 ? "#5A5BD6" : score.score >= 50 ? "#F59E0B" : "#EF4444",
-                      }} />
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                      {score.strengths.length > 0 && (
-                        <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "10px 12px" }}>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "#15A06B", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>잘된 점</div>
-                          {score.strengths.map((s, i) => (
-                            <div key={i} style={{ fontSize: 12.5, color: "#1F2436", lineHeight: 1.6 }}>✓ {s}</div>
-                          ))}
-                        </div>
-                      )}
-                      {score.missing_items.length > 0 && (
-                        <div style={{ background: "#FFF7ED", borderRadius: 10, padding: "10px 12px" }}>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "#C2410C", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>보완 필요</div>
-                          {score.missing_items.map((m, i) => (
-                            <div key={i} style={{ fontSize: 12.5, color: "#1F2436", lineHeight: 1.6 }}>△ {m}</div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    {score.improvement_hint && (
-                      <div style={{ marginTop: 10, padding: "9px 12px", background: "#ECECFB", borderRadius: 9, fontSize: 12.5, color: "#3B3D8E", fontWeight: 600 }}>
-                        💡 {score.improvement_hint}
-                      </div>
-                    )}
-                  </>
-                )}
-                {!fetchingScore && !score && (
-                  <div style={{ fontSize: 13, color: "#9198A6" }}>채점 중 오류가 발생했습니다.</div>
-                )}
-              </div>
+          </div>
+        </nav>
 
-              {/* 이전/이후 비교 결과 */}
-              {compareResult && prevContent && (
-                <div style={{ background: "#F0FDF4", border: "1px solid #CDEBDC", borderRadius: 16, padding: "18px 20px", marginTop: 12 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#15A06B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#15803D" }}>수정 후 변화 분석</span>
-                    {compareResult.progress_delta > 0 && (
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "#15A06B", background: "#D8EFE3", padding: "2px 8px", borderRadius: 100 }}>
-                        +{compareResult.progress_delta}점 향상
+        {/* ── BODY GRID ── */}
+        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "26px 28px", display: "grid", gridTemplateColumns: "212px 1fr", gap: 30, alignItems: "start" }}>
+
+          {/* ── SIDEBAR ── */}
+          <aside className="glass" style={{ position: "sticky", top: 26, borderRadius: "var(--radius-lg)", padding: "20px 16px" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "var(--color-primary)" }}>창업 여정</div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "9px 0 8px" }}>
+              <span style={{ fontSize: 12.5, color: "var(--color-muted)", fontWeight: 600 }}>진행률</span>
+              <span style={{ fontSize: 12.5, color: "var(--color-muted)", fontWeight: 700 }}>{completedCount}/7</span>
+            </div>
+            <div style={{ height: 7, background: TRACK_BG, borderRadius: "var(--radius-full)", overflow: "hidden", marginBottom: 24 }}>
+              <div style={{ width: `${(completedCount / 7) * 100}%`, height: "100%", background: "var(--color-success)", borderRadius: "var(--radius-full)", transition: "width 0.5s" }}></div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              {STEP_META.map((s) => {
+                const isActive = s.step === step;
+                const isDone = progress.find((p) => p.step === s.step)?.is_completed;
+                return (
+                  <Link
+                    key={s.step}
+                    href={`/roadmap/${s.step}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 11,
+                      padding: "10px 11px",
+                      borderRadius: "var(--radius-sm)",
+                      fontSize: 13.5,
+                      fontWeight: isActive ? 700 : 600,
+                      color: isActive ? "var(--color-primary)" : "var(--color-muted)",
+                      background: isActive ? TINT : "transparent",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {isDone && !isActive ? (
+                      <span style={{ width: 17, height: 17, borderRadius: "50%", background: SUCCESS_TINT, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="var(--color-success)" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </span>
+                    ) : (
+                      <span style={{ flexShrink: 0, color: isActive ? "var(--color-primary)" : "var(--color-muted)" }}>
+                        <StepIcon step={s.step} color={isActive ? "var(--color-primary)" : "var(--color-muted)"} />
                       </span>
                     )}
+                    {s.name}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div style={{ borderTop: "1px solid var(--color-border)", margin: "22px 0 16px" }}></div>
+
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("open-chat"))}
+              style={{ width: "100%", cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, background: "var(--color-text)", color: "var(--color-background)", border: "none", padding: 12, borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: 700 }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="currentColor"/></svg>
+              AI 인사이트 받기
+            </button>
+
+            {/* 지원사업 매칭 */}
+            {(() => {
+              const programs = getProgramsForStep(step);
+              if (!programs.length) return null;
+              return (
+                <div style={{ marginTop: 18 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-accent)" }}>이 단계 추천 지원사업</span>
                   </div>
-                  {compareResult.improvements.length > 0 && (
-                    <div style={{ marginBottom: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "#15A06B", marginBottom: 5 }}>나아진 점</div>
-                      {compareResult.improvements.map((imp, i) => (
-                        <div key={i} style={{ fontSize: 12.5, color: "#1F2436", lineHeight: 1.6, paddingLeft: 12 }}>▸ {imp}</div>
-                      ))}
-                    </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {programs.slice(0, 4).map((p, i) => {
+                      const expired = isExpired(p.deadline);
+                      const left = daysLeft(p.deadline);
+                      return (
+                        <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                          style={{
+                            display: "block", padding: "9px 10px", borderRadius: "var(--radius-sm)",
+                            background: expired ? "transparent" : ACCENT_TINT,
+                            border: `1px solid ${expired ? "var(--color-border)" : ACCENT_BORDER}`,
+                            textDecoration: "none", opacity: expired ? 0.6 : 1,
+                          }}
+                        >
+                          <div style={{ fontSize: 11.5, fontWeight: 700, color: expired ? "var(--color-muted)" : "var(--color-text)", lineHeight: 1.4, marginBottom: 4 }}>{p.name}</div>
+                          <div style={{ fontSize: 10.5, color: expired ? "var(--color-muted)" : (left <= 7 ? "var(--color-error)" : "var(--color-accent)"), fontWeight: 600 }}>
+                            {expired ? "마감" : `D-${left} · ${p.deadline.slice(5).replace("-", "/")}`}
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 11px 4px" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--color-muted)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-muted)" strokeWidth="1.7"/><path d="M9.5 9.5a2.5 2.5 0 113.5 2.3c-.7.3-1 .8-1 1.7M12 17h.01" stroke="var(--color-muted)" strokeWidth="1.7" strokeLinecap="round"/></svg>
+                도움말
+              </span>
+              <Link href="/">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="var(--color-muted)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </Link>
+            </div>
+          </aside>
+
+          {/* ── MAIN ── */}
+          <main>
+
+            {/* Step Header */}
+            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <span style={{ width: 46, height: 46, borderRadius: "var(--radius-md)", background: TINT, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <StepIcon step={step} color="var(--color-primary)" />
+              </span>
+              <div>
+                <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: "var(--color-text)" }}>{meta.heading}</h1>
+                <p style={{ fontSize: 14.5, color: "var(--color-muted)", margin: "7px 0 0" }}>{meta.description}</p>
+              </div>
+            </div>
+
+            {/* Why + Coach two-column */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 250px", gap: 18, marginTop: 24 }}>
+              {/* Why card */}
+              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "22px 24px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 16, fontWeight: 800, color: "var(--color-primary)" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M12 11v5M12 7.5h.01" stroke="var(--color-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                  왜 이 단계가 필요한가
+                </div>
+                {meta.whyText.map((text, i) => (
+                  <p key={i} style={{ fontSize: 13.8, lineHeight: 1.7, color: "var(--color-muted)", margin: i === 0 ? "13px 0 0" : "12px 0 0" }}>{text}</p>
+                ))}
+                <div style={{ display: "flex", gap: 10, marginTop: 18, flexWrap: "wrap" }}>
+                  {meta.tags.map((tag) => (
+                    <span key={tag} style={{ display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--color-border)", borderRadius: "var(--radius-full)", padding: "7px 14px", fontSize: 12.5, fontWeight: 600, color: "var(--color-muted)" }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="var(--color-success)" strokeWidth="1.8"/><path d="M8 12l3 3 5-6" stroke="var(--color-success)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Coach card — primary-tinted glass, distinct from neutral cards */}
+              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: 20, background: TINT, display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, fontWeight: 800, color: "var(--color-primary)" }}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3c-1 3-2 4-5 5 3 1 4 2 5 5 1-3 2-4 5-5-3-1-4-2-5-5z" fill="var(--color-accent)"/></svg>
+                  RK · AI 코치 요다
+                </div>
+                <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--color-text)", marginTop: 13, flex: 1 }}>
+                  "{meta.coachQuote}"
+                </div>
+                <div style={{ borderTop: "1px solid var(--color-border)", marginTop: 14, paddingTop: 11, fontSize: 11, color: "var(--color-muted)" }}>
+                  실시간 분석 · 피드백 활성
+                </div>
+              </div>
+            </div>
+
+            {/* AI Draft Banner */}
+            {!draftGenerated ? (
+              /* Hero gradient moment — the page's one call-to-action highlight */
+              <div style={{
+                position: "relative", overflow: "hidden",
+                background: "linear-gradient(150deg, var(--color-primary) 0%, var(--color-secondary) 55%, var(--color-accent) 100%)",
+                border: "1px solid rgba(255,255,255,0.3)",
+                borderRadius: "var(--radius-lg)", padding: "18px 22px", marginTop: 18,
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), 0 20px 40px -20px color-mix(in srgb, var(--color-primary) 55%, transparent)",
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18,
+              }}>
+                <div style={{
+                  position: "absolute", inset: 0, pointerEvents: "none",
+                  background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)",
+                }} />
+                <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 13 }}>
+                  <span style={{ width: 40, height: 40, borderRadius: "var(--radius-sm)", background: "rgba(255,255,255,0.22)", border: "1px solid rgba(255,255,255,0.3)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/></svg>
+                  </span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: "#fff" }}>AI 초안 생성이 준비되었습니다</div>
+                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", marginTop: 3 }}>{meta.frameworkDesc}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={handleGenerate}
+                  disabled={generating || !user?.item_keyword}
+                  style={{ position: "relative", cursor: generating || !user?.item_keyword ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "var(--color-text)", color: "var(--color-background)", border: "none", padding: "13px 22px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: 700, opacity: generating || !user?.item_keyword ? 0.6 : 1 }}
+                >
+                  {generating ? (
+                    <span style={{ display: "inline-block", width: 15, height: 15, border: "2px solid color-mix(in srgb, var(--color-background) 40%, transparent)", borderTopColor: "var(--color-background)", borderRadius: "50%", animation: "spin 0.7s linear infinite" }}></span>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 12.5h6L9 22l9-11h-6L13 2z" fill="currentColor"/></svg>
                   )}
-                  {compareResult.remaining_issues.length > 0 && (
-                    <div style={{ marginBottom: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "#92400E", marginBottom: 5 }}>아직 보완 필요</div>
-                      {compareResult.remaining_issues.map((issue, i) => (
-                        <div key={i} style={{ fontSize: 12.5, color: "#1F2436", lineHeight: 1.6, paddingLeft: 12 }}>△ {issue}</div>
-                      ))}
+                  {generating ? "생성 중..." : "AI 초안 생성 시작"}
+                </button>
+              </div>
+            ) : (
+              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "16px 20px", marginTop: 18, background: SUCCESS_TINT, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
+                  <span style={{ width: 40, height: 40, borderRadius: "var(--radius-sm)", background: "var(--color-success)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: "var(--color-success)" }}>AI 초안이 생성되었습니다</div>
+                    <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 3 }}>각 항목을 검토하고 다듬은 뒤 저장 후 다음 단계로 진행하세요.</div>
+                  </div>
+                </div>
+                <button
+                  onClick={handleGenerate}
+                  disabled={generating || !user?.item_keyword}
+                  style={{ cursor: generating || !user?.item_keyword ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "var(--color-success)", color: "#fff", border: "none", padding: "11px 18px", borderRadius: "var(--radius-sm)", fontSize: 13, fontWeight: 700, opacity: generating || !user?.item_keyword ? 0.6 : 1 }}
+                >
+                  {generating ? "생성 중..." : "다시 생성하기"}
+                </button>
+              </div>
+            )}
+
+            {/* Framework Table */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "28px 2px 14px" }}>
+              <h2 style={{ fontSize: 19, fontWeight: 800, margin: 0, color: "var(--color-text)" }}>{meta.frameworkTitle}</h2>
+              <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, color: "var(--color-primary)", textDecoration: "none" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M9.5 9.5a2.5 2.5 0 113.5 2.3c-.7.3-1 .8-1 1.7M12 17h.01" stroke="var(--color-primary)" strokeWidth="1.7" strokeLinecap="round"/></svg>
+                프레임워크 가이드 보기
+              </a>
+            </div>
+
+            <div className="glass" style={{ borderRadius: "var(--radius-md)", overflow: "hidden" }}>
+              {/* Table header */}
+              <div style={{ display: "grid", gridTemplateColumns: "210px 1fr", background: "color-mix(in srgb, var(--color-text) 4%, transparent)", borderBottom: "1px solid var(--color-border)" }}>
+                <div style={{ padding: "13px 22px", fontSize: 12, fontWeight: 700, color: "var(--color-muted)" }}>구분</div>
+                <div style={{ padding: "13px 22px", fontSize: 12, fontWeight: 700, color: "var(--color-muted)" }}>상세 내용</div>
+              </div>
+
+              {meta.rows.map((row, idx) => {
+                const raw = content?.[row.key];
+                const val = formatValue(raw);
+                const isLast = idx === meta.rows.length - 1;
+                return (
+                  <div key={row.key} style={{ display: "grid", gridTemplateColumns: "210px 1fr", borderBottom: isLast ? "none" : "1px solid var(--color-border)" }}>
+                    <div style={{ padding: "20px 22px", display: "flex", alignItems: "center", gap: 10, fontSize: 14, fontWeight: 700, color: "var(--color-text)" }}>
+                      <span style={{ width: 8, height: 8, borderRadius: 3, background: "var(--color-primary)", flexShrink: 0 }}></span>
+                      {row.label}
                     </div>
+                    <div style={{ padding: "16px 22px", fontSize: 13.5, lineHeight: 1.6 }}>
+                      {val && (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 10.5, fontWeight: 700, color: "var(--color-primary)", background: TINT, padding: "3px 8px", borderRadius: "var(--radius-full)", marginBottom: 8 }}>
+                          ✦ AI 초안
+                        </span>
+                      )}
+                      <textarea
+                        value={val}
+                        placeholder={row.placeholder}
+                        onChange={(e) => setContent((prev) => ({ ...(prev || {}), [row.key]: e.target.value }))}
+                        rows={val ? Math.max(2, val.split("\n").length + 1) : 2}
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          border: "none",
+                          outline: "none",
+                          resize: "none",
+                          fontFamily: "'Pretendard', sans-serif",
+                          fontSize: 13.5,
+                          lineHeight: 1.6,
+                          color: val ? "var(--color-text)" : "var(--color-muted)",
+                          background: "transparent",
+                          padding: 0,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Coaching Feedback */}
+            {!draftGenerated ? (
+              <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: 34, marginTop: 18, textAlign: "center" }}>
+                <span style={{ width: 46, height: 46, borderRadius: "50%", background: "color-mix(in srgb, var(--color-muted) 15%, transparent)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.5 8.5 0 01-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1121 11.5z" stroke="var(--color-muted)" strokeWidth="1.7" strokeLinejoin="round"/></svg>
+                </span>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "var(--color-muted)", marginTop: 14 }}>코칭 피드백 대기 중</div>
+                <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 5, lineHeight: 1.6 }}>AI 초안을 생성하면 코치 요다가 작성된 내용을 분석해 피드백을 제시합니다.</div>
+              </div>
+            ) : (
+              <>
+                {/* 완성도 점수 카드 */}
+                <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "18px 20px", marginTop: 18 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: fetchingScore ? 0 : (score ? 14 : 0) }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-text)" }}>완성도 채점</span>
+                      {score && (
+                        <span style={{ fontSize: 11, color: "var(--color-muted)", fontWeight: 500 }}>— {score.methodology_ref}</span>
+                      )}
+                    </div>
+                    {fetchingScore ? (
+                      <span style={{ display: "inline-flex", gap: 3 }}>
+                        {[0, 150, 300].map((d, i) => (
+                          <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--color-accent)", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
+                        ))}
+                      </span>
+                    ) : score ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{
+                          fontSize: 28, fontWeight: 900, color:
+                            score.score >= 90 ? "var(--color-success)" : score.score >= 70 ? "var(--color-primary)" : score.score >= 50 ? "var(--color-accent)" : "var(--color-error)"
+                        }}>{score.score}</span>
+                        <span style={{
+                          fontSize: 13, fontWeight: 800, padding: "3px 10px", borderRadius: "var(--radius-full)",
+                          background: score.grade === "A" ? SUCCESS_TINT : score.grade === "B" ? TINT : score.grade === "C" ? ACCENT_TINT : ERROR_TINT,
+                          color: score.grade === "A" ? "var(--color-success)" : score.grade === "B" ? "var(--color-primary)" : score.grade === "C" ? "var(--color-accent)" : "var(--color-error)",
+                        }}>등급 {score.grade}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                  {!fetchingScore && score && (
+                    <>
+                      <div style={{ height: 6, background: TRACK_BG, borderRadius: "var(--radius-full)", overflow: "hidden", marginBottom: 14 }}>
+                        <div style={{
+                          width: `${score.score}%`, height: "100%", borderRadius: "var(--radius-full)", transition: "width 0.8s ease",
+                          background: score.score >= 90 ? "var(--color-success)" : score.score >= 70 ? "var(--color-primary)" : score.score >= 50 ? "var(--color-accent)" : "var(--color-error)",
+                        }} />
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                        {score.strengths.length > 0 && (
+                          <div style={{ background: SUCCESS_TINT, borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-success)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>잘된 점</div>
+                            {score.strengths.map((s, i) => (
+                              <div key={i} style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.6 }}>✓ {s}</div>
+                            ))}
+                          </div>
+                        )}
+                        {score.missing_items.length > 0 && (
+                          <div style={{ background: ACCENT_TINT, borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-accent)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>보완 필요</div>
+                            {score.missing_items.map((m, i) => (
+                              <div key={i} style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.6 }}>△ {m}</div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {score.improvement_hint && (
+                        <div style={{ marginTop: 10, padding: "9px 12px", background: TINT, borderRadius: "var(--radius-sm)", fontSize: 12.5, color: "var(--color-primary)", fontWeight: 600 }}>
+                          💡 {score.improvement_hint}
+                        </div>
+                      )}
+                    </>
                   )}
-                  {compareResult.overall_progress && (
-                    <div style={{ fontSize: 13, color: "#15803D", fontWeight: 600, fontStyle: "italic" }}>"{compareResult.overall_progress}"</div>
+                  {!fetchingScore && !score && (
+                    <div style={{ fontSize: 13, color: "var(--color-muted)" }}>채점 중 오류가 발생했습니다.</div>
                   )}
                 </div>
-              )}
 
-              {/* 피드백 카드 */}
-              <div style={{ background: "#EAF1FB", border: "1px solid #D9E6F7", borderRadius: 16, padding: "18px 20px", marginTop: 12 }}>
-                <div style={{ display: "flex", gap: 13, alignItems: "flex-start" }}>
-                  <span style={{ width: 34, height: 34, borderRadius: 9, background: "#fff", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px -6px rgba(47,62,114,0.3)" }}>
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="3" stroke="#2F3E72" strokeWidth="1.7"/><path d="M12 8V4M9 4h6" stroke="#2F3E72" strokeWidth="1.7" strokeLinecap="round"/><circle cx="9" cy="14" r="1.2" fill="#2F3E72"/><circle cx="15" cy="14" r="1.2" fill="#2F3E72"/></svg>
-                  </span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13.5, fontWeight: 800, color: "#2F3E72", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      코치 요다의 피드백
-                      {fetchingFeedback && (
-                        <span style={{ display: "inline-flex", gap: 3 }}>
-                          {[0, 150, 300].map((d, i) => (
-                            <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "#5A5BD6", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
-                          ))}
+                {/* 이전/이후 비교 결과 */}
+                {compareResult && prevContent && (
+                  <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "18px 20px", marginTop: 12, background: SUCCESS_TINT }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-success)" }}>수정 후 변화 분석</span>
+                      {compareResult.progress_delta > 0 && (
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-success)", background: "color-mix(in srgb, var(--color-success) 26%, var(--color-surface))", padding: "2px 8px", borderRadius: "var(--radius-full)" }}>
+                          +{compareResult.progress_delta}점 향상
                         </span>
                       )}
                     </div>
-                    {fetchingFeedback ? (
-                      <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>작성된 내용을 분석 중입니다...</div>
-                    ) : feedback ? (
-                      <>
-                        <div style={{ fontSize: 13.5, lineHeight: 1.75, color: "#42506B", marginTop: 5, whiteSpace: "pre-line" }}>
-                          {feedback.replace(/\[근거:.*?\]/g, "").trim()}
-                        </div>
-                        {methodologyRef && (
-                          <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 5, background: "#2F3E72", color: "#A8B8D8", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 100 }}>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.5 4.6H18l-4 2.9 1.5 4.6L12 11.2l-3.5 2.9 1.5-4.6-4-2.9h4.5L12 2z" fill="#7DE0AE"/></svg>
-                            근거: {methodologyRef}
-                          </div>
-                        )}
-                        <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid #D9E6F7" }}>
-                          <div style={{ fontSize: 12, color: "#9198A6", marginBottom: 8 }}>내용을 수정했다면 피드백을 다시 받아보세요.</div>
-                          <button
-                            onClick={() => {
-                              if (content) {
-                                fetchFeedback(step, content);
-                                fetchScore(step, content);
-                              }
-                            }}
-                            style={{
-                              display: "inline-flex", alignItems: "center", gap: 6,
-                              fontSize: 12.5, fontWeight: 600, color: "#2F3E72",
-                              background: "#fff", border: "1px solid #C8D8F0", padding: "7px 14px", borderRadius: 8, cursor: "pointer",
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = "#EAF1FB"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
-                          >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="#2F3E72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#2F3E72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            피드백 다시 받기
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div style={{ fontSize: 13, color: "#9198A6", marginTop: 6 }}>피드백을 불러오지 못했습니다.</div>
+                    {compareResult.improvements.length > 0 && (
+                      <div style={{ marginBottom: 10 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-success)", marginBottom: 5 }}>나아진 점</div>
+                        {compareResult.improvements.map((imp, i) => (
+                          <div key={i} style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.6, paddingLeft: 12 }}>▸ {imp}</div>
+                        ))}
+                      </div>
+                    )}
+                    {compareResult.remaining_issues.length > 0 && (
+                      <div style={{ marginBottom: 10 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-accent)", marginBottom: 5 }}>아직 보완 필요</div>
+                        {compareResult.remaining_issues.map((issue, i) => (
+                          <div key={i} style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.6, paddingLeft: 12 }}>△ {issue}</div>
+                        ))}
+                      </div>
+                    )}
+                    {compareResult.overall_progress && (
+                      <div style={{ fontSize: 13, color: "var(--color-success)", fontWeight: 600, fontStyle: "italic" }}>"{compareResult.overall_progress}"</div>
                     )}
                   </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Bottom Nav */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "26px 0 36px" }}>
-            <Link href={prevLink} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#6B7280", textDecoration: "none" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              이전으로
-            </Link>
-            <div style={{ display: "flex", gap: 11 }}>
-              <button
-                onClick={() => handleSave(false)}
-                disabled={saving || !hasContent}
-                style={{ cursor: "pointer", fontFamily: "inherit", background: "#fff", color: "#42506B", border: "1.5px solid #D5D9E2", padding: "13px 22px", borderRadius: 11, fontSize: 14, fontWeight: 700, opacity: !hasContent ? 0.5 : 1 }}
-              >
-                임시 저장
-              </button>
-              <button
-                onClick={() => handleSave(true)}
-                disabled={saving}
-                style={{ cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", gap: 8, background: "#2F3E72", color: "#fff", border: "none", padding: "13px 24px", borderRadius: 11, fontSize: 14, fontWeight: 700, opacity: saving ? 0.7 : 1 }}
-              >
-                {saveButtonLabel}
-                {!saving && (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 )}
-              </button>
-            </div>
-          </div>
 
-        </main>
+                {/* 피드백 카드 */}
+                <div className="glass" style={{ borderRadius: "var(--radius-md)", padding: "18px 20px", marginTop: 12, background: FEEDBACK_TINT }}>
+                  <div style={{ display: "flex", gap: 13, alignItems: "flex-start" }}>
+                    <span style={{ width: 34, height: 34, borderRadius: "var(--radius-sm)", background: "var(--color-surface)", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px -6px color-mix(in srgb, var(--color-primary) 30%, transparent)" }}>
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="3" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M12 8V4M9 4h6" stroke="var(--color-primary)" strokeWidth="1.7" strokeLinecap="round"/><circle cx="9" cy="14" r="1.2" fill="var(--color-primary)"/><circle cx="15" cy="14" r="1.2" fill="var(--color-primary)"/></svg>
+                    </span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 800, color: "var(--color-primary)", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        코치 요다의 피드백
+                        {fetchingFeedback && (
+                          <span style={{ display: "inline-flex", gap: 3 }}>
+                            {[0, 150, 300].map((d, i) => (
+                              <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--color-primary)", display: "inline-block", animation: "bounce 1.2s infinite", animationDelay: `${d}ms` }} />
+                            ))}
+                          </span>
+                        )}
+                      </div>
+                      {fetchingFeedback ? (
+                        <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 6 }}>작성된 내용을 분석 중입니다...</div>
+                      ) : feedback ? (
+                        <>
+                          <div style={{ fontSize: 13.5, lineHeight: 1.75, color: "var(--color-muted)", marginTop: 5, whiteSpace: "pre-line" }}>
+                            {feedback.replace(/\[근거:.*?\]/g, "").trim()}
+                          </div>
+                          {methodologyRef && (
+                            <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 5, background: "var(--color-text)", color: "var(--color-background)", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: "var(--radius-full)" }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.5 4.6H18l-4 2.9 1.5 4.6L12 11.2l-3.5 2.9 1.5-4.6-4-2.9h4.5L12 2z" fill="var(--color-accent)"/></svg>
+                              근거: {methodologyRef}
+                            </div>
+                          )}
+                          <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid var(--color-border)" }}>
+                            <div style={{ fontSize: 12, color: "var(--color-muted)", marginBottom: 8 }}>내용을 수정했다면 피드백을 다시 받아보세요.</div>
+                            <button
+                              onClick={() => {
+                                if (content) {
+                                  fetchFeedback(step, content);
+                                  fetchScore(step, content);
+                                }
+                              }}
+                              style={{
+                                display: "inline-flex", alignItems: "center", gap: 6,
+                                fontSize: 12.5, fontWeight: 600, color: "var(--color-primary)",
+                                background: "var(--color-surface)", border: `1px solid ${FEEDBACK_BORDER}`, padding: "7px 14px", borderRadius: "var(--radius-sm)", cursor: "pointer",
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = FEEDBACK_TINT; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-surface)"; }}
+                            >
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              피드백 다시 받기
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 6 }}>피드백을 불러오지 못했습니다.</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Bottom Nav */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "26px 0 36px" }}>
+              <Link href={prevLink} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "var(--color-muted)", textDecoration: "none" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                이전으로
+              </Link>
+              <div style={{ display: "flex", gap: 11 }}>
+                <button
+                  onClick={() => handleSave(false)}
+                  disabled={saving || !hasContent}
+                  style={{ cursor: "pointer", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-text)", border: "1.5px solid var(--color-border)", padding: "13px 22px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: 700, opacity: !hasContent ? 0.5 : 1 }}
+                >
+                  임시 저장
+                </button>
+                <button
+                  onClick={() => handleSave(true)}
+                  disabled={saving}
+                  style={{ cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", gap: 8, background: "var(--color-text)", color: "var(--color-background)", border: "none", padding: "13px 24px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: 700, opacity: saving ? 0.7 : 1 }}
+                >
+                  {saveButtonLabel}
+                  {!saving && (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+          </main>
+        </div>
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>

@@ -23,34 +23,34 @@ export default function StepCard({ step, isCompleted, isLocked }: Props) {
 
   return (
     <div
-      className={`relative p-6 rounded-2xl border transition-all ${
+      className={`relative p-6 rounded-lg border transition-all ${
         isLocked
-          ? "border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed"
+          ? "border-border bg-[color-mix(in_srgb,var(--color-muted)_8%,var(--color-surface))] opacity-50 cursor-not-allowed"
           : isCompleted
-          ? "border-green-200 bg-green-50 hover:shadow-md cursor-pointer"
-          : "border-blue-200 bg-white hover:shadow-md cursor-pointer"
+          ? "border-[color-mix(in_srgb,var(--color-success)_35%,transparent)] bg-[color-mix(in_srgb,var(--color-success)_14%,var(--color-surface))] hover:shadow-md cursor-pointer"
+          : "glass border-primary hover:shadow-md cursor-pointer"
       }`}
     >
       {isLocked && (
-        <span className="absolute top-4 right-4 text-gray-400 text-lg">🔒</span>
+        <span className="absolute top-4 right-4 text-muted text-lg">🔒</span>
       )}
       {isCompleted && (
-        <span className="absolute top-4 right-4 text-green-500 text-lg">✅</span>
+        <span className="absolute top-4 right-4 text-success text-lg">✅</span>
       )}
 
       <div className="flex items-start gap-4">
         <span className="text-3xl">{meta.icon}</span>
         <div className="flex-1">
-          <p className="text-xs font-semibold text-blue-500 uppercase tracking-wide mb-1">
+          <p className="text-xs font-semibold text-primary uppercase tracking-wide mb-1">
             STEP {step}
           </p>
-          <h3 className="font-bold text-gray-900 text-lg mb-1">{meta.title}</h3>
-          <p className="text-sm text-gray-500">{meta.desc}</p>
+          <h3 className="font-bold text-text text-lg mb-1">{meta.title}</h3>
+          <p className="text-sm text-muted">{meta.desc}</p>
         </div>
       </div>
 
       {!isLocked && (
-        <Link href={`/roadmap/${step}`} className="absolute inset-0 rounded-2xl" />
+        <Link href={`/roadmap/${step}`} className="absolute inset-0 rounded-lg" />
       )}
     </div>
   );

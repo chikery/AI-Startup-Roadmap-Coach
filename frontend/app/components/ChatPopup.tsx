@@ -84,92 +84,91 @@ export default function ChatPopup() {
     }
   }
 
-  const INDIGO = "#5A5BD6";
-  const INDIGO_DARK = "#4849C0";
-  const INDIGO_BG = "#ECECFB";
-
   return (
     <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 12 }}>
       {open && (
-        <div style={{
+        <div className="glass" style={{
           width: 360,
           height: 500,
-          background: "#fff",
-          borderRadius: 20,
-          boxShadow: "0 20px 60px rgba(90,91,214,0.18), 0 4px 16px rgba(0,0,0,0.08)",
-          border: `1.5px solid ${INDIGO_BG}`,
+          borderRadius: "var(--radius-lg)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
         }}>
-          {/* Header */}
+          {/* Header — hero gradient moment for this component */}
           <div style={{
-            background: `linear-gradient(135deg, ${INDIGO} 0%, #4849C0 100%)`,
+            position: "relative",
+            overflow: "hidden",
+            background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 60%, var(--color-accent) 100%)",
             padding: "14px 16px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: "50%",
-                background: "rgba(255,255,255,0.18)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 18,
-              }}>🤖</div>
-              <div>
-                <div style={{ color: "#fff", fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>AI 창업 코치</div>
-                <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 11, display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
-                  {step ? `STEP ${step} 전문 코칭 중` : "언제든 질문하세요"}
+            <div style={{
+              position: "absolute", inset: 0, pointerEvents: "none",
+              background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)",
+            }} />
+            <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: "var(--radius-full)",
+                  background: "rgba(255,255,255,0.18)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 18,
+                }}>🤖</div>
+                <div>
+                  <div style={{ color: "#fff", fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>AI 창업 코치</div>
+                  <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 11, display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "var(--radius-full)", background: "var(--color-success)", display: "inline-block" }} />
+                    {step ? `STEP ${step} 전문 코칭 중` : "언제든 질문하세요"}
+                  </div>
                 </div>
               </div>
+              <button
+                onClick={() => setOpen(false)}
+                style={{
+                  color: "rgba(255,255,255,0.7)", background: "none", border: "none",
+                  cursor: "pointer", fontSize: 20, lineHeight: 1, padding: "4px 6px",
+                  borderRadius: "var(--radius-sm)",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.7)")}
+              >
+                ×
+              </button>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              style={{
-                color: "rgba(255,255,255,0.7)", background: "none", border: "none",
-                cursor: "pointer", fontSize: 20, lineHeight: 1, padding: "4px 6px",
-                borderRadius: 8,
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.7)")}
-            >
-              ×
-            </button>
           </div>
 
           {/* Messages */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10, background: "#F8F8FE" }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10, background: "var(--color-background)" }}>
             {messages.map((m, i) => (
               <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
-                <div style={{
-                  maxWidth: "82%",
-                  padding: "10px 13px",
-                  borderRadius: m.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-                  fontSize: 13,
-                  lineHeight: 1.6,
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                  background: m.role === "user" ? INDIGO : "#fff",
-                  color: m.role === "user" ? "#fff" : "#1F2436",
-                  boxShadow: m.role === "user" ? "none" : "0 1px 4px rgba(0,0,0,0.06)",
-                  border: m.role === "user" ? "none" : "1px solid #ECECFB",
-                }}>
+                <div
+                  className={m.role === "user" ? undefined : "glass"}
+                  style={{
+                    maxWidth: "82%",
+                    padding: "10px 13px",
+                    borderRadius: m.role === "user" ? "var(--radius-md) var(--radius-md) 4px var(--radius-md)" : "var(--radius-md) var(--radius-md) var(--radius-md) 4px",
+                    fontSize: 13,
+                    lineHeight: 1.6,
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                    background: m.role === "user" ? "var(--color-primary)" : undefined,
+                    color: m.role === "user" ? "#fff" : "var(--color-text)",
+                  }}
+                >
                   {m.content}
                 </div>
               </div>
             ))}
             {loading && (
               <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                <div style={{
-                  background: "#fff", border: "1px solid #ECECFB", borderRadius: "16px 16px 16px 4px",
-                  padding: "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                <div className="glass" style={{
+                  borderRadius: "var(--radius-md) var(--radius-md) var(--radius-md) 4px",
+                  padding: "10px 14px",
                   display: "flex", gap: 4, alignItems: "center",
                 }}>
                   {[0, 150, 300].map((delay, idx) => (
                     <span key={idx} style={{
-                      width: 7, height: 7, borderRadius: "50%", background: INDIGO,
+                      width: 7, height: 7, borderRadius: "var(--radius-full)", background: "var(--color-primary)",
                       display: "inline-block", opacity: 0.6,
                       animation: "bounce 1.2s infinite",
                       animationDelay: `${delay}ms`,
@@ -182,7 +181,7 @@ export default function ChatPopup() {
           </div>
 
           {/* Input */}
-          <div style={{ padding: "10px 12px", background: "#fff", borderTop: "1px solid #ECECFB", display: "flex", gap: 8 }}>
+          <div style={{ padding: "10px 12px", background: "var(--color-surface)", borderTop: "1px solid var(--color-border)", display: "flex", gap: 8 }}>
             <input
               type="text"
               value={input}
@@ -192,27 +191,27 @@ export default function ChatPopup() {
               disabled={loading}
               style={{
                 flex: 1, fontSize: 13, padding: "9px 13px",
-                borderRadius: 12, border: "1.5px solid #E0E1FA",
-                outline: "none", background: "#FAFAFE",
-                color: "#1F2436",
+                borderRadius: "var(--radius-sm)", border: "1.5px solid var(--color-border)",
+                outline: "none", background: "var(--color-background)",
+                color: "var(--color-text)",
                 opacity: loading ? 0.5 : 1,
               }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = INDIGO)}
-              onBlur={(e) => (e.currentTarget.style.borderColor = "#E0E1FA")}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-primary)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "var(--color-border)")}
             />
             <button
               onClick={send}
               disabled={loading || !input.trim()}
               style={{
                 padding: "9px 13px",
-                background: loading || !input.trim() ? "#C5C6F4" : INDIGO,
-                color: "#fff", border: "none", borderRadius: 12,
+                background: loading || !input.trim() ? "color-mix(in srgb, var(--color-primary) 30%, var(--color-surface))" : "var(--color-primary)",
+                color: "#fff", border: "none", borderRadius: "var(--radius-sm)",
                 cursor: loading || !input.trim() ? "not-allowed" : "pointer",
                 transition: "background 0.15s",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
-              onMouseEnter={(e) => { if (!loading && input.trim()) e.currentTarget.style.background = INDIGO_DARK; }}
-              onMouseLeave={(e) => { if (!loading && input.trim()) e.currentTarget.style.background = INDIGO; }}
+              onMouseEnter={(e) => { if (!loading && input.trim()) e.currentTarget.style.background = "var(--color-primary-hover)"; }}
+              onMouseLeave={(e) => { if (!loading && input.trim()) e.currentTarget.style.background = "var(--color-primary)"; }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -227,9 +226,9 @@ export default function ChatPopup() {
         onClick={() => setOpen((v) => !v)}
         style={{
           width: 56, height: 56,
-          background: open ? INDIGO_DARK : INDIGO,
-          border: "none", borderRadius: "50%",
-          boxShadow: "0 4px 20px rgba(90,91,214,0.4)",
+          background: open ? "var(--color-primary-hover)" : "var(--color-primary)",
+          border: "none", borderRadius: "var(--radius-full)",
+          boxShadow: "0 4px 20px color-mix(in srgb, var(--color-primary) 40%, transparent)",
           cursor: "pointer", color: "#fff",
           display: "flex", alignItems: "center", justifyContent: "center",
           transition: "transform 0.15s, background 0.15s",
