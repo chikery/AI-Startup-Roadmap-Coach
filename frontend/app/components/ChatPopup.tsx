@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { cn } from "@/app/lib/cn";
 
 interface Message {
   role: "user" | "assistant";
@@ -21,6 +22,13 @@ const STEP_GREETINGS: Record<number, string> = {
 };
 
 const DEFAULT_GREETING = "안녕하세요! StepUp AI 코치입니다. 창업 여정의 어떤 단계든 함께 고민해 드릴게요.";
+
+// TODO(bug, tracked separately — not fixed as part of this refactor):
+// `@keyframes bounce` used by the loading dots below is only defined locally in
+// business-plan/page.tsx's <style> tag, not globally in globals.css. On any other
+// page, the loading dots' `animate-[bounce_1.2s_infinite]` has no matching keyframe,
+// so they just sit at fixed opacity instead of bouncing. Needs the keyframe moved
+// to globals.css. Filed as a follow-up, out of scope for the Tailwind-unification pass.
 
 function useCurrentStep(): number | null {
   const pathname = usePathname();
@@ -85,52 +93,34 @@ export default function ChatPopup() {
   }
 
   return (
-    <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 12 }}>
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
       {open && (
-        <div className="glass" style={{
-          width: 360,
-          height: 500,
-          borderRadius: "var(--radius-lg)",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}>
-          {/* Header — hero gradient moment for this component */}
-          <div style={{
-            position: "relative",
-            overflow: "hidden",
-            background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 60%, var(--color-accent) 100%)",
-            padding: "14px 16px",
-          }}>
-            <div style={{
-              position: "absolute", inset: 0, pointerEvents: "none",
-              background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)",
-            }} />
-            <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: "var(--radius-full)",
-                  background: "rgba(255,255,255,0.18)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 18,
-                }}>🤖</div>
+        <div className="glass flex h-[500px] w-[360px] flex-col overflow-hidden rounded-lg">
+          {/* Header — hero gradient moment for this component. Gradient stays inline:
+              a 3-stop CSS-var gradient reused across pages, not a good arbitrary-value fit. */}
+          <div
+            className="relative overflow-hidden px-4 py-3.5"
+            style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 60%, var(--color-accent) 100%)" }}
+          >
+            {/* Sheen overlay — same exception as above */}
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{ background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)" }}
+            />
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.18] text-lg">🤖</div>
                 <div>
-                  <div style={{ color: "#fff", fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>AI 창업 코치</div>
-                  <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 11, display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: "var(--radius-full)", background: "var(--color-success)", display: "inline-block" }} />
+                  <div className="text-sm font-bold leading-[1.2] text-white">AI 창업 코치</div>
+                  <div className="flex items-center gap-1 text-[11px] text-white/75">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" />
                     {step ? `STEP ${step} 전문 코칭 중` : "언제든 질문하세요"}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                style={{
-                  color: "rgba(255,255,255,0.7)", background: "none", border: "none",
-                  cursor: "pointer", fontSize: 20, lineHeight: 1, padding: "4px 6px",
-                  borderRadius: "var(--radius-sm)",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.7)")}
+                className="rounded-sm border-none bg-transparent px-1.5 py-1 text-[20px] leading-none text-white/70 hover:text-white"
               >
                 ×
               </button>
@@ -138,41 +128,30 @@ export default function ChatPopup() {
           </div>
 
           {/* Messages */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10, background: "var(--color-background)" }}>
+          <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto bg-background px-3 py-3.5">
             {messages.map((m, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
+              <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
                 <div
-                  className={m.role === "user" ? undefined : "glass"}
-                  style={{
-                    maxWidth: "82%",
-                    padding: "10px 13px",
-                    borderRadius: m.role === "user" ? "var(--radius-md) var(--radius-md) 4px var(--radius-md)" : "var(--radius-md) var(--radius-md) var(--radius-md) 4px",
-                    fontSize: 13,
-                    lineHeight: 1.6,
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                    background: m.role === "user" ? "var(--color-primary)" : undefined,
-                    color: m.role === "user" ? "#fff" : "var(--color-text)",
-                  }}
+                  className={cn(
+                    "max-w-[82%] whitespace-pre-wrap break-words px-[13px] py-2.5 text-[13px] leading-[1.6]",
+                    m.role === "user"
+                      ? "rounded-tl-md rounded-tr-md rounded-br-md rounded-bl-[4px] bg-primary text-white"
+                      : "glass rounded-tl-md rounded-tr-md rounded-br-md rounded-bl-[4px] text-text"
+                  )}
                 >
                   {m.content}
                 </div>
               </div>
             ))}
             {loading && (
-              <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                <div className="glass" style={{
-                  borderRadius: "var(--radius-md) var(--radius-md) var(--radius-md) 4px",
-                  padding: "10px 14px",
-                  display: "flex", gap: 4, alignItems: "center",
-                }}>
+              <div className="flex justify-start">
+                <div className="glass flex items-center gap-1 rounded-tl-md rounded-tr-md rounded-br-md rounded-bl-[4px] px-3.5 py-2.5">
                   {[0, 150, 300].map((delay, idx) => (
-                    <span key={idx} style={{
-                      width: 7, height: 7, borderRadius: "var(--radius-full)", background: "var(--color-primary)",
-                      display: "inline-block", opacity: 0.6,
-                      animation: "bounce 1.2s infinite",
-                      animationDelay: `${delay}ms`,
-                    }} />
+                    <span
+                      key={idx}
+                      className="inline-block h-[7px] w-[7px] animate-[bounce_1.2s_infinite] rounded-full bg-primary opacity-60"
+                      style={{ animationDelay: `${delay}ms` }}
+                    />
                   ))}
                 </div>
               </div>
@@ -181,7 +160,7 @@ export default function ChatPopup() {
           </div>
 
           {/* Input */}
-          <div style={{ padding: "10px 12px", background: "var(--color-surface)", borderTop: "1px solid var(--color-border)", display: "flex", gap: 8 }}>
+          <div className="flex gap-2 border-t border-border bg-surface px-3 py-2.5">
             <input
               type="text"
               value={input}
@@ -189,29 +168,17 @@ export default function ChatPopup() {
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
               placeholder="코치에게 물어보세요..."
               disabled={loading}
-              style={{
-                flex: 1, fontSize: 13, padding: "9px 13px",
-                borderRadius: "var(--radius-sm)", border: "1.5px solid var(--color-border)",
-                outline: "none", background: "var(--color-background)",
-                color: "var(--color-text)",
-                opacity: loading ? 0.5 : 1,
-              }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-primary)")}
-              onBlur={(e) => (e.currentTarget.style.borderColor = "var(--color-border)")}
+              className="flex-1 rounded-sm border-[1.5px] border-border bg-background px-[13px] py-[9px] text-[13px] text-text outline-none focus:border-primary disabled:opacity-50"
             />
             <button
               onClick={send}
               disabled={loading || !input.trim()}
-              style={{
-                padding: "9px 13px",
-                background: loading || !input.trim() ? "color-mix(in srgb, var(--color-primary) 30%, var(--color-surface))" : "var(--color-primary)",
-                color: "#fff", border: "none", borderRadius: "var(--radius-sm)",
-                cursor: loading || !input.trim() ? "not-allowed" : "pointer",
-                transition: "background 0.15s",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}
-              onMouseEnter={(e) => { if (!loading && input.trim()) e.currentTarget.style.background = "var(--color-primary-hover)"; }}
-              onMouseLeave={(e) => { if (!loading && input.trim()) e.currentTarget.style.background = "var(--color-primary)"; }}
+              className={cn(
+                "flex items-center justify-center rounded-sm px-[13px] py-[9px] text-white transition-colors duration-150 disabled:pointer-events-none disabled:cursor-not-allowed",
+                loading || !input.trim()
+                  ? "bg-[color-mix(in_srgb,var(--color-primary)_30%,var(--color-surface))]"
+                  : "cursor-pointer bg-primary hover:bg-primary-hover"
+              )}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -221,20 +188,14 @@ export default function ChatPopup() {
         </div>
       )}
 
-      {/* Toggle FAB */}
+      {/* Toggle FAB — boxShadow stays inline: color-mix() shadow, arbitrary-value would be unreadable */}
       <button
         onClick={() => setOpen((v) => !v)}
-        style={{
-          width: 56, height: 56,
-          background: open ? "var(--color-primary-hover)" : "var(--color-primary)",
-          border: "none", borderRadius: "var(--radius-full)",
-          boxShadow: "0 4px 20px color-mix(in srgb, var(--color-primary) 40%, transparent)",
-          cursor: "pointer", color: "#fff",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          transition: "transform 0.15s, background 0.15s",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.08)")}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        className={cn(
+          "flex h-14 w-14 items-center justify-center rounded-full border-none text-white transition duration-150 hover:scale-[1.08]",
+          open ? "bg-primary-hover" : "bg-primary"
+        )}
+        style={{ boxShadow: "0 4px 20px color-mix(in srgb, var(--color-primary) 40%, transparent)" }}
       >
         {open ? (
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
