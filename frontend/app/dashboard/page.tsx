@@ -13,6 +13,7 @@ import AIRecommendationCard from "./components/AIRecommendationCard";
 import GovernmentSupportCard from "./components/GovernmentSupportCard";
 import NotificationCard from "./components/NotificationCard";
 import LearningCard from "./components/LearningCard";
+import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 
 interface StepStatus {
   step: number;
@@ -195,6 +196,7 @@ export default function DashboardPage() {
                 )}
               </div>
 
+              <ThemeSwitcher />
               <span className="hidden h-8 w-8 rounded-full sm:inline-block" style={{ background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", border: "1px solid var(--color-border)" }} />
               {isLoggedIn && (
                 <button

@@ -7,6 +7,7 @@ import { Copy, Check, Pencil, Save, RefreshCw, ArrowLeft } from "lucide-react";
 import { api } from "@/app/lib/api";
 import { useToast } from "@/app/components/ui/Toast";
 import Button from "@/app/components/ui/Button";
+import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -247,6 +248,7 @@ export default function BusinessPlanPage() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill={INDIGO}/></svg>
                 완성
               </span>
+              <ThemeSwitcher />
               <span className="hidden sm:inline-block" style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))" }} />
               {isLoggedIn && (
                 <button

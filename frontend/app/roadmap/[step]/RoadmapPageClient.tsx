@@ -6,6 +6,7 @@ import Link from "next/link";
 import { api } from "@/app/lib/api";
 import { getProgramsForStep, isExpired, daysLeft } from "@/app/lib/support-programs";
 import { useToast } from "@/app/components/ui/Toast";
+import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 
 /* ------------------------------------------------------------------ */
 /* Step Metadata                                                         */
@@ -445,9 +446,9 @@ export default function RoadmapStepPage() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="var(--color-primary)"/></svg>
                 {step}/7
               </span>
-              {/* Decorative icons — desktop only, no behavior attached */}
+              {/* Decorative bell — desktop only, no behavior attached */}
               <svg className="hidden md:block" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <svg className="hidden md:block" width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="var(--color-muted)" strokeWidth="1.8"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4L5.3 5.3" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round"/></svg>
+              <ThemeSwitcher />
               <span className="hidden sm:inline-block" style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", border: "1px solid var(--color-border)" }}></span>
               {isLoggedIn && (
                 <button

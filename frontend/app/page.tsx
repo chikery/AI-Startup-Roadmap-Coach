@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeSwitcher from "./components/ui/ThemeSwitcher";
 
 const bricolageFont = "var(--font-geist), 'Geist', sans-serif";
 
@@ -43,13 +44,17 @@ export default function Home() {
               </span>
               <span style={{ fontFamily: bricolageFont, fontWeight: 700, fontSize: 20, letterSpacing: "-0.01em" }}>Stepup</span>
             </div>
-            <div className="landing-nav-links" style={{ alignItems: "center", gap: 36, fontSize: 15, fontWeight: 500, color: "var(--color-muted)", whiteSpace: "nowrap" }}>
+            <div className="landing-nav-links" style={{ alignItems: "center", gap: 28, fontSize: 15, fontWeight: 500, color: "var(--color-muted)", whiteSpace: "nowrap" }}>
               <a href="#how" style={{ color: "inherit", textDecoration: "none" }}>작동 방식</a>
               <a href="#match" style={{ color: "inherit", textDecoration: "none" }}>지원사업 매칭</a>
               <a href="#preview" style={{ color: "inherit", textDecoration: "none" }}>작성 화면</a>
+              <ThemeSwitcher />
               <Link href="/dashboard" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "11px 20px", borderRadius: "var(--radius-full)", fontWeight: 600, textDecoration: "none", fontSize: 15 }}>무료로 시작하기</Link>
             </div>
-            <Link href="/dashboard" className="md:hidden" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "9px 16px", borderRadius: "var(--radius-full)", fontWeight: 600, textDecoration: "none", fontSize: 13.5, flexShrink: 0 }}>시작하기</Link>
+            <div className="flex items-center gap-2 md:hidden">
+              <ThemeSwitcher />
+              <Link href="/dashboard" style={{ background: "var(--color-text)", color: "var(--color-background)", padding: "9px 16px", borderRadius: "var(--radius-full)", fontWeight: 600, textDecoration: "none", fontSize: 13.5, flexShrink: 0 }}>시작하기</Link>
+            </div>
           </div>
         </nav>
 

@@ -10,6 +10,7 @@ import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import Accordion from "@/app/components/ui/Accordion";
 import { Input } from "@/app/components/ui/Input";
+import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 
 const CATEGORIES = ["문화예술", "콘텐츠", "공예", "소셜임팩트", "기술/IT", "기타"];
 const STAGES = ["아이디어", "예비창업", "초기창업"];
@@ -111,7 +112,10 @@ export default function ProgramsPage() {
         <header className="glass border-b border-border px-6 py-4" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none" }}>
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <Link href="/dashboard" className="font-[800] text-text no-underline">StepUp</Link>
-            <Link href="/dashboard" className="text-[13px] text-muted no-underline hover:text-text">← 대시보드</Link>
+            <div className="flex items-center gap-3">
+              <ThemeSwitcher />
+              <Link href="/dashboard" className="text-[13px] text-muted no-underline hover:text-text">← 대시보드</Link>
+            </div>
           </div>
         </header>
 

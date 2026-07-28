@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ChatPopup from "./components/ChatPopup";
 import { ToastProvider } from "./components/ui/Toast";
+import { ThemeProvider } from "./components/ui/ThemeProvider";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko" className={`${geist.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="ko" className={`${geist.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         {/* 구버전 JS 청크 로드 실패 시 자동 하드 리프레시 */}
         <script dangerouslySetInnerHTML={{ __html: `
@@ -36,12 +37,28 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             }
           }, true);
         ` }} />
+        {/* 팔레트/다크모드 적용 — hydration 전에 실행해 깜빡임(FOUC) 방지 */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            try {
+              var palette = localStorage.getItem('stepup_palette') || 'violet';
+              var mode = localStorage.getItem('stepup_mode') || 'system';
+              var resolved = mode === 'system'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : mode;
+              document.documentElement.setAttribute('data-palette', palette);
+              document.documentElement.setAttribute('data-theme', resolved);
+            } catch (e) {}
+          })();
+        ` }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <ToastProvider>
-          {children}
-          <ChatPopup />
-        </ToastProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            {children}
+            <ChatPopup />
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
