@@ -20,6 +20,14 @@ def strip_markdown(text: str) -> str:
     text = re.sub(r'\n{3,}', '\n\n', text)                 # 3줄 이상 공백 → 2줄
     return text.strip()
 
+def _as_str_list(value) -> list:
+    if isinstance(value, list):
+        return [str(v) for v in value]
+    if isinstance(value, str) and value.strip():
+        return [value]
+    return []
+
+
 router = APIRouter(prefix="/ai", tags=["ai"])
 client = OpenAI(api_key=settings.openai_api_key)
 solar_client = OpenAI(api_key=settings.solar_api_key, base_url="https://api.upstage.ai/v1")
@@ -629,8 +637,8 @@ def score_step(body: ScoreRequest):
         return {
             "score": int(result.get("score", 0)),
             "grade": result.get("grade", "D"),
-            "strengths": result.get("strengths", []),
-            "missing_items": result.get("missing_items", []),
+            "strengths": _as_str_list(result.get("strengths")),
+            "missing_items": _as_str_list(result.get("missing_items")),
             "improvement_hint": result.get("improvement_hint", ""),
             "methodology_ref": METHODOLOGY_REFS.get(body.step, {}).get("name", ""),
         }
@@ -690,8 +698,8 @@ def compare_versions(body: CompareRequest):
             raw = raw[start:end]
         result = _json.loads(raw)
         return {
-            "improvements": result.get("improvements", []),
-            "remaining_issues": result.get("remaining_issues", []),
+            "improvements": _as_str_list(result.get("improvements")),
+            "remaining_issues": _as_str_list(result.get("remaining_issues")),
             "overall_progress": result.get("overall_progress", ""),
             "progress_delta": int(result.get("progress_delta", 0)),
         }
