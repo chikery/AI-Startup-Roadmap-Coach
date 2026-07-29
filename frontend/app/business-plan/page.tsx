@@ -242,13 +242,15 @@ export default function BusinessPlanPage() {
               <ThemeSwitcher />
               <span className="hidden h-8 w-8 rounded-full bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] sm:inline-block" />
               {isLoggedIn && (
-                <button
+                <Button
                   onClick={handleLogout}
-                  className="hidden cursor-pointer items-center gap-[5px] rounded-sm border border-border bg-transparent px-3 py-[5px] text-[13px] font-semibold text-muted hover:border-error hover:text-error md:inline-flex"
+                  variant="secondary"
+                  size="sm"
+                  className="hidden hover:border-error hover:text-error md:inline-flex"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   로그아웃
-                </button>
+                </Button>
               )}
               {isLoggedIn && (
                 <button
@@ -295,46 +297,36 @@ export default function BusinessPlanPage() {
                 <div className="flex gap-2">
                   {!isEditing ? (
                     <>
-                      <button
+                      <Button
                         onClick={handleEditStart}
                         disabled={!businessPlan}
-                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-none bg-[color-mix(in_srgb,var(--color-muted)_12%,var(--color-surface))] px-4 py-[7px] text-[13px] font-semibold text-muted disabled:cursor-not-allowed"
+                        variant="secondary"
+                        size="sm"
                       >
                         <Pencil size={14} />
                         편집
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => handleSave()}
                         disabled={!businessPlan || saving}
-                        className={cn(
-                          "inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-none px-4 py-[7px] text-[13px] font-semibold text-success disabled:cursor-not-allowed",
-                          savedOk
-                            ? "bg-[color-mix(in_srgb,var(--color-success)_26%,var(--color-surface))]"
-                            : "bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))]"
-                        )}
+                        variant="success"
+                        size="sm"
                       >
                         {savedOk ? (<><Check size={14} />저장됨!</>) : (<><Save size={14} />{saving ? "저장 중..." : "저장"}</>)}
-                      </button>
+                      </Button>
                     </>
                   ) : (
                     <>
-                      <button
-                        onClick={handleEditCancel}
-                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-none bg-[color-mix(in_srgb,var(--color-muted)_12%,var(--color-surface))] px-4 py-[7px] text-[13px] font-semibold text-muted"
-                      >
+                      <Button onClick={handleEditCancel} variant="secondary" size="sm">
                         취소
-                      </button>
-                      <button
-                        onClick={handleEditSave}
-                        disabled={saving}
-                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-none bg-text px-4 py-[7px] text-[13px] font-semibold text-background disabled:cursor-not-allowed"
-                      >
+                      </Button>
+                      <Button onClick={handleEditSave} disabled={saving} variant="primary" size="sm">
                         {savedOk ? (
                           <><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--color-background)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>저장됨!</>
                         ) : (
                           <>{saving ? "저장 중..." : "저장 완료"}</>
                         )}
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>
@@ -357,7 +349,7 @@ export default function BusinessPlanPage() {
                   <div className="px-5 py-[60px] text-center text-error">
                     <div className="mb-2 text-[15px] font-bold">오류가 발생했습니다</div>
                     <div className="text-[13px] text-muted">{error}</div>
-                    <button onClick={() => { hasFetched.current = false; window.location.reload(); }} className="mt-4 cursor-pointer rounded-sm border-none bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-[18px] py-2 text-[13px] font-semibold text-primary">다시 시도</button>
+                    <Button onClick={() => { hasFetched.current = false; window.location.reload(); }} variant="secondary" size="sm" className="mt-4">다시 시도</Button>
                   </div>
                 ) : isEditing ? (
                   <textarea
@@ -423,13 +415,15 @@ export default function BusinessPlanPage() {
                     <div className="mb-2 text-[12px] leading-[1.6] text-muted">
                       사업계획서를 편집한 후 새 피드백을 받고 싶다면 아래 버튼을 눌러주세요.
                     </div>
-                    <button
+                    <Button
                       onClick={() => handleRefreshFeedback()}
-                      className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border-none bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] py-[9px] text-[13px] font-semibold text-primary hover:bg-[color-mix(in_srgb,var(--color-primary)_24%,var(--color-surface))]"
+                      variant="secondary"
+                      size="sm"
+                      className="w-full"
                     >
                       <RefreshCw size={14} />
                       피드백 다시 받기
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>

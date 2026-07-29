@@ -14,6 +14,9 @@ import GovernmentSupportCard from "./components/GovernmentSupportCard";
 import NotificationCard from "./components/NotificationCard";
 import LearningCard from "./components/LearningCard";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
+import Card from "@/app/components/ui/Card";
+import Badge from "@/app/components/ui/Badge";
+import Button from "@/app/components/ui/Button";
 
 interface StepStatus {
   step: number;
@@ -158,13 +161,10 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
-              <span
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-bold"
-                style={{ background: "color-mix(in srgb, var(--color-primary) 14%, var(--color-surface))", color: "var(--color-primary)" }}
-              >
+              <Badge variant="default" className="gap-1.5 text-[13px]">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="currentColor"/></svg>
                 {completedCount}/7
-              </span>
+              </Badge>
 
               {/* Mobile-only icon shortcuts — sm:hidden text nav means these are the only way in on small screens */}
               <div className="flex items-center gap-1 sm:hidden">
@@ -199,13 +199,14 @@ export default function DashboardPage() {
               <ThemeSwitcher />
               <span className="hidden h-8 w-8 rounded-full sm:inline-block" style={{ background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", border: "1px solid var(--color-border)" }} />
               {isLoggedIn && (
-                <button
+                <Button
                   onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
-                  className="hidden rounded-md border px-3 py-1.5 text-[13px] font-semibold sm:inline-flex"
-                  style={{ color: "var(--color-muted)", borderColor: "var(--color-border)", background: "none", cursor: "pointer" }}
+                  variant="secondary"
+                  size="sm"
+                  className="hidden sm:inline-flex"
                 >
                   로그아웃
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -215,15 +216,15 @@ export default function DashboardPage() {
 
           {/* Guest Banner */}
           {!isLoggedIn && (
-            <div className="glass mb-4 flex flex-col items-start gap-3 rounded-lg p-5 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <Card variant="glass" padding="md" className="mb-4 flex flex-col items-start gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
                 로그인하면 진행 상황이 저장되고, AI 초안 생성 기능을 사용할 수 있습니다.
               </p>
               <div className="flex flex-shrink-0 gap-2">
-                <Link href="/signup" className="rounded-full px-4 py-2 text-[13px] font-bold no-underline" style={{ color: "var(--color-background)", background: "var(--color-text)" }}>무료 가입</Link>
-                <Link href="/login" className="rounded-full border px-4 py-2 text-[13px] font-bold no-underline" style={{ color: "var(--color-text)", borderColor: "var(--color-border)" }}>로그인</Link>
+                <Button href="/signup" variant="primary" size="sm" className="rounded-full">무료 가입</Button>
+                <Button href="/login" variant="secondary" size="sm" className="rounded-full">로그인</Button>
               </div>
-            </div>
+            </Card>
           )}
 
           <div className="dash-grid">

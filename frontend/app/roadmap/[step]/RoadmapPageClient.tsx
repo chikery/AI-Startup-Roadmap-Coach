@@ -7,6 +7,10 @@ import { api } from "@/app/lib/api";
 import { getProgramsForStep, isExpired, daysLeft } from "@/app/lib/support-programs";
 import { useToast } from "@/app/components/ui/Toast";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
+import Button from "@/app/components/ui/Button";
+import Card from "@/app/components/ui/Card";
+import Badge from "@/app/components/ui/Badge";
+import ProgressBar from "@/app/components/ui/ProgressBar";
 import { cn } from "@/app/lib/cn";
 
 /* ------------------------------------------------------------------ */
@@ -437,14 +441,16 @@ export default function RoadmapStepPage() {
               <ThemeSwitcher />
               <span className="hidden h-8 w-8 rounded-full border border-border bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] sm:inline-block"></span>
               {isLoggedIn && (
-                <button
+                <Button
                   onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
                   aria-label="로그아웃"
-                  className="hidden cursor-pointer items-center gap-[5px] rounded-sm border border-border bg-transparent px-3 py-[5px] text-[13px] font-semibold text-muted hover:border-error hover:text-error md:inline-flex"
+                  variant="secondary"
+                  size="sm"
+                  className="hidden hover:border-error hover:text-error md:inline-flex"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   로그아웃
-                </button>
+                </Button>
               )}
               {isLoggedIn && (
                 <button
@@ -469,8 +475,8 @@ export default function RoadmapStepPage() {
               <span className="text-[12.5px] font-semibold text-muted">진행률</span>
               <span className="text-[12.5px] font-bold text-muted">{completedCount}/7</span>
             </div>
-            <div className="mb-6 h-[7px] overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-text)_8%,transparent)]">
-              <div className="h-full rounded-full bg-success [transition:width_0.5s]" style={{ width: `${(completedCount / 7) * 100}%` }}></div>
+            <div className="mb-6">
+              <ProgressBar value={completedCount} max={7} color="var(--color-success)" className="h-[7px]" />
             </div>
 
             {/* Desktop: full step list, always visible (unchanged) */}
@@ -542,13 +548,15 @@ export default function RoadmapStepPage() {
 
             <div className="mt-[22px] mb-4 border-t border-border"></div>
 
-            <button
+            <Button
               onClick={() => window.dispatchEvent(new CustomEvent("open-chat"))}
-              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border-none bg-text p-3 text-[14px] font-bold text-background [font-family:inherit]"
+              variant="secondary"
+              size="md"
+              className="w-full"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="currentColor"/></svg>
               AI 인사이트 받기
-            </button>
+            </Button>
 
             {/* 지원사업 매칭 */}
             {(() => {
@@ -648,7 +656,7 @@ export default function RoadmapStepPage() {
             <div className="roadmap-section-why mt-6 hidden md:block">
             <div className="roadmap-why-row">
               {/* Why card */}
-              <div className="glass rounded-md px-6 py-[22px]">
+              <Card variant="glass" radius="md" className="px-6 py-[22px]">
                 <div className="flex items-center gap-2 text-[16px] font-extrabold text-primary">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M12 11v5M12 7.5h.01" stroke="var(--color-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
                   왜 이 단계가 필요한가
@@ -664,10 +672,10 @@ export default function RoadmapStepPage() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </Card>
 
               {/* Coach card — primary-tinted glass, distinct from neutral cards */}
-              <div className="glass flex flex-col rounded-md bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] p-5">
+              <Card variant="glass" radius="md" className="flex flex-col bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] p-5">
                 <div className="flex items-center gap-[7px] text-[13px] font-extrabold text-primary">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3c-1 3-2 4-5 5 3 1 4 2 5 5 1-3 2-4 5-5-3-1-4-2-5-5z" fill="var(--color-accent)"/></svg>
                   RK · AI 코치 요다
@@ -678,7 +686,7 @@ export default function RoadmapStepPage() {
                 <div className="mt-3.5 border-t border-border pt-[11px] text-[11px] text-muted">
                   실시간 분석 · 피드백 활성
                 </div>
-              </div>
+              </Card>
             </div>
             </div>
 
@@ -708,10 +716,12 @@ export default function RoadmapStepPage() {
                     <div className="mt-[3px] text-[13px] text-white/85">{meta.frameworkDesc}</div>
                   </div>
                 </div>
-                <button
+                <Button
                   onClick={handleGenerate}
                   disabled={generating || !user?.item_keyword}
-                  className="relative inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-sm border-none bg-text px-[22px] py-[13px] text-[14px] font-bold text-background [font-family:inherit] disabled:cursor-not-allowed disabled:opacity-60"
+                  variant="primary"
+                  size="md"
+                  className="relative shrink-0 px-[22px] py-[13px]"
                 >
                   {generating ? (
                     <span
@@ -722,7 +732,7 @@ export default function RoadmapStepPage() {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 12.5h6L9 22l9-11h-6L13 2z" fill="currentColor"/></svg>
                   )}
                   {generating ? "생성 중..." : "AI 초안 생성 시작"}
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="glass mt-[18px] flex items-center justify-between gap-[18px] rounded-md bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-5 py-4">
@@ -735,13 +745,15 @@ export default function RoadmapStepPage() {
                     <div className="mt-[3px] text-[13px] text-muted">각 항목을 검토하고 다듬은 뒤 저장 후 다음 단계로 진행하세요.</div>
                   </div>
                 </div>
-                <button
+                <Button
                   onClick={handleGenerate}
                   disabled={generating || !user?.item_keyword}
-                  className="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-sm border-none bg-success px-[18px] py-[11px] text-[13px] font-bold text-white [font-family:inherit] disabled:cursor-not-allowed disabled:opacity-60"
+                  variant="success"
+                  size="sm"
+                  className="shrink-0 px-[18px] py-[11px]"
                 >
                   {generating ? "생성 중..." : "다시 생성하기"}
-                </button>
+                </Button>
               </div>
             )}
 
@@ -754,7 +766,7 @@ export default function RoadmapStepPage() {
               </a>
             </div>
 
-            <div className="glass overflow-hidden rounded-md">
+            <Card variant="glass" radius="md" padding="none" className="overflow-hidden">
               {/* Table header — hidden on mobile since the label already appears above each field in the stacked layout */}
               <div className="roadmap-table-row hidden border-b border-border bg-[color-mix(in_srgb,var(--color-text)_4%,transparent)] md:grid">
                 <div className="px-[22px] py-[13px] text-[12px] font-bold text-muted">구분</div>
@@ -791,7 +803,7 @@ export default function RoadmapStepPage() {
                   </div>
                 );
               })}
-            </div>
+            </Card>
             </div>
 
             {/* Coaching Feedback — surfaced right after the work area on mobile so users see it without hunting */}
@@ -807,7 +819,7 @@ export default function RoadmapStepPage() {
             ) : (
               <>
                 {/* 완성도 점수 카드 */}
-                <div className="glass mt-[18px] rounded-md px-5 py-[18px]">
+                <Card variant="glass" radius="md" className="mt-[18px] px-5 py-[18px]">
                   <div className={cn("flex items-center justify-between", !fetchingScore && score && "mb-3.5")}>
                     <div className="flex items-center gap-2">
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
@@ -830,32 +842,22 @@ export default function RoadmapStepPage() {
                             score.score >= 90 ? "text-success" : score.score >= 70 ? "text-primary" : score.score >= 50 ? "text-accent" : "text-error"
                           )}
                         >{score.score}</span>
-                        <span
-                          className={cn(
-                            "rounded-full px-2.5 py-[3px] text-[13px] font-extrabold",
-                            score.grade === "A"
-                              ? "bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] text-success"
-                              : score.grade === "B"
-                              ? "bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] text-primary"
-                              : score.grade === "C"
-                              ? "bg-[color-mix(in_srgb,var(--color-accent)_18%,var(--color-surface))] text-accent"
-                              : "bg-[color-mix(in_srgb,var(--color-error)_16%,var(--color-surface))] text-error"
-                          )}
-                        >등급 {score.grade}</span>
+                        <Badge
+                          variant={score.grade === "A" ? "success" : score.grade === "B" ? "default" : score.grade === "C" ? "accent" : "error"}
+                          className="text-[13px]"
+                        >등급 {score.grade}</Badge>
                       </div>
                     ) : null}
                   </div>
                   {!fetchingScore && score && (
                     <>
-                      <div className="mb-3.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-text)_8%,transparent)]">
-                        <div
-                          className={cn(
-                            "h-full rounded-full [transition:width_0.8s_ease]",
-                            score.score >= 90 ? "bg-success" : score.score >= 70 ? "bg-primary" : score.score >= 50 ? "bg-accent" : "bg-error"
-                          )}
-                          style={{ width: `${score.score}%` }}
-                        />
-                      </div>
+                      <ProgressBar
+                        value={score.score}
+                        color={
+                          score.score >= 90 ? "var(--color-success)" : score.score >= 70 ? "var(--color-primary)" : score.score >= 50 ? "var(--color-accent)" : "var(--color-error)"
+                        }
+                        className="mb-3.5 h-1.5"
+                      />
                       <div className="grid grid-cols-2 gap-3">
                         {score.strengths.length > 0 && (
                           <div className="rounded-sm bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-3 py-2.5">
@@ -884,11 +886,11 @@ export default function RoadmapStepPage() {
                   {!fetchingScore && !score && (
                     <div className="text-[13px] text-muted">채점 중 오류가 발생했습니다.</div>
                   )}
-                </div>
+                </Card>
 
                 {/* 이전/이후 비교 결과 */}
                 {compareResult && prevContent && (
-                  <div className="glass mt-3 rounded-md bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-5 py-[18px]">
+                  <Card variant="glass" radius="md" className="mt-3 bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-5 py-[18px]">
                     <div className="mb-3 flex items-center gap-2">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       <span className="text-[14px] font-extrabold text-success">수정 후 변화 분석</span>
@@ -917,11 +919,11 @@ export default function RoadmapStepPage() {
                     {compareResult.overall_progress && (
                       <div className="text-[13px] font-semibold italic text-success">"{compareResult.overall_progress}"</div>
                     )}
-                  </div>
+                  </Card>
                 )}
 
                 {/* 피드백 카드 */}
-                <div className="glass mt-3 rounded-md bg-[color-mix(in_srgb,var(--color-primary)_10%,var(--color-surface))] px-5 py-[18px]">
+                <Card variant="glass" radius="md" className="mt-3 bg-[color-mix(in_srgb,var(--color-primary)_10%,var(--color-surface))] px-5 py-[18px]">
                   <div className="flex items-start gap-[13px]">
                     <span
                       className="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-sm bg-surface"
@@ -955,18 +957,19 @@ export default function RoadmapStepPage() {
                           )}
                           <div className="mt-3.5 border-t border-border pt-3">
                             <div className="mb-2 text-[12px] text-muted">내용을 수정했다면 피드백을 다시 받아보세요.</div>
-                            <button
+                            <Button
                               onClick={() => {
                                 if (content) {
                                   fetchFeedback(step, content);
                                   fetchScore(step, content);
                                 }
                               }}
-                              className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border border-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] bg-surface px-3.5 py-[7px] text-[12.5px] font-semibold text-primary hover:bg-[color-mix(in_srgb,var(--color-primary)_10%,var(--color-surface))]"
+                              variant="secondary"
+                              size="sm"
                             >
                               <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                               피드백 다시 받기
-                            </button>
+                            </Button>
                           </div>
                         </>
                       ) : (
@@ -974,7 +977,7 @@ export default function RoadmapStepPage() {
                       )}
                     </div>
                   </div>
-                </div>
+                </Card>
               </>
             )}
             </div>
@@ -986,26 +989,26 @@ export default function RoadmapStepPage() {
                 이전으로
               </Link>
               <div className="flex gap-[11px]">
-                <button
+                <Button
                   onClick={() => handleSave(false)}
                   disabled={saving || !hasContent}
-                  className={cn(
-                    "cursor-pointer rounded-sm border-[1.5px] border-border bg-surface px-[22px] py-[13px] text-[14px] font-bold text-text [font-family:inherit]",
-                    !hasContent && "opacity-50"
-                  )}
+                  variant="secondary"
+                  size="lg"
+                  className={cn(!hasContent && "opacity-50")}
                 >
                   임시 저장
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => handleSave(true)}
                   disabled={saving}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-sm border-none bg-text px-6 py-[13px] text-[14px] font-bold text-background [font-family:inherit] disabled:opacity-70"
+                  variant="primary"
+                  size="lg"
                 >
                   {saveButtonLabel}
                   {!saving && (
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   )}
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -1014,16 +1017,18 @@ export default function RoadmapStepPage() {
 
         {/* Mobile-only sticky primary CTA — always reachable regardless of scroll position */}
         <div className="roadmap-sticky-cta glass md:hidden">
-          <button
+          <Button
             onClick={() => handleSave(true)}
             disabled={saving}
-            className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border-none bg-text px-5 py-3.5 text-[15px] font-bold text-background [font-family:inherit] disabled:opacity-70"
+            variant="primary"
+            size="lg"
+            className="w-full text-[15px]"
           >
             {saveButtonLabel}
             {!saving && (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             )}
-          </button>
+          </Button>
         </div>
       </div>
 

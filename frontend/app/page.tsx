@@ -1,5 +1,5 @@
-import Link from "next/link";
 import ThemeSwitcher from "./components/ui/ThemeSwitcher";
+import Button from "./components/ui/Button";
 import { cn } from "./lib/cn";
 
 const SECONDARY_TINT = "color-mix(in srgb, var(--color-secondary) 16%, transparent)";
@@ -49,11 +49,11 @@ export default function Home() {
               <a href="#match" className="text-inherit no-underline">지원사업 매칭</a>
               <a href="#preview" className="text-inherit no-underline">작성 화면</a>
               <ThemeSwitcher />
-              <Link href="/dashboard" className="rounded-full bg-text px-5 py-[11px] text-[15px] font-semibold text-background no-underline">무료로 시작하기</Link>
+              <Button href="/dashboard" variant="primary" size="md" className="rounded-full">무료로 시작하기</Button>
             </div>
             <div className="flex items-center gap-2 md:hidden">
               <ThemeSwitcher />
-              <Link href="/dashboard" className="shrink-0 rounded-full bg-text px-4 py-[9px] text-[13.5px] font-semibold text-background no-underline">시작하기</Link>
+              <Button href="/dashboard" variant="primary" size="sm" className="shrink-0 rounded-full">시작하기</Button>
             </div>
           </div>
         </nav>
@@ -74,12 +74,14 @@ export default function Home() {
               <h1 className="landing-hero-title mt-6 [font-family:var(--font-geist)] font-extrabold leading-[1.1] tracking-[-0.03em]">아이디어를<br /><span className="text-primary">사업으로</span> 키우는<br />가장 빠른 길.</h1>
               <p className="mt-6 max-w-[520px] text-[17px] leading-[1.6] text-muted">창업 아이디어만 있다면 충분해요. AI 코치가 <b className="text-text">7단계로 사업계획서</b>를 완성하고, 지금 신청 가능한 <b className="text-text">정부지원사업</b>까지 매칭해 드립니다.</p>
               <div className="mt-8 flex flex-wrap items-center gap-[13px]">
-                <Link
+                <Button
                   href="/dashboard"
-                  className="rounded-full bg-text px-7 py-4 text-[16px] font-semibold text-background no-underline"
+                  variant="primary"
+                  size="lg"
+                  className="rounded-full"
                   style={{ boxShadow: "0 14px 30px -10px color-mix(in srgb, var(--color-text) 45%, transparent)" }}
-                >무료로 시작하기 →</Link>
-                <a href="#preview" className="rounded-full border-[1.5px] border-border px-[26px] py-4 text-[16px] font-semibold text-text no-underline">데모 둘러보기</a>
+                >무료로 시작하기 →</Button>
+                <Button href="#preview" variant="secondary" size="lg" className="rounded-full">데모 둘러보기</Button>
               </div>
               <div className="mt-9 flex flex-wrap items-center gap-3 text-[13.5px] text-muted">
                 <span className="inline-flex">
@@ -387,11 +389,13 @@ export default function Home() {
               </div>
             </div>
             <div className="mt-9 text-center">
-              <Link
+              <Button
                 href="/dashboard"
-                className="inline-block rounded-full bg-text px-[34px] py-[17px] text-[17px] font-semibold text-background no-underline"
+                variant="primary"
+                size="lg"
+                className="rounded-full px-[34px] py-[17px] text-[17px]"
                 style={{ boxShadow: "0 14px 30px -10px color-mix(in srgb, var(--color-text) 45%, transparent)" }}
-              >직접 작성해 보기 →</Link>
+              >직접 작성해 보기 →</Button>
             </div>
           </div>
         </section>
@@ -407,8 +411,18 @@ export default function Home() {
               <h2 className="landing-cta-heading m-0 [font-family:var(--font-geist)] font-extrabold leading-[1.2] tracking-[-0.03em] text-background">오늘 아이디어를 적으면,<br />이번 주에 지원사업에 신청할 수 있어요.</h2>
               <p className="mt-5 text-[16px] text-[color-mix(in_srgb,var(--color-background)_65%,transparent)]">가입 후 7단계 전부 무료. 카드 등록 없이 바로 시작하세요.</p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-[13px]">
-                <Link href="/dashboard" className="whitespace-nowrap rounded-full bg-background px-[30px] py-4 text-[16px] font-bold text-text no-underline">무료로 시작하기 →</Link>
-                <a href="#how" className="whitespace-nowrap rounded-full border-[1.5px] border-[color-mix(in_srgb,var(--color-background)_45%,transparent)] px-[26px] py-4 text-[16px] font-semibold text-background no-underline">작동 방식 보기</a>
+                <Button
+                  href="/dashboard"
+                  variant="primary"
+                  size="lg"
+                  className="whitespace-nowrap rounded-full bg-background text-[16px] font-bold text-text hover:opacity-90"
+                >무료로 시작하기 →</Button>
+                <Button
+                  href="#how"
+                  variant="secondary"
+                  size="lg"
+                  className="whitespace-nowrap rounded-full border-[1.5px] border-[color-mix(in_srgb,var(--color-background)_45%,transparent)] bg-transparent text-[16px] text-background hover:border-background"
+                >작동 방식 보기</Button>
               </div>
             </div>
           </div>

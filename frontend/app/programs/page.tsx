@@ -10,6 +10,7 @@ import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import Accordion from "@/app/components/ui/Accordion";
 import { Input } from "@/app/components/ui/Input";
+import { Select } from "@/app/components/ui/Select";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 
 const CATEGORIES = ["문화예술", "콘텐츠", "공예", "소셜임팩트", "기술/IT", "기타"];
@@ -214,28 +215,24 @@ function SearchForm({
             placeholder="예: 공예 작가를 위한 온라인 판매 플랫폼"
           />
         </div>
-        <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-[600] text-text">분야</span>
-          <select
-            required value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="w-full rounded-md border border-border bg-surface px-3.5 py-2.5 text-[14px] text-text outline-none focus:border-primary"
-          >
-            <option value="">선택</option>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-[600] text-text">창업 단계</span>
-          <select
-            required value={form.startup_stage}
-            onChange={(e) => setForm({ ...form, startup_stage: e.target.value })}
-            className="w-full rounded-md border border-border bg-surface px-3.5 py-2.5 text-[14px] text-text outline-none focus:border-primary"
-          >
-            <option value="">선택</option>
-            {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </label>
+        <Select
+          label="분야"
+          required
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+        >
+          <option value="">선택</option>
+          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+        </Select>
+        <Select
+          label="창업 단계"
+          required
+          value={form.startup_stage}
+          onChange={(e) => setForm({ ...form, startup_stage: e.target.value })}
+        >
+          <option value="">선택</option>
+          {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
+        </Select>
         <Input
           label="지역 (선택)"
           value={form.region}
@@ -243,7 +240,7 @@ function SearchForm({
           placeholder="서울 (비워두면 전국)"
         />
       </div>
-      <Button type="submit" variant="primary" size="md" disabled={loading} className="mt-4 w-full rounded-full">
+      <Button type="submit" variant="secondary" size="md" disabled={loading} className="mt-4 w-full rounded-full">
         {loading ? "AI가 분석 중..." : "맞춤 지원사업 추천받기"}
       </Button>
     </form>

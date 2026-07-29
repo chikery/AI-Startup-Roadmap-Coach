@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Button from "@/app/components/ui/Button";
 
 export type MissionVariant = "guest" | "roadmap" | "plan" | "support" | "polish";
 
@@ -13,16 +13,6 @@ interface Props {
 }
 
 export default function TodayMissionCard({ variant, eyebrow, title, desc, ctaLabel, ctaHref, externalCta }: Props) {
-  const Cta = () => (
-    <span
-      className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-[15px] font-bold sm:text-base"
-      style={{ color: "var(--color-primary)" }}
-    >
-      {ctaLabel}
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-    </span>
-  );
-
   return (
     <div
       className="relative overflow-hidden rounded-lg p-6 text-white sm:p-8"
@@ -43,11 +33,17 @@ export default function TodayMissionCard({ variant, eyebrow, title, desc, ctaLab
         <h1 className="mt-4 text-2xl font-extrabold leading-tight tracking-tight sm:text-[32px]">{title}</h1>
         <p className="mt-2 max-w-md text-sm text-white/85 sm:text-[15px]">{desc}</p>
         <div className="mt-6">
-          {externalCta ? (
-            <a href={ctaHref} target="_blank" rel="noopener noreferrer"><Cta /></a>
-          ) : (
-            <Link href={ctaHref}><Cta /></Link>
-          )}
+          <Button
+            href={ctaHref}
+            target={externalCta ? "_blank" : undefined}
+            rel={externalCta ? "noopener noreferrer" : undefined}
+            variant="primary"
+            size="lg"
+            className="rounded-full bg-white text-[15px] text-primary hover:opacity-90 sm:text-base"
+          >
+            {ctaLabel}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </Button>
         </div>
       </div>
     </div>

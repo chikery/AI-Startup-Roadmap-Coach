@@ -1,3 +1,6 @@
+import Card from "@/app/components/ui/Card";
+import ProgressBar from "@/app/components/ui/ProgressBar";
+
 interface Props {
   completedCount: number;
 }
@@ -15,15 +18,15 @@ export default function ProjectHealthCard({ completedCount }: Props) {
   const { label, color } = bucket(completedCount);
 
   return (
-    <div className="glass rounded-lg p-5 sm:p-6">
+    <Card variant="glass" padding="md">
       <div className="text-sm font-bold" style={{ color: "var(--color-text)" }}>사업계획서 진행 상태</div>
       <div className="mt-3 flex items-end gap-2">
         <span className="text-3xl font-extrabold tabular-nums" style={{ color }}>{pct}%</span>
         <span className="mb-1 text-[13px] font-semibold" style={{ color: "var(--color-muted)" }}>{label}</span>
       </div>
-      <div className="mt-3 h-2 overflow-hidden rounded-full" style={{ background: "var(--color-border)" }}>
-        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
+      <div className="mt-3">
+        <ProgressBar value={completedCount} max={7} color={color} />
       </div>
-    </div>
+    </Card>
   );
 }

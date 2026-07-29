@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { SUPPORT_PROGRAMS, SupportProgram, isExpired, daysLeft } from "@/app/lib/support-programs";
+import Card from "@/app/components/ui/Card";
+import Badge from "@/app/components/ui/Badge";
+import Button from "@/app/components/ui/Button";
 
 interface Props {
   currentStep: number;
@@ -25,7 +28,7 @@ export default function GovernmentSupportCard({ currentStep }: Props) {
   const rest = ranked.slice(2);
 
   return (
-    <div className="glass rounded-lg p-5 sm:p-6">
+    <Card variant="glass" padding="md">
       <div className="flex items-center gap-2">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--color-accent)"/></svg>
         <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>지금 신청 가능한 지원사업</span>
@@ -41,15 +44,16 @@ export default function GovernmentSupportCard({ currentStep }: Props) {
       </div>
 
       {rest.length > 0 && (
-        <button
+        <Button
           onClick={() => setOpen((v) => !v)}
-          className="mt-3 w-full rounded-md py-2 text-[12.5px] font-bold"
-          style={{ color: "var(--color-primary)", background: "color-mix(in srgb, var(--color-primary) 10%, transparent)" }}
+          variant="ghost"
+          size="sm"
+          className="mt-3 w-full text-primary"
         >
           {open ? "접기" : `${rest.length}개 더 보기`}
-        </button>
+        </Button>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -68,9 +72,9 @@ function SupportRow({ p }: { p: RankedProgram }) {
       <div className="flex items-start justify-between gap-2">
         <span className="text-[13px] font-bold leading-snug" style={{ color: "var(--color-text)" }}>{p.name}</span>
         {p.matched && (
-          <span className="flex-shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-extrabold text-white" style={{ background: "var(--color-accent)" }}>
+          <Badge variant="accent" className="flex-shrink-0 whitespace-nowrap text-[10px]">
             현재 단계
-          </span>
+          </Badge>
         )}
       </div>
       <div className="mt-1.5 flex items-center justify-between text-[11px]">

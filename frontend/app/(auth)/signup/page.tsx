@@ -4,6 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "@/app/lib/api";
+import Card from "@/app/components/ui/Card";
+import { Input } from "@/app/components/ui/Input";
+import { Select } from "@/app/components/ui/Select";
+import Button from "@/app/components/ui/Button";
+import ProgressBar from "@/app/components/ui/ProgressBar";
 
 const CATEGORIES = ["문화예술", "콘텐츠", "공예", "소셜임팩트", "기술/IT", "기타"];
 const STAGES = ["아이디어", "예비창업", "초기창업"];
@@ -56,11 +61,9 @@ export default function SignupPage() {
         }}
       />
 
-      <div className="glass relative z-10 rounded-lg p-10 w-full max-w-md">
-        <div className="flex gap-2 mb-8">
-          {["account", "profile"].map((s, i) => (
-            <div key={s} className={`flex-1 h-1.5 rounded-full ${step === s || (i === 0) ? "bg-primary" : "bg-border"}`} />
-          ))}
+      <Card variant="glass" padding="lg" className="relative z-10 w-full max-w-md p-10">
+        <div className="mb-8">
+          <ProgressBar variant="segmented" total={2} completed={step === "profile" ? 2 : 1} />
         </div>
 
         <h1 className="text-2xl font-bold text-text mb-2">
@@ -73,77 +76,56 @@ export default function SignupPage() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {step === "account" ? (
             <>
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">이름</label>
-                <input
-                  required value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="홍길동"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">이메일</label>
-                <input
-                  type="email" required value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="hello@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">비밀번호</label>
-                <input
-                  type="password" required value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="8자 이상"
-                  minLength={8}
-                />
-              </div>
+              <Input
+                label="이름"
+                required value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="홍길동"
+              />
+              <Input
+                label="이메일"
+                type="email" required value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="hello@example.com"
+              />
+              <Input
+                label="비밀번호"
+                type="password" required value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="8자 이상"
+                minLength={8}
+              />
             </>
           ) : (
             <>
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">창업 아이템 키워드</label>
-                <input
-                  required value={form.item_keyword}
-                  onChange={(e) => setForm({ ...form, item_keyword: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="예: 공예 작가를 위한 온라인 판매 플랫폼"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">분야</label>
-                <select
-                  required value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">선택해주세요</option>
-                  {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">창업 단계</label>
-                <select
-                  required value={form.startup_stage}
-                  onChange={(e) => setForm({ ...form, startup_stage: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">선택해주세요</option>
-                  {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">지역</label>
-                <input
-                  value={form.region}
-                  onChange={(e) => setForm({ ...form, region: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="서울 (비워두면 전국)"
-                />
-              </div>
+              <Input
+                label="창업 아이템 키워드"
+                required value={form.item_keyword}
+                onChange={(e) => setForm({ ...form, item_keyword: e.target.value })}
+                placeholder="예: 공예 작가를 위한 온라인 판매 플랫폼"
+              />
+              <Select
+                label="분야"
+                required value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              >
+                <option value="">선택해주세요</option>
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </Select>
+              <Select
+                label="창업 단계"
+                required value={form.startup_stage}
+                onChange={(e) => setForm({ ...form, startup_stage: e.target.value })}
+              >
+                <option value="">선택해주세요</option>
+                {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </Select>
+              <Input
+                label="지역"
+                value={form.region}
+                onChange={(e) => setForm({ ...form, region: e.target.value })}
+                placeholder="서울 (비워두면 전국)"
+              />
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">팀 구성</label>
                 <div className="flex gap-3">
@@ -164,12 +146,9 @@ export default function SignupPage() {
 
           {error && <p className="text-error text-sm">{error}</p>}
 
-          <button
-            type="submit" disabled={loading}
-            className="w-full bg-text text-background font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 mt-2"
-          >
+          <Button type="submit" disabled={loading} variant="primary" size="lg" className="mt-2 w-full">
             {loading ? "처리 중..." : step === "account" ? "다음 →" : "시작하기"}
-          </button>
+          </Button>
         </form>
 
         {step === "account" && (
@@ -178,7 +157,7 @@ export default function SignupPage() {
             <Link href="/login" className="text-primary font-medium hover:underline">로그인</Link>
           </p>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { STEP_CONTENT } from "../step-content";
+import Card from "@/app/components/ui/Card";
+import ProgressBar from "@/app/components/ui/ProgressBar";
 
 interface Props {
   completedCount: number;
@@ -11,31 +13,14 @@ export default function RoadmapProgressCard({ completedCount, activeStep, compac
   const pct = Math.round((completedCount / 7) * 100);
 
   return (
-    <div className="glass rounded-lg p-5 sm:p-6">
+    <Card variant="glass" padding="md">
       <div className="flex items-center justify-between">
         <div className="text-sm font-bold" style={{ color: "var(--color-text)" }}>7단계 로드맵</div>
         <span className="text-sm font-extrabold" style={{ color: "var(--color-primary)" }}>{completedCount}/7</span>
       </div>
 
-      <div className="mt-3 flex gap-1.5">
-        {STEP_CONTENT.map((s, i) => {
-          const stepNum = i + 1;
-          const done = stepNum <= completedCount;
-          const isActive = stepNum === activeStep;
-          return (
-            <div
-              key={stepNum}
-              className="h-2 flex-1 rounded-full"
-              style={{
-                background: done
-                  ? "var(--color-primary)"
-                  : isActive
-                  ? "color-mix(in srgb, var(--color-primary) 35%, transparent)"
-                  : "var(--color-border)",
-              }}
-            />
-          );
-        })}
+      <div className="mt-3">
+        <ProgressBar variant="segmented" total={7} completed={completedCount} activeIndex={activeStep} />
       </div>
       <div className="mt-2 text-xs font-medium" style={{ color: "var(--color-muted)" }}>전체 진행률 {pct}%</div>
 
@@ -70,6 +55,6 @@ export default function RoadmapProgressCard({ completedCount, activeStep, compac
           })}
         </div>
       )}
-    </div>
+    </Card>
   );
 }
