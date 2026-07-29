@@ -8,6 +8,8 @@ import { api } from "@/app/lib/api";
 import { useToast } from "@/app/components/ui/Toast";
 import Button from "@/app/components/ui/Button";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
+import BottomNav from "@/app/components/ui/BottomNav";
+import Drawer from "@/app/components/ui/Drawer";
 import { cn } from "@/app/lib/cn";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -220,8 +222,9 @@ export default function BusinessPlanPage() {
 
       <div className="relative z-[1] font-['Pretendard',_sans-serif] text-text">
 
-        {/* NAV */}
-        <nav className="glass sticky top-0 z-10 rounded-none! border-l-0! border-r-0! border-t-0!">
+        {/* NAV — desktop unchanged; mobile trimmed to logo + a single "더보기" drawer trigger
+             (theme + logout), since 대시보드 이동은 이제 BottomNav가 담당 */}
+        <nav className="glass sticky top-0 z-10 rounded-none border-l-0 border-r-0 border-t-0">
           <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 md:px-7">
             <div className="flex min-w-0 items-center gap-[18px]">
               <Link href="/" className="shrink-0 [font-family:var(--font-geist)] text-[21px] font-extrabold tracking-[-0.01em] text-text no-underline">StepUp</Link>
@@ -230,17 +233,14 @@ export default function BusinessPlanPage() {
                 대시보드
               </Link>
               <span className="hidden border-l border-border pl-[18px] text-[13px] text-muted md:inline">사업계획서</span>
-              <Link href="/dashboard" aria-label="대시보드" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] md:hidden">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="3" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="3" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/><rect x="14" y="14" width="7" height="7" rx="1.5" fill={INDIGO}/></svg>
-              </Link>
             </div>
             <div className="flex items-center gap-2.5 md:gap-4">
-              <span className="hidden items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-[5px] text-[13px] font-bold text-primary sm:inline-flex">
+              <span className="hidden items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-[5px] text-[13px] font-bold text-primary md:inline-flex">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill={INDIGO}/></svg>
                 완성
               </span>
-              <ThemeSwitcher />
-              <span className="hidden h-8 w-8 rounded-full bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] sm:inline-block" />
+              <ThemeSwitcher className="hidden md:inline-flex" />
+              <span className="hidden h-8 w-8 rounded-full bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] md:inline-block" />
               {isLoggedIn && (
                 <Button
                   onClick={handleLogout}
@@ -252,21 +252,39 @@ export default function BusinessPlanPage() {
                   로그아웃
                 </Button>
               )}
-              {isLoggedIn && (
-                <button
-                  onClick={handleLogout}
-                  aria-label="로그아웃"
-                  className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-muted md:hidden"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-              )}
+
+              {/* Mobile only: single drawer trigger carrying theme + logout (nav links moved to BottomNav) */}
+              <Drawer
+                title="메뉴"
+                trigger={(open) => (
+                  <button
+                    onClick={open}
+                    aria-label="메뉴 더보기"
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-none bg-transparent text-muted md:hidden"
+                  >
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg>
+                  </button>
+                )}
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[13px] font-semibold text-muted">테마</span>
+                    <ThemeSwitcher />
+                  </div>
+                  {isLoggedIn && (
+                    <Button onClick={handleLogout} variant="secondary" size="md" className="w-full hover:border-error hover:text-error">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      로그아웃
+                    </Button>
+                  )}
+                </div>
+              </Drawer>
             </div>
           </div>
         </nav>
 
         {/* BODY */}
-        <div className="mx-auto max-w-[1280px] px-5 pt-6 pb-[60px] md:px-7 md:pt-8">
+        <div className="mx-auto max-w-[1280px] px-5 pt-6 pb-24 md:px-7 md:pt-8 md:pb-[60px]">
 
           {/* Page header */}
           <div className="mb-5">
@@ -332,7 +350,7 @@ export default function BusinessPlanPage() {
                 </div>
               </div>
 
-              <div className={cn("glass min-h-[500px] rounded-md px-8 py-7", isEditing && "border-2! border-primary!")}>
+              <div className={cn("glass min-h-[500px] rounded-md px-8 py-7", isEditing && "border-2 border-primary")}>
                 {loadingPlan ? (
                   <div className="flex min-h-[400px] flex-col items-center justify-center gap-[18px]">
                     <div className="flex gap-1.5">
@@ -440,6 +458,8 @@ export default function BusinessPlanPage() {
 
           </div>
         </div>
+
+        <BottomNav />
 
         <style>{`
           @keyframes bounce {

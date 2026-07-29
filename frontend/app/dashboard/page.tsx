@@ -17,6 +17,8 @@ import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
+import BottomNav from "@/app/components/ui/BottomNav";
+import Drawer from "@/app/components/ui/Drawer";
 
 interface StepStatus {
   step: number;
@@ -126,6 +128,12 @@ export default function DashboardPage() {
 
   const mission = buildMission();
 
+  function handleLogout() {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/";
+  }
+
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--color-background)" }}>
@@ -135,7 +143,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ position: "relative", minHeight: "100vh", background: "var(--color-background)" }}>
+    <div className="overflow-x-hidden" style={{ position: "relative", minHeight: "100vh", background: "var(--color-background)" }}>
       {/* Ambient blurred color blobs — glass cards need something to refract */}
       <div
         style={{
@@ -149,12 +157,13 @@ export default function DashboardPage() {
 
       <div style={{ position: "relative", zIndex: 1, fontFamily: "Pretendard, sans-serif", color: "var(--color-text)" }}>
 
-        {/* TOP NAV */}
+        {/* TOP NAV — desktop unchanged; mobile trimmed to logo + progress badge + a single
+             "더보기" drawer trigger (theme + logout), since 지원사업/사업계획서 이동은 이제 BottomNav가 담당 */}
         <nav className="glass" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none", position: "sticky", top: 0, zIndex: 10 }}>
           <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 sm:px-7">
             <div className="flex items-center gap-8">
               <Link href="/" style={{ fontFamily: "var(--font-geist, 'Geist', sans-serif)", fontWeight: 800, fontSize: 21, color: "var(--color-text)", letterSpacing: "-0.01em", textDecoration: "none" }}>StepUp</Link>
-              <div className="hidden items-center gap-6 text-[14.5px] font-semibold sm:flex" style={{ color: "var(--color-muted)" }}>
+              <div className="hidden items-center gap-6 text-[14.5px] font-semibold md:flex" style={{ color: "var(--color-muted)" }}>
                 <span style={{ color: "var(--color-primary)" }}>대시보드</span>
                 <Link href="/programs" style={{ color: "inherit", textDecoration: "none" }}>지원사업</Link>
                 <Link href="/business-plan" style={{ color: "inherit", textDecoration: "none" }}>사업계획서</Link>
@@ -166,53 +175,50 @@ export default function DashboardPage() {
                 {completedCount}/7
               </Badge>
 
-              {/* Mobile-only icon shortcuts — sm:hidden text nav means these are the only way in on small screens */}
-              <div className="flex items-center gap-1 sm:hidden">
-                <Link
-                  href="/programs"
-                  aria-label="지원사업"
-                  className="flex h-10 w-10 items-center justify-center rounded-full"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>
-                </Link>
-                <Link
-                  href="/business-plan"
-                  aria-label="사업계획서"
-                  className="flex h-10 w-10 items-center justify-center rounded-full"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 2v6h6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </Link>
-                {isLoggedIn && (
-                  <button
-                    onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
-                    aria-label="로그아웃"
-                    className="flex h-10 w-10 items-center justify-center rounded-full"
-                    style={{ color: "var(--color-muted)", background: "none", border: "none", cursor: "pointer" }}
-                  >
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                )}
-              </div>
-
-              <ThemeSwitcher />
-              <span className="hidden h-8 w-8 rounded-full sm:inline-block" style={{ background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", border: "1px solid var(--color-border)" }} />
+              <ThemeSwitcher className="hidden md:inline-flex" />
+              <span className="hidden h-8 w-8 rounded-full md:inline-block" style={{ background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", border: "1px solid var(--color-border)" }} />
               {isLoggedIn && (
                 <Button
-                  onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
+                  onClick={handleLogout}
                   variant="secondary"
                   size="sm"
-                  className="hidden sm:inline-flex"
+                  className="hidden md:inline-flex"
                 >
                   로그아웃
                 </Button>
               )}
+
+              {/* Mobile only: single drawer trigger carrying theme + logout (nav links moved to BottomNav) */}
+              <Drawer
+                title="메뉴"
+                trigger={(open) => (
+                  <button
+                    onClick={open}
+                    aria-label="메뉴 더보기"
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-none bg-transparent text-muted md:hidden"
+                  >
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg>
+                  </button>
+                )}
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[13px] font-semibold text-muted">테마</span>
+                    <ThemeSwitcher />
+                  </div>
+                  {isLoggedIn && (
+                    <Button onClick={handleLogout} variant="secondary" size="md" className="w-full hover:border-error hover:text-error">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      로그아웃
+                    </Button>
+                  )}
+                </div>
+              </Drawer>
             </div>
           </div>
         </nav>
 
-        <div className="mx-auto max-w-[1200px] px-5 py-6 sm:px-7 sm:py-8">
+        <div className="mx-auto max-w-[1200px] px-5 pt-6 pb-24 sm:px-7 sm:py-8">
 
           {/* Guest Banner */}
           {!isLoggedIn && (
@@ -260,6 +266,8 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        <BottomNav />
       </div>
     </div>
   );

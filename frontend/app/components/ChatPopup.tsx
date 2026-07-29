@@ -36,8 +36,20 @@ function useCurrentStep(): number | null {
   return match ? parseInt(match[1]) : null;
 }
 
+// Pages below render the mobile-only BottomNav, so the floating chat button
+// (and its popup) must clear it — roadmap additionally stacks a sticky CTA bar
+// above BottomNav, so it needs extra clearance on top of that.
+function useBottomBarClearance(): "none" | "bottomnav" | "roadmap" {
+  const pathname = usePathname();
+  if (!pathname) return "none";
+  if (pathname.startsWith("/roadmap/")) return "roadmap";
+  if (["/dashboard", "/business-plan", "/programs"].some((p) => pathname.startsWith(p))) return "bottomnav";
+  return "none";
+}
+
 export default function ChatPopup() {
   const step = useCurrentStep();
+  const bottomClearance = useBottomBarClearance();
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -93,7 +105,12 @@ export default function ChatPopup() {
   }
 
   return (
-    <div className={cn("fixed right-6 z-50 flex flex-col items-end gap-3", step !== null ? "bottom-[140px] md:bottom-6" : "bottom-6")}>
+    <div
+      className={cn(
+        "fixed right-6 z-50 flex flex-col items-end gap-3",
+        bottomClearance === "roadmap" ? "bottom-[140px] md:bottom-6" : bottomClearance === "bottomnav" ? "bottom-20 md:bottom-6" : "bottom-6"
+      )}
+    >
       {open && (
         <div className="glass flex h-[500px] w-[360px] flex-col overflow-hidden rounded-lg">
           {/* Header — hero gradient moment for this component. Gradient stays inline:

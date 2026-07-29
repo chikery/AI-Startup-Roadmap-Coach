@@ -12,6 +12,8 @@ import Accordion from "@/app/components/ui/Accordion";
 import { Input } from "@/app/components/ui/Input";
 import { Select } from "@/app/components/ui/Select";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
+import BottomNav from "@/app/components/ui/BottomNav";
+import Drawer from "@/app/components/ui/Drawer";
 
 const CATEGORIES = ["문화예술", "콘텐츠", "공예", "소셜임팩트", "기술/IT", "기타"];
 const STAGES = ["아이디어", "예비창업", "초기창업"];
@@ -98,7 +100,7 @@ export default function ProgramsPage() {
   }).length;
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen overflow-x-hidden bg-background">
       <div
         className="fixed inset-0 z-0 pointer-events-none"
         style={{
@@ -110,17 +112,37 @@ export default function ProgramsPage() {
       />
 
       <div className="relative z-10">
+        {/* HEADER — desktop unchanged; mobile trimmed to logo + a single "더보기" drawer trigger
+            (theme only — 대시보드 이동은 이제 BottomNav가 담당) */}
         <header className="glass border-b border-border px-6 py-4" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none" }}>
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <Link href="/dashboard" className="font-[800] text-text no-underline">StepUp</Link>
             <div className="flex items-center gap-3">
-              <ThemeSwitcher />
-              <Link href="/dashboard" className="text-[13px] text-muted no-underline hover:text-text">← 대시보드</Link>
+              <ThemeSwitcher className="hidden md:inline-flex" />
+              <Link href="/dashboard" className="hidden text-[13px] text-muted no-underline hover:text-text md:inline">← 대시보드</Link>
+
+              <Drawer
+                title="메뉴"
+                trigger={(open) => (
+                  <button
+                    onClick={open}
+                    aria-label="메뉴 더보기"
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-none bg-transparent text-muted md:hidden"
+                  >
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg>
+                  </button>
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[13px] font-semibold text-muted">테마</span>
+                  <ThemeSwitcher />
+                </div>
+              </Drawer>
             </div>
           </div>
         </header>
 
-        <main className="max-w-4xl mx-auto px-5 py-8 sm:px-6 sm:py-10">
+        <main className="max-w-4xl mx-auto px-5 pt-8 pb-24 sm:px-6 sm:py-10">
           {/* Task-driven headline: lead with the eligibility count, not the form */}
           {searched ? (
             <div className="mb-6">
@@ -190,6 +212,8 @@ export default function ProgramsPage() {
             </div>
           )}
         </main>
+
+        <BottomNav />
       </div>
     </div>
   );
