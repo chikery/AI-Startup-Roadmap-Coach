@@ -4,6 +4,89 @@
 
 ---
 
+## 2026-07-29
+
+### 공용 UI 프리미티브 확장 · 언레이어드 CSS 근본 수정 · 모바일 UX 전면 재설계 · SOLAR 브랜딩
+
+---
+
+### 1. 공용 UI 프리미티브 확장 및 전 화면 적용
+
+**커밋:** `6cecc2d`
+
+Button/Card/Badge/Input/Textarea/Accordion/Drawer/Toast는 이미 존재하던 프리미티브. 스펙에 맞게 확장하고 전 화면의 제각각 버튼/카드/배지를 이 컴포넌트로 교체했다.
+
+- **Button**: `href` prop 추가 — 있으면 `next/link` `Link`로, 없으면 `<button>`으로 렌더링(variant/size 클래스는 동일). 랜딩 페이지의 링크 기반 CTA와 앱 내부 버튼을 하나의 컴포넌트로 통일. `variant="success"` 추가(`--color-success` 토큰 사용). 전 사이즈에 `min-h-11`(44px) 터치 타겟 하한 추가.
+- **Card**: `padding="none"` + `radius`(sm/md/lg/full) prop 추가 — 프레임워크 테이블처럼 자체 내부 패딩을 쓰는 컴포지트 컨테이너도 Card로 흡수해, `.glass` bespoke div가 화면마다 따로 노는 것을 방지.
+- **Select**: signup/programs의 `<select>` 2곳을 위한 신규 공용 폼 프리미티브(Input/Textarea와 같은 묶음).
+- 화면당 primary 버튼 1개 원칙 적용 — roadmap의 "저장 후 다음 단계"를 primary로, "AI 인사이트 받기"를 secondary로 재배치. programs의 "신청하기"(전환 액션)를 primary로.
+
+---
+
+### 2. 언레이어드 CSS 근본 원인 수정
+
+**커밋:** `678cf07`
+
+STEP 1에서 트래킹만 해두었던 두 가지 버그(`.roadmap-table-row`의 모바일 데스크톱 헤더 노출, `.glass` border 문제)의 공통 원인을 이번에 규명하고 정식 수정했다.
+
+**원인:** CSS Cascade Layers 스펙상, `globals.css`에 평범하게 선언된(레이어 미지정) CSS 규칙은 **명시도·소스 순서와 무관하게** `@layer utilities`에 속한 Tailwind 유틸리티 클래스를 항상 이긴다. `.glass`와 `.roadmap-table-row`가 이 레이어 미지정 상태였기 때문에, `hidden`이나 `border-t-0` 같은 Tailwind 클래스를 아무리 붙여도 소용없었고, 지금까지는 매 충돌 지점마다 Tailwind의 trailing-`!`(important modifier)로 임시 봉합해 왔다.
+
+**해결:** `globals.css`에서 두 클래스를 `@layer components { ... }`로 감싸 Tailwind가 선언한 레이어 순서(`theme, base, components, utilities`)에서 `utilities`보다 아래에 위치시켰다. 이제 Tailwind 클래스가 `!` 없이도 자연스럽게 이긴다.
+
+```css
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 10px 26px -14px rgba(22,21,28,0.22);
+  }
+}
+```
+
+**부수 발견:** 이 버그 때문에 Phase 2에서 추가한 배경 틴트 오버라이드(`AIRecommendationCard`의 `className="bg-[color-mix(...)]"` 등)도 `.glass`한테 조용히 묻혀 실제로는 적용되지 않고 있었다. `getComputedStyle().backgroundColor`로 수정 전/후 비교해 실제 틴트 색이 반영됨을 확인.
+
+전 화면에 걸쳐 있던 `rounded-none!`, `border-t-0!`, `border-2!` 등 redundant bang 수정자도 이번 수정 이후 순차적으로 제거했다(랜딩, roadmap, 이후 business-plan).
+
+---
+
+### 3. 모바일 UX 전면 재설계 — BottomNav/FAB/Drawer/Accordion
+
+**커밋:** `678cf07`, `08dc5f5`
+
+데스크톱은 그대로 두고 모바일만 별도 UX로 재설계했다. 특히 로드맵 3분할 작업 화면이 모바일에서 완전히 깨지고 있어 최우선으로 손봤다.
+
+- **전역**: `html, body { overflow-x: hidden; }` 세이프넷 추가.
+- **BottomNav**(`app/components/ui/BottomNav.tsx`, 신규): 대시보드/지원사업/사업계획서 3탭 고정 하단바, `md:hidden`.
+- **Drawer 채택**: 로그인 전엔 사용된 적 없던 기존 `Drawer` 컴포넌트를 처음 실사용하면서 스택킹 컨텍스트 버그를 발견했다 —
+
+  **버그:** `position: sticky` + `z-index` + `backdrop-filter`(= `.glass`)를 가진 상위 `<nav>`가 새로운 스태킹 컨텍스트를 만들면서, 그 안에 렌더링된 Drawer의 `z-50` 오버레이가 nav의 형제 요소(`.roadmap-sticky-cta` z-20, `BottomNav` z-30)보다 항상 뒤에 깔렸다. 자식의 z-index는 조상의 스태킹 컨텍스트 안에서만 유효하기 때문.
+
+  **수정:** `Drawer.tsx`에서 `createPortal(..., document.body)`로 오버레이를 항상 문서 루트로 탈출시킴 — 이후 추가되는 모든 Drawer 사용처에 영구적으로 적용되는 근본 수정.
+
+- **로드맵 페이지**: 헤더를 로고 + 단계 배지 + 단일 "더보기" Drawer 트리거(테마+로그아웃)로 단순화. 모바일 전용 하단 고정 CTA(`bottom: 53px`)를 BottomNav(`bottom: 0`) 바로 위에 쌓아 두 고정 바가 겹치지 않게 조정.
+- **ChatPopup FAB 충돌**: 새로 생긴 고정 하단 바들과 채팅 FAB이 겹치는 문제 발견 → 경로 기반으로 FAB `bottom` 오프셋을 조건부 상향(`useCurrentStep`). 이후 dashboard/business-plan/programs 3개 화면에도 BottomNav를 확장 적용하면서, 이 로직을 `useBottomBarClearance()` 훅으로 일반화(`"roadmap"` → 140px, `"bottomnav"` → 80px, 그 외 → 기본 24px).
+- **dashboard**: 배지+아이콘 3개+테마 스위처가 320px에서 겹쳐 넘치던 것을 헤더 단순화(로고+배지+Drawer)로 해소. `sm:` 브레이크포인트를 BottomNav와 동일한 `md:`로 통일해 640~768px 구간에서 데스크톱 텍스트 내비와 BottomNav가 동시에 뜨는 것 방지.
+- **business-plan/programs**: 동일한 BottomNav/Drawer 패턴 적용. business-plan은 `.glass` 수정 이후 불필요해진 `rounded-none!/border-*-0!/border-2!/border-primary!` bang도 함께 제거.
+
+검증은 매 화면마다 타입체크·320px 콘솔 에러+스크린샷·실제 클릭·데스크톱 레이아웃 동일성·프로덕션 빌드까지 동일한 수준으로 진행했다.
+
+---
+
+### 4. SOLAR API 브랜딩 노출
+
+**커밋:** `c7fdfb4`
+
+Solar API 기반임을 브랜드로 드러내되, 방금 좁혀 놓은 320px 헤더 세이프마진을 다시 깨지 않는 게 관건이었다.
+
+- 신규 `PoweredBySolar` 컴포넌트: border-only pill(`⚡` + 라벨), STEP1 토큰만 사용해 semantic 배지(진행률·마감 등)와 시각적으로 경쟁하지 않게 절제.
+- **로그인**: 로그인 버튼 아래 중앙 정렬 "⚡ Continue with SOLAR" 배지(장식용 — 실제 SOLAR OAuth가 없는 상태에서 클릭 가능한 버튼처럼 보이게 만드는 것은 기만적이라 판단해 비대화형 배지로 처리).
+- **ChatPopup**: 그라데이션 헤더 바로 아래 얇은 띠로 "⚡ Powered by SOLAR" — 전역 컴포넌트라 모든 화면에 자동 적용.
+- **랜딩**: 기존 footer의 저작권 문구 옆에 배치(이미 `flex-wrap`이라 모바일에서도 안전).
+- **dashboard/business-plan/programs/roadmap**: 데스크톱은 헤더의 ThemeSwitcher 앞에 `hidden md:inline-flex`로 추가, 모바일은 헤더를 건드리지 않고 기존 Drawer 맨 아래(로그아웃 버튼 아래, 구분선 추가)에 배치 — 방금 확보한 320px 세이프마진을 그대로 유지.
+
+---
+
 ## 2026-07-14
 
 ### AI 활용 깊이 강화 — 완성도 채점 · 근거 기반 피드백 · 이전/이후 비교
