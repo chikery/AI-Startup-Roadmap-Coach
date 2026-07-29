@@ -7,12 +7,9 @@ import { SUPPORT_PROGRAMS, isExpired, daysLeft } from "@/app/lib/support-program
 import { STEP_CONTENT } from "./step-content";
 import TodayMissionCard, { MissionVariant } from "./components/TodayMissionCard";
 import RoadmapProgressCard from "./components/RoadmapProgressCard";
-import MilestoneCard from "./components/MilestoneCard";
 import ProjectHealthCard from "./components/ProjectHealthCard";
-import AIRecommendationCard from "./components/AIRecommendationCard";
+import EligibleProgramsCard from "./components/EligibleProgramsCard";
 import GovernmentSupportCard from "./components/GovernmentSupportCard";
-import NotificationCard from "./components/NotificationCard";
-import LearningCard from "./components/LearningCard";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
@@ -26,15 +23,12 @@ interface StepStatus {
   is_completed: boolean;
 }
 
-const LAST_SEEN_KEY = "stepup_last_seen_completed";
-
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [progress, setProgress] = useState<StepStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasPlan, setHasPlan] = useState(false);
-  const [justCompletedStep, setJustCompletedStep] = useState<number | null>(null);
 
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -46,13 +40,7 @@ export default function DashboardPage() {
 
     if (token) {
       api.roadmap.getProgress()
-        .then((data: any) => {
-          setProgress(data);
-          const completedCount = (data as StepStatus[]).filter((s) => s.is_completed).length;
-          const lastSeen = parseInt(localStorage.getItem(LAST_SEEN_KEY) || "0", 10);
-          if (completedCount > lastSeen) setJustCompletedStep(completedCount);
-          localStorage.setItem(LAST_SEEN_KEY, String(completedCount));
-        })
+        .then((data: any) => setProgress(data))
         .catch(() => {})
         .finally(() => setLoading(false));
 
@@ -73,6 +61,8 @@ export default function DashboardPage() {
     .map((p) => ({ ...p, expired: isExpired(p.deadline), left: daysLeft(p.deadline) }))
     .filter((p) => !p.expired && p.left <= 14)
     .sort((a, b) => a.left - b.left)[0];
+
+  const eligibleCount = SUPPORT_PROGRAMS.filter((p) => !isExpired(p.deadline)).length;
 
   function buildMission(): { variant: MissionVariant; eyebrow: string; title: string; desc: string; ctaLabel: string; ctaHref: string; externalCta?: boolean } {
     if (!isLoggedIn) {
@@ -238,36 +228,14 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          <div className="dash-grid">
-            <div style={{ gridArea: "mission" }} className="flex flex-col gap-4">
-              <TodayMissionCard {...mission} />
-              {justCompletedStep && justCompletedStep >= 1 && (
-                <MilestoneCard stepName={STEP_CONTENT[justCompletedStep - 1].name} />
-              )}
-            </div>
+          <div className="flex flex-col gap-4 sm:gap-6">
+            <TodayMissionCard {...mission} />
 
-            <div style={{ gridArea: "progress" }}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
+              <ProjectHealthCard completedCount={completedCount} hasPlan={hasPlan} />
+              <EligibleProgramsCard count={eligibleCount} />
               <RoadmapProgressCard completedCount={completedCount} activeStep={activeStep} />
-            </div>
-
-            <div style={{ gridArea: "health" }}>
-              <ProjectHealthCard completedCount={completedCount} />
-            </div>
-
-            <div style={{ gridArea: "recommend" }}>
-              <AIRecommendationCard tip={STEP_CONTENT[Math.min(activeStep, 7) - 1].coachTip} />
-            </div>
-
-            <div style={{ gridArea: "support" }}>
               <GovernmentSupportCard currentStep={activeStep} />
-            </div>
-
-            <div style={{ gridArea: "notify" }}>
-              <NotificationCard currentStep={activeStep} />
-            </div>
-
-            <div style={{ gridArea: "learning" }}>
-              <LearningCard step={Math.min(activeStep, 7)} />
             </div>
           </div>
         </div>

@@ -59,11 +59,8 @@ export default function GovernmentSupportCard({ currentStep }: Props) {
 
 function SupportRow({ p }: { p: RankedProgram }) {
   return (
-    <a
-      href={p.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block rounded-md p-3 no-underline transition-colors"
+    <div
+      className="rounded-md p-3"
       style={{
         background: p.matched ? "color-mix(in srgb, var(--color-accent) 14%, var(--color-surface))" : "color-mix(in srgb, var(--color-surface) 60%, transparent)",
         border: `1px solid ${p.matched ? "color-mix(in srgb, var(--color-accent) 40%, transparent)" : "var(--color-border)"}`,
@@ -83,6 +80,9 @@ function SupportRow({ p }: { p: RankedProgram }) {
         </span>
         <span style={{ color: "var(--color-muted)" }}>{p.maxSupport}</span>
       </div>
-    </a>
+      <Button href={p.url} target="_blank" rel="noopener noreferrer" variant="secondary" size="sm" className="mt-2.5 w-full">
+        신청하기
+      </Button>
+    </div>
   );
 }

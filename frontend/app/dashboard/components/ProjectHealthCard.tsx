@@ -1,8 +1,10 @@
 import Card from "@/app/components/ui/Card";
 import ProgressBar from "@/app/components/ui/ProgressBar";
+import Button from "@/app/components/ui/Button";
 
 interface Props {
   completedCount: number;
+  hasPlan: boolean;
 }
 
 function bucket(completedCount: number): { label: string; color: string } {
@@ -13,20 +15,25 @@ function bucket(completedCount: number): { label: string; color: string } {
   return { label: "로드맵 완주!", color: "var(--color-success)" };
 }
 
-export default function ProjectHealthCard({ completedCount }: Props) {
+export default function ProjectHealthCard({ completedCount, hasPlan }: Props) {
   const pct = Math.round((completedCount / 7) * 100);
   const { label, color } = bucket(completedCount);
 
   return (
-    <Card variant="glass" padding="md">
-      <div className="text-sm font-bold" style={{ color: "var(--color-text)" }}>사업계획서 진행 상태</div>
-      <div className="mt-3 flex items-end gap-2">
-        <span className="text-3xl font-extrabold tabular-nums" style={{ color }}>{pct}%</span>
-        <span className="mb-1 text-[13px] font-semibold" style={{ color: "var(--color-muted)" }}>{label}</span>
+    <Card variant="glass" padding="md" className="flex flex-col justify-between">
+      <div>
+        <div className="text-sm font-bold" style={{ color: "var(--color-text)" }}>사업계획서 완성도</div>
+        <div className="mt-3 flex items-end gap-2">
+          <span className="text-3xl font-extrabold tabular-nums" style={{ color }}>{pct}%</span>
+          <span className="mb-1 text-[13px] font-semibold" style={{ color: "var(--color-muted)" }}>{label}</span>
+        </div>
+        <div className="mt-3">
+          <ProgressBar value={completedCount} max={7} color={color} />
+        </div>
       </div>
-      <div className="mt-3">
-        <ProgressBar value={completedCount} max={7} color={color} />
-      </div>
+      <Button href="/business-plan" variant="secondary" size="sm" className="mt-4 w-full">
+        {hasPlan ? "사업계획서 보기" : "사업계획서 만들어보기"}
+      </Button>
     </Card>
   );
 }

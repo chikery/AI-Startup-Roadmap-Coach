@@ -2,6 +2,7 @@ import Link from "next/link";
 import { STEP_CONTENT } from "../step-content";
 import Card from "@/app/components/ui/Card";
 import ProgressBar from "@/app/components/ui/ProgressBar";
+import Button from "@/app/components/ui/Button";
 
 interface Props {
   completedCount: number;
@@ -11,6 +12,7 @@ interface Props {
 
 export default function RoadmapProgressCard({ completedCount, activeStep, compact }: Props) {
   const pct = Math.round((completedCount / 7) * 100);
+  const allDone = completedCount >= 7;
 
   return (
     <Card variant="glass" padding="md">
@@ -55,6 +57,10 @@ export default function RoadmapProgressCard({ completedCount, activeStep, compac
           })}
         </div>
       )}
+
+      <Button href={`/roadmap/${activeStep}`} variant="secondary" size="sm" className="mt-4 w-full">
+        {allDone ? `${activeStep}단계 다시 보기` : `${activeStep}단계로 이동`}
+      </Button>
     </Card>
   );
 }
