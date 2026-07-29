@@ -10,6 +10,9 @@ import RoadmapProgressCard from "./components/RoadmapProgressCard";
 import ProjectHealthCard from "./components/ProjectHealthCard";
 import EligibleProgramsCard from "./components/EligibleProgramsCard";
 import GovernmentSupportCard from "./components/GovernmentSupportCard";
+import StartupNewsCard from "./components/StartupNewsCard";
+import GovSupportNewsCard from "./components/GovSupportNewsCard";
+import RecommendedArticleCard from "./components/RecommendedArticleCard";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
@@ -236,6 +239,17 @@ export default function DashboardPage() {
               <EligibleProgramsCard count={eligibleCount} />
               <RoadmapProgressCard completedCount={completedCount} activeStep={activeStep} />
               <GovernmentSupportCard currentStep={activeStep} />
+            </div>
+
+            {/* 창업 정보 허브 — desktop only. Mobile already has enough content and must
+                keep its 320px safe margin, so this section doesn't render there at all. */}
+            <div className="hidden md:block">
+              <div className="text-base font-bold" style={{ color: "var(--color-text)" }}>창업 정보 허브</div>
+              <div className="mt-3 grid grid-cols-3 gap-6">
+                <StartupNewsCard currentStep={activeStep} />
+                <GovSupportNewsCard currentStep={activeStep} />
+                <RecommendedArticleCard currentStep={activeStep} />
+              </div>
             </div>
           </div>
         </div>
