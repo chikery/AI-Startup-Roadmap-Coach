@@ -15,6 +15,8 @@ import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
 import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
+import NotificationList from "@/app/components/ui/NotificationList";
+import { NOTIFICATIONS } from "@/app/lib/notifications-data";
 
 const CATEGORIES = ["문화예술", "콘텐츠", "공예", "소셜임팩트", "기술/IT", "기타"];
 const STAGES = ["아이디어", "예비창업", "초기창업"];
@@ -136,6 +138,10 @@ export default function ProgramsPage() {
                 )}
               >
                 <div className="flex flex-col gap-4">
+                  <div className="border-b border-border pb-4">
+                    <div className="mb-2 text-[13px] font-semibold text-muted">알림</div>
+                    <NotificationList items={NOTIFICATIONS} />
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-semibold text-muted">테마</span>
                     <ThemeSwitcher />

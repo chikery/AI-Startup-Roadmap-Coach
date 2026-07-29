@@ -14,6 +14,8 @@ import ProgressBar from "@/app/components/ui/ProgressBar";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
 import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
+import NotificationList from "@/app/components/ui/NotificationList";
+import { NOTIFICATIONS } from "@/app/lib/notifications-data";
 import { cn } from "@/app/lib/cn";
 
 /* ------------------------------------------------------------------ */
@@ -286,11 +288,11 @@ export default function RoadmapStepPage() {
             fetchScore(step, data.content);
           }
         })
-        .catch(() => {});
+        .catch(() => toast.show("이 단계 내용을 불러오지 못했습니다. 다시 로그인해보세요.", "error"));
 
       (api.roadmap.getProgress() as Promise<{ step: number; is_completed: boolean }[]>)
         .then((data) => setProgress(data))
-        .catch(() => {});
+        .catch(() => toast.show("진행 상황을 불러오지 못했습니다.", "error"));
     }
   }, [step]);
 
@@ -357,6 +359,13 @@ export default function RoadmapStepPage() {
     }
   }
 
+  // TODO(bug, tracked separately — not fixed as part of this pass):
+  // Content typed into DraftFormEditor lives only in the `content` React state above
+  // until this handleSave is explicitly called. There's no autosave and no local
+  // draft cache, so navigating away or closing the tab before clicking "저장" loses
+  // whatever was typed — on any device, not just cross-device. Same tracking
+  // treatment as the .glass/.roadmap-table-row unlayered-CSS bugs: filed as a
+  // follow-up, out of scope for the notification/sync work in this pass.
   async function handleSave(navigate = true) {
     const token = localStorage.getItem("access_token");
     if (!token) {
@@ -473,6 +482,10 @@ export default function RoadmapStepPage() {
                 )}
               >
                 <div className="flex flex-col gap-4">
+                  <div className="border-b border-border pb-4">
+                    <div className="mb-2 text-[13px] font-semibold text-muted">알림</div>
+                    <NotificationList items={NOTIFICATIONS} />
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-semibold text-muted">테마</span>
                     <ThemeSwitcher />

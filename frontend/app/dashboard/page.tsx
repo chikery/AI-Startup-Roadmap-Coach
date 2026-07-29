@@ -20,6 +20,9 @@ import Button from "@/app/components/ui/Button";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
 import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
+import NotificationList from "@/app/components/ui/NotificationList";
+import { NOTIFICATIONS } from "@/app/lib/notifications-data";
+import { useToast } from "@/app/components/ui/Toast";
 
 interface StepStatus {
   step: number;
@@ -27,6 +30,7 @@ interface StepStatus {
 }
 
 export default function DashboardPage() {
+  const toast = useToast();
   const [user, setUser] = useState<any>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [progress, setProgress] = useState<StepStatus[]>([]);
@@ -44,16 +48,17 @@ export default function DashboardPage() {
     if (token) {
       api.roadmap.getProgress()
         .then((data: any) => setProgress(data))
-        .catch(() => {})
+        .catch(() => toast.show("진행 상황을 불러오지 못했습니다. 다시 로그인해보세요.", "error"))
         .finally(() => setLoading(false));
 
       fetch(`${BASE_URL}/roadmap/business-plan?token=${token}`)
         .then((r) => r.json())
         .then((d) => setHasPlan(!!d.content))
-        .catch(() => {});
+        .catch(() => toast.show("사업계획서 정보를 불러오지 못했습니다.", "error"));
     } else {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const completedCount = progress.filter((s) => s.is_completed).length;
@@ -197,6 +202,10 @@ export default function DashboardPage() {
                 )}
               >
                 <div className="flex flex-col gap-4">
+                  <div className="border-b border-border pb-4">
+                    <div className="mb-2 text-[13px] font-semibold text-muted">알림</div>
+                    <NotificationList items={NOTIFICATIONS} />
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-semibold text-muted">테마</span>
                     <ThemeSwitcher />

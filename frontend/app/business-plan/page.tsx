@@ -11,6 +11,8 @@ import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
 import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
+import NotificationList from "@/app/components/ui/NotificationList";
+import { NOTIFICATIONS } from "@/app/lib/notifications-data";
 import { cn } from "@/app/lib/cn";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -269,6 +271,10 @@ export default function BusinessPlanPage() {
                 )}
               >
                 <div className="flex flex-col gap-4">
+                  <div className="border-b border-border pb-4">
+                    <div className="mb-2 text-[13px] font-semibold text-muted">알림</div>
+                    <NotificationList items={NOTIFICATIONS} />
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-semibold text-muted">테마</span>
                     <ThemeSwitcher />

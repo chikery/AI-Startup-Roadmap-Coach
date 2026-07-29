@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/app/lib/cn";
+import { NOTIFICATIONS, unreadCount } from "@/app/lib/notifications-data";
 
 const ITEMS = [
   {
@@ -31,6 +32,7 @@ const ITEMS = [
 /** Mobile-only fixed tab bar for the app's three primary sections. Desktop nav stays in each page's own header. */
 export default function BottomNav() {
   const pathname = usePathname();
+  const hasUnread = unreadCount(NOTIFICATIONS) > 0;
 
   return (
     <nav className="glass fixed inset-x-0 bottom-0 z-30 flex items-stretch justify-around border-t border-border pb-[env(safe-area-inset-bottom)] md:hidden">
@@ -45,7 +47,12 @@ export default function BottomNav() {
               active ? "text-primary" : "text-muted"
             )}
           >
-            {item.icon}
+            <span className="relative">
+              {item.icon}
+              {item.href === "/dashboard" && hasUnread && (
+                <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-error" />
+              )}
+            </span>
             {item.label}
           </Link>
         );
