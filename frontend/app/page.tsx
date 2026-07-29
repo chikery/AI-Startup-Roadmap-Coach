@@ -1,5 +1,6 @@
 import ThemeSwitcher from "./components/ui/ThemeSwitcher";
 import Button from "./components/ui/Button";
+import PoweredBySolar from "./components/ui/PoweredBySolar";
 import { cn } from "./lib/cn";
 
 const SECONDARY_TINT = "color-mix(in srgb, var(--color-secondary) 16%, transparent)";
@@ -442,7 +443,10 @@ export default function Home() {
               <span className="[font-family:var(--font-geist)] text-[17px] font-bold">Stepup</span>
               <span className="ml-2 text-[13px] text-muted">아이디어에서 사업계획서까지, AI 창업 로드맵 코치</span>
             </div>
-            <div className="text-[13px] text-muted">© 2026 Stepup. All rights reserved.</div>
+            <div className="flex items-center gap-4">
+              <PoweredBySolar />
+              <div className="text-[13px] text-muted">© 2026 Stepup. All rights reserved.</div>
+            </div>
           </div>
         </footer>
 

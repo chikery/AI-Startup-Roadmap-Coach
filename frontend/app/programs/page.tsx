@@ -14,6 +14,7 @@ import { Select } from "@/app/components/ui/Select";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
+import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
 
 const CATEGORIES = ["문화예술", "콘텐츠", "공예", "소셜임팩트", "기술/IT", "기타"];
 const STAGES = ["아이디어", "예비창업", "초기창업"];
@@ -118,6 +119,7 @@ export default function ProgramsPage() {
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <Link href="/dashboard" className="font-[800] text-text no-underline">StepUp</Link>
             <div className="flex items-center gap-3">
+              <PoweredBySolar className="hidden md:inline-flex" />
               <ThemeSwitcher className="hidden md:inline-flex" />
               <Link href="/dashboard" className="hidden text-[13px] text-muted no-underline hover:text-text md:inline">← 대시보드</Link>
 
@@ -133,9 +135,14 @@ export default function ProgramsPage() {
                   </button>
                 )}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-semibold text-muted">테마</span>
-                  <ThemeSwitcher />
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[13px] font-semibold text-muted">테마</span>
+                    <ThemeSwitcher />
+                  </div>
+                  <div className="flex justify-center border-t border-border pt-4">
+                    <PoweredBySolar />
+                  </div>
                 </div>
               </Drawer>
             </div>

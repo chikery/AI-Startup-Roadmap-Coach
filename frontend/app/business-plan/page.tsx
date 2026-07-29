@@ -10,6 +10,7 @@ import Button from "@/app/components/ui/Button";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
+import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
 import { cn } from "@/app/lib/cn";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -239,6 +240,7 @@ export default function BusinessPlanPage() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill={INDIGO}/></svg>
                 완성
               </span>
+              <PoweredBySolar className="hidden md:inline-flex" />
               <ThemeSwitcher className="hidden md:inline-flex" />
               <span className="hidden h-8 w-8 rounded-full bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] md:inline-block" />
               {isLoggedIn && (
@@ -277,6 +279,9 @@ export default function BusinessPlanPage() {
                       로그아웃
                     </Button>
                   )}
+                  <div className="flex justify-center border-t border-border pt-4">
+                    <PoweredBySolar />
+                  </div>
                 </div>
               </Drawer>
             </div>

@@ -13,6 +13,7 @@ import Badge from "@/app/components/ui/Badge";
 import ProgressBar from "@/app/components/ui/ProgressBar";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
+import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
 import { cn } from "@/app/lib/cn";
 
 /* ------------------------------------------------------------------ */
@@ -443,6 +444,7 @@ export default function RoadmapStepPage() {
               </span>
               {/* Decorative bell — desktop only, no behavior attached */}
               <svg className="hidden md:block" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <PoweredBySolar className="hidden md:inline-flex" />
               <ThemeSwitcher className="hidden md:inline-flex" />
               <span className="hidden h-8 w-8 rounded-full border border-border bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] sm:inline-block"></span>
               {isLoggedIn && (
@@ -481,6 +483,9 @@ export default function RoadmapStepPage() {
                       로그아웃
                     </Button>
                   )}
+                  <div className="flex justify-center border-t border-border pt-4">
+                    <PoweredBySolar />
+                  </div>
                 </div>
               </Drawer>
             </div>

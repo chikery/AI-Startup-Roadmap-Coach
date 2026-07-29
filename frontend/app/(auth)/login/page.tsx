@@ -7,6 +7,7 @@ import { api } from "@/app/lib/api";
 import Card from "@/app/components/ui/Card";
 import { Input } from "@/app/components/ui/Input";
 import Button from "@/app/components/ui/Button";
+import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -71,6 +72,10 @@ export default function LoginPage() {
             {loading ? "로그인 중..." : "로그인"}
           </Button>
         </form>
+
+        <div className="mt-5 flex justify-center">
+          <PoweredBySolar label="Continue with SOLAR" />
+        </div>
 
         <p className="text-center text-sm text-muted mt-6">
           계정이 없으신가요?{" "}

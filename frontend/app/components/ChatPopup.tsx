@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/app/lib/cn";
+import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
 
 interface Message {
   role: "user" | "assistant";
@@ -142,6 +143,11 @@ export default function ChatPopup() {
                 ×
               </button>
             </div>
+          </div>
+
+          {/* Brand strip — thin, understated; doesn't compete with the gradient header above */}
+          <div className="flex items-center justify-center border-b border-border bg-surface py-1">
+            <PoweredBySolar className="border-none bg-transparent px-0 py-0 text-[10px]" />
           </div>
 
           {/* Messages */}

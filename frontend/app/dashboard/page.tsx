@@ -19,6 +19,7 @@ import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
+import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
 
 interface StepStatus {
   step: number;
@@ -175,6 +176,7 @@ export default function DashboardPage() {
                 {completedCount}/7
               </Badge>
 
+              <PoweredBySolar className="hidden md:inline-flex" />
               <ThemeSwitcher className="hidden md:inline-flex" />
               <span className="hidden h-8 w-8 rounded-full md:inline-block" style={{ background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", border: "1px solid var(--color-border)" }} />
               {isLoggedIn && (
@@ -212,6 +214,9 @@ export default function DashboardPage() {
                       로그아웃
                     </Button>
                   )}
+                  <div className="flex justify-center border-t border-border pt-4">
+                    <PoweredBySolar />
+                  </div>
                 </div>
               </Drawer>
             </div>
