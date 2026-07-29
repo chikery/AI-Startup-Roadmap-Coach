@@ -11,6 +11,8 @@ import Button from "@/app/components/ui/Button";
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
 import ProgressBar from "@/app/components/ui/ProgressBar";
+import BottomNav from "@/app/components/ui/BottomNav";
+import Drawer from "@/app/components/ui/Drawer";
 import { cn } from "@/app/lib/cn";
 
 /* ------------------------------------------------------------------ */
@@ -400,8 +402,14 @@ export default function RoadmapStepPage() {
     ? "완성! 사업계획서 보기"
     : "저장 후 다음 단계";
 
+  function handleLogout() {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/";
+  }
+
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen overflow-x-hidden bg-background">
       {/* Ambient blurred color blobs — kept subtle since this page is text/form-dense */}
       <div
         className="pointer-events-none fixed inset-0 z-0"
@@ -415,21 +423,18 @@ export default function RoadmapStepPage() {
 
       <div className="relative z-[1] font-['Pretendard',_sans-serif] text-text">
 
-        {/* ── TOP NAV ── */}
-        <nav className="glass sticky top-0 z-10 rounded-none! border-l-0! border-r-0! border-t-0!">
+        {/* ── TOP NAV — desktop unchanged; mobile trimmed to logo + step badge + a single
+             "더보기" drawer trigger (theme + logout), since 대시보드 이동은 이제 BottomNav가 담당 ── */}
+        <nav className="glass sticky top-0 z-10 rounded-none border-l-0 border-r-0 border-t-0">
           <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between px-4 sm:px-7">
             <div className="flex min-w-0 items-center gap-[18px]">
               <Link href="/" className="shrink-0 [font-family:var(--font-geist)] text-[21px] font-extrabold tracking-[-0.01em] text-text no-underline">StepUp</Link>
-              {/* Desktop: full dashboard link + step name label */}
+              {/* Desktop only: full dashboard link + step name label */}
               <Link href="/dashboard" className="hidden items-center gap-1.5 rounded-sm bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-[5px] text-[13px] font-semibold text-primary no-underline transition-[background] duration-150 md:inline-flex">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/></svg>
                 대시보드
               </Link>
               <span className="hidden border-l border-border pl-[18px] text-[13px] text-muted md:inline">{step}단계: {meta.name}</span>
-              {/* Mobile: icon-only dashboard shortcut */}
-              <Link href="/dashboard" aria-label="대시보드" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] md:hidden">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--color-primary)"/></svg>
-              </Link>
             </div>
             <div className="flex items-center gap-2.5 sm:gap-4">
               <span className="inline-flex items-center gap-[7px] rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-1.5 text-[13px] font-bold text-primary">
@@ -438,11 +443,11 @@ export default function RoadmapStepPage() {
               </span>
               {/* Decorative bell — desktop only, no behavior attached */}
               <svg className="hidden md:block" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <ThemeSwitcher />
+              <ThemeSwitcher className="hidden md:inline-flex" />
               <span className="hidden h-8 w-8 rounded-full border border-border bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] sm:inline-block"></span>
               {isLoggedIn && (
                 <Button
-                  onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
+                  onClick={handleLogout}
                   aria-label="로그아웃"
                   variant="secondary"
                   size="sm"
@@ -452,15 +457,32 @@ export default function RoadmapStepPage() {
                   로그아웃
                 </Button>
               )}
-              {isLoggedIn && (
-                <button
-                  onClick={() => { localStorage.removeItem("access_token"); localStorage.removeItem("user"); window.location.href = (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/dashboard/"; }}
-                  aria-label="로그아웃"
-                  className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-muted md:hidden"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-              )}
+              {/* Mobile only: single drawer trigger carrying theme + logout */}
+              <Drawer
+                title="메뉴"
+                trigger={(open) => (
+                  <button
+                    onClick={open}
+                    aria-label="메뉴 더보기"
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-none bg-transparent text-muted md:hidden"
+                  >
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg>
+                  </button>
+                )}
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[13px] font-semibold text-muted">테마</span>
+                    <ThemeSwitcher />
+                  </div>
+                  {isLoggedIn && (
+                    <Button onClick={handleLogout} variant="secondary" size="md" className="w-full hover:border-error hover:text-error">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      로그아웃
+                    </Button>
+                  )}
+                </div>
+              </Drawer>
             </div>
           </div>
         </nav>
@@ -1030,6 +1052,8 @@ export default function RoadmapStepPage() {
             )}
           </Button>
         </div>
+
+        <BottomNav />
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>

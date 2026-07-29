@@ -303,6 +303,10 @@
 @keyframes floaty2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   background: var(--color-background);
@@ -310,13 +314,20 @@ body {
   font-family: 'Pretendard', -apple-system, sans-serif;
 }
 
-/* Glassmorphism / fluent acrylic card material — see native-mockup design direction */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-  border: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 26px -14px rgba(22, 21, 28, 0.22);
+/* Glassmorphism / fluent acrylic card material — see native-mockup design direction.
+   Wrapped in @layer components so Tailwind utility classes (@layer utilities) placed
+   alongside .glass — border-*-0, rounded-none, bg-[...] overrides — win as expected.
+   Unlayered CSS otherwise beats layered Tailwind utilities regardless of specificity,
+   which previously required trailing-! hacks at every call site and silently broke
+   background-tint overrides (e.g. AIRecommendationCard) without any visible error. */
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 26px -14px rgba(22, 21, 28, 0.22);
+  }
 }
 
 /* Dashboard: task-driven responsive layout — order genuinely differs by breakpoint (not just resized) */
@@ -355,7 +366,7 @@ body {
   overflow-x: hidden;
   padding: 18px 16px;
 }
-.roadmap-grid > aside { order: 2; min-width: 0; position: static !important; top: auto !important; padding-bottom: 84px !important; }
+.roadmap-grid > aside { order: 2; min-width: 0; position: static !important; top: auto !important; padding-bottom: 140px !important; }
 .roadmap-grid > main { order: 1; min-width: 0; display: flex; flex-direction: column; }
 @media (min-width: 768px) {
   .roadmap-grid {
@@ -392,20 +403,27 @@ body {
   .roadmap-why-row { grid-template-columns: 1fr 250px; }
 }
 
-.roadmap-table-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  min-width: 0;
-}
-@media (min-width: 768px) {
-  .roadmap-table-row { grid-template-columns: 210px 1fr; }
+/* Wrapped for the same reason as .glass above: this unconditionally sets display:grid,
+   which previously beat the "hidden md:grid" Tailwind utility on the table header row
+   regardless of viewport, leaving the desktop-only header visible on mobile. */
+@layer components {
+  .roadmap-table-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+  @media (min-width: 768px) {
+    .roadmap-table-row { grid-template-columns: 210px 1fr; }
+  }
 }
 
+/* Sits directly above BottomNav (~53px tall incl. its own safe-area padding),
+   so the two fixed bottom bars stack instead of overlapping. */
 .roadmap-sticky-cta {
   position: fixed;
-  left: 0; right: 0; bottom: 0;
+  left: 0; right: 0; bottom: 53px;
   z-index: 20;
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  padding: 12px 16px;
 }
 @media (min-width: 768px) {
   .roadmap-sticky-cta { display: none; }

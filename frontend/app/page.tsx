@@ -32,7 +32,7 @@ export default function Home() {
       <div className="relative z-[1]">
 
         {/* NAV */}
-        <nav className="glass sticky top-0 z-50 rounded-none! border-l-0! border-r-0! border-t-0!">
+        <nav className="glass sticky top-0 z-50 rounded-none border-l-0 border-r-0 border-t-0">
           <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-3.5 md:px-10">
             <div className="flex items-center gap-[9px]">
               <img
@@ -161,7 +161,7 @@ export default function Home() {
         </section>
 
         {/* TRUST MARQUEE */}
-        <section className="glass overflow-hidden rounded-none! border-l-0! border-r-0! py-[22px]">
+        <section className="glass overflow-hidden rounded-none border-l-0 border-r-0 py-[22px]">
           <div className="mx-auto flex max-w-[1200px] items-center gap-[18px] px-10">
             <span className="shrink-0 whitespace-nowrap text-[13px] font-semibold text-muted">실시간 반영 공고 기관</span>
             {/* Mask stays inline: needs identical linear-gradient duplicated on both the
