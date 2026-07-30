@@ -36,6 +36,18 @@ export const api = {
       request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
     updateProfile: (body: object, token?: string) =>
       request(`/auth/profile?token=${token || getToken()}`, { method: "PATCH", body: JSON.stringify(body) }),
+    // 조용한 백그라운드 갱신 전용 — request()를 안 쓴다: 실패(만료된 토큰)해도
+    // 여기서 로그인 페이지로 리다이렉트하면 안 되고, 그냥 아무 일도 없었던 것처럼
+    // 넘어가야 한다. 실제로 만료된 토큰으로 뭔가 시도할 때만 기존 401 흐름이 뜬다.
+    refresh: async (token: string): Promise<{ access_token: string } | null> => {
+      try {
+        const res = await fetch(`${BASE_URL}/auth/refresh?token=${token}`, { method: "POST" });
+        if (!res.ok) return null;
+        return res.json();
+      } catch {
+        return null;
+      }
+    },
   },
   programs: {
     recommend: (body: object) =>

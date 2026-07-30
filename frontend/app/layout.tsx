@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ChatPopup from "./components/ChatPopup";
+import AuthRefresher from "./components/AuthRefresher";
 import { ToastProvider } from "./components/ui/Toast";
 import { ThemeProvider } from "./components/ui/ThemeProvider";
 
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <ToastProvider>
             {children}
             <ChatPopup />
+            <AuthRefresher />
           </ToastProvider>
         </ThemeProvider>
       </body>

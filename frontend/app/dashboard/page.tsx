@@ -56,9 +56,12 @@ export default function DashboardPage() {
         .finally(() => setLoading(false));
 
       fetch(`${BASE_URL}/roadmap/business-plan?token=${token}`)
-        .then((r) => r.json())
+        .then((r) => {
+          if (!r.ok) throw new Error("사업계획서 조회 실패");
+          return r.json();
+        })
         .then((d) => setHasPlan(!!d.content))
-        .catch(() => toast.show("사업계획서 정보를 불러오지 못했습니다.", "error"));
+        .catch(() => toast.show("사업계획서 정보를 불러오지 못했습니다. 다시 로그인해보세요.", "error"));
     } else {
       setLoading(false);
     }

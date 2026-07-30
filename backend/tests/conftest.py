@@ -1,11 +1,17 @@
 import os
 
-# app.config.Settings() reads these at import time — set test values before any
-# app.* module is imported so the whole app boots against a throwaway SQLite DB
-# instead of trying to reach a real Postgres.
-os.environ.setdefault("DATABASE_URL", "sqlite:///./test_hub.db")
-os.environ.setdefault("SECRET_KEY", "test-secret-key")
-os.environ.setdefault("OPENAI_API_KEY", "test-openai-key")
+# app.config.Settings() reads these at import time. Force (not setdefault) so a
+# real backend/.env with live API keys never leaks into tests — pydantic-settings
+# precedence is env var > .env file, so this guarantees hermetic, network-free
+# tests regardless of what a developer's local .env happens to contain.
+os.environ["DATABASE_URL"] = "sqlite:///./test_hub.db"
+os.environ["SECRET_KEY"] = "test-secret-key"
+os.environ["OPENAI_API_KEY"] = "test-openai-key"
+os.environ["SOLAR_API_KEY"] = ""
+os.environ["HUB_COLLECTOR_KEY"] = ""
+os.environ["KSTARTUP_API_KEY"] = ""
+os.environ["BIZINFO_API_KEY"] = ""
+os.environ["KOCCA_API_KEY"] = ""
 
 import pytest
 from fastapi.testclient import TestClient

@@ -53,6 +53,14 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     return TokenResponse(access_token=create_access_token(user.id), user=UserResponse.model_validate(user))
 
 
+@router.post("/refresh", response_model=TokenResponse)
+def refresh(token: str, db: Session = Depends(get_db)):
+    """만료 전 토큰만 재발급한다 — 이미 만료됐으면 get_current_user가 401을 던지고
+    끝(기존 로그인 흐름 그대로). 새 토큰 종류·저장소 없이 같은 만료 정책으로 재발급만 한다."""
+    user = get_current_user(token, db)
+    return TokenResponse(access_token=create_access_token(user.id), user=UserResponse.model_validate(user))
+
+
 @router.patch("/profile", response_model=UserResponse)
 def update_profile(body: UserUpdate, token: str, db: Session = Depends(get_db)):
     user = get_current_user(token, db)

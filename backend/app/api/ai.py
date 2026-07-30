@@ -1,11 +1,27 @@
 import re
 import json
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from openai import OpenAI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from app.schemas.roadmap import AIDraftRequest
 from app.config import settings
+
+limiter = Limiter(key_func=get_remote_address)
+
+MAX_DICT_JSON_CHARS = 20000  # 로드맵 단계 하나 분량 기준 넉넉한 상한 — 유료 LLM 호출 남용 방지용
+
+
+def _size_validator(max_chars: int = MAX_DICT_JSON_CHARS):
+    """field_validator에 꽂을 수 있는 (cls, v) 시그니처 검증기를 만들어 반환한다 —
+    Pydantic v2가 필드 검증기를 classmethod로 감싸 (cls, value) 형태로 호출하기 때문."""
+    def _validate(cls, v):
+        if v is not None and len(json.dumps(v, ensure_ascii=False)) > max_chars:
+            raise ValueError(f"입력이 너무 큽니다 (최대 {max_chars}자)")
+        return v
+    return _validate
 
 
 def strip_markdown(text: str) -> str:
@@ -35,10 +51,10 @@ solar_client = OpenAI(api_key=settings.solar_api_key, base_url="https://api.upst
 
 class ChatMessage(BaseModel):
     role: str
-    content: str
+    content: str = Field(max_length=4000)
 
 class ChatRequest(BaseModel):
-    messages: List[ChatMessage]
+    messages: List[ChatMessage] = Field(max_length=50)
     step: Optional[int] = None
 
 
@@ -556,9 +572,12 @@ class FeedbackRequest(BaseModel):
     step: int
     content: dict
 
+    _validate_content = field_validator("content")(_size_validator())
+
 
 @router.post("/feedback")
-def generate_feedback(body: FeedbackRequest):
+@limiter.limit("20/minute")
+def generate_feedback(request: Request, body: FeedbackRequest):
     if body.step not in STEP_FEEDBACK_PROMPTS:
         raise HTTPException(status_code=400, detail="유효하지 않은 단계입니다")
 
@@ -601,9 +620,12 @@ class ScoreRequest(BaseModel):
     step: int
     content: dict
 
+    _validate_content = field_validator("content")(_size_validator())
+
 
 @router.post("/score")
-def score_step(body: ScoreRequest):
+@limiter.limit("20/minute")
+def score_step(request: Request, body: ScoreRequest):
     if body.step not in STEP_SCORE_PROMPTS:
         raise HTTPException(status_code=400, detail="유효하지 않은 단계입니다")
 
@@ -651,9 +673,13 @@ class CompareRequest(BaseModel):
     before: dict
     after: dict
 
+    _validate_before = field_validator("before")(_size_validator())
+    _validate_after = field_validator("after")(_size_validator())
+
 
 @router.post("/compare")
-def compare_versions(body: CompareRequest):
+@limiter.limit("20/minute")
+def compare_versions(request: Request, body: CompareRequest):
     if body.step not in STEP_COMPARE_PROMPTS:
         raise HTTPException(status_code=400, detail="유효하지 않은 단계입니다")
 
@@ -710,7 +736,8 @@ def compare_versions(body: CompareRequest):
 # ── 엔드포인트 ────────────────────────────────────────────────────────────
 
 @router.post("/generate")
-def generate_draft(body: AIDraftRequest):
+@limiter.limit("20/minute")
+def generate_draft(request: Request, body: AIDraftRequest):
     if body.step not in STEP_PROMPTS:
         raise HTTPException(status_code=400, detail="유효하지 않은 단계입니다")
 
@@ -789,7 +816,8 @@ def generate_draft(body: AIDraftRequest):
 
 
 @router.post("/chat")
-def chat(body: ChatRequest):
+@limiter.limit("30/minute")
+def chat(request: Request, body: ChatRequest):
     if not body.messages:
         raise HTTPException(status_code=400, detail="메시지가 없습니다")
 
@@ -829,13 +857,16 @@ class BusinessPlanRequest(BaseModel):
     token: str
     all_content: dict
 
+    _validate_all_content = field_validator("all_content")(_size_validator(max_chars=80000))  # 7단계 전체 취합분
+
 
 class BusinessPlanFeedbackRequest(BaseModel):
-    business_plan: str
+    business_plan: str = Field(max_length=20000)
 
 
 @router.post("/business-plan")
-def generate_business_plan(body: BusinessPlanRequest):
+@limiter.limit("10/minute")
+def generate_business_plan(request: Request, body: BusinessPlanRequest):
     step_names = {
         1: "문제 발견과 솔루션", 2: "예술적 비전", 3: "시장 분석",
         4: "수익 모델", 5: "자금 계획", 6: "팀 빌딩", 7: "피치덱·런칭",
@@ -895,7 +926,8 @@ def generate_business_plan(body: BusinessPlanRequest):
 
 
 @router.post("/business-plan/feedback")
-def generate_business_plan_feedback(body: BusinessPlanFeedbackRequest):
+@limiter.limit("20/minute")
+def generate_business_plan_feedback(request: Request, body: BusinessPlanFeedbackRequest):
     prompt = f"""당신은 StepUp AI 창업 코치 '요다'입니다.
 아래 사업계획서 전체를 읽고, 창업자에게 따뜻하고 직접적인 코칭 피드백을 해주세요.
 
