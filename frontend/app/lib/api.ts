@@ -57,4 +57,13 @@ export const api = {
     compare: (step: number, before: object, after: object) =>
       request("/ai/compare", { method: "POST", body: JSON.stringify({ step, before, after }) }),
   },
+  hub: {
+    // 인증 불필요한 공개 조회 — request()의 401 리다이렉트 로직을 타지 않도록 직접 fetch.
+    // 실패하면 그냥 throw만 하고, 호출부(dashboard)가 기존 목업으로 폴백한다.
+    getItems: async (sourceType: string): Promise<{ items: { title: string; source: string; date: string; url: string; steps: number[] }[] }> => {
+      const res = await fetch(`${BASE_URL}/hub/items?source_type=${sourceType}`);
+      if (!res.ok) throw new Error("허브 데이터를 불러오지 못했습니다");
+      return res.json();
+    },
+  },
 };

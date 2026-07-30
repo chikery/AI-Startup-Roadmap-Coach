@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import engine, Base
-from app.api import auth, programs, roadmap, ai
+from app.api import auth, programs, roadmap, ai, hub
 import app.models  # noqa: ensure models are registered
 import app.models.business_plan  # noqa
 
@@ -27,6 +27,7 @@ app.include_router(auth.router)
 app.include_router(programs.router)
 app.include_router(roadmap.router)
 app.include_router(ai.router)
+app.include_router(hub.router)
 
 
 @app.get("/health")

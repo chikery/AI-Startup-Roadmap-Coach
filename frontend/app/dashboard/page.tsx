@@ -23,6 +23,7 @@ import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
 import NotificationList from "@/app/components/ui/NotificationList";
 import { NOTIFICATIONS } from "@/app/lib/notifications-data";
 import { useToast } from "@/app/components/ui/Toast";
+import { STARTUP_NEWS, GOV_SUPPORT_NEWS, RECOMMENDED_ARTICLES, InfoHubItem } from "@/app/lib/info-hub-data";
 
 interface StepStatus {
   step: number;
@@ -36,6 +37,9 @@ export default function DashboardPage() {
   const [progress, setProgress] = useState<StepStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasPlan, setHasPlan] = useState(false);
+  // 실데이터(hub_items)가 비어있으면 목업을 기본값으로 유지 — K-Startup/기업마당/KOCCA는
+  // 전부 정부지원사업 공고라 govSupportNews만 실제 수집기가 있고, 나머지 둘은 계속 목업.
+  const [govSupportNews, setGovSupportNews] = useState<InfoHubItem[]>(GOV_SUPPORT_NEWS);
 
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -59,6 +63,15 @@ export default function DashboardPage() {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // 로그인 여부와 무관한 공개 데이터 — 실패하거나 비어있으면 조용히 목업 유지.
+    api.hub.getItems("gov_support")
+      .then((res) => {
+        if (res.items.length > 0) setGovSupportNews(res.items);
+      })
+      .catch(() => {});
   }, []);
 
   const completedCount = progress.filter((s) => s.is_completed).length;
@@ -255,9 +268,9 @@ export default function DashboardPage() {
             <div className="hidden md:block">
               <div className="text-base font-bold" style={{ color: "var(--color-text)" }}>창업 정보 허브</div>
               <div className="mt-3 grid grid-cols-3 gap-6">
-                <StartupNewsCard currentStep={activeStep} />
-                <GovSupportNewsCard currentStep={activeStep} />
-                <RecommendedArticleCard currentStep={activeStep} />
+                <StartupNewsCard currentStep={activeStep} items={STARTUP_NEWS} />
+                <GovSupportNewsCard currentStep={activeStep} items={govSupportNews} />
+                <RecommendedArticleCard currentStep={activeStep} items={RECOMMENDED_ARTICLES} />
               </div>
             </div>
           </div>

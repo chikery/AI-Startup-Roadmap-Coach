@@ -14,6 +14,8 @@ __pycache__/
 *.pyo
 .venv/
 venv/
+backend/test_hub.db
+.pytest_cache/
 
 # FAISS index (빌드 시 재생성)
 backend/app/rag/faiss_index/
