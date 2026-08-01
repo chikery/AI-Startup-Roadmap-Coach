@@ -19,6 +19,12 @@
   --color-primary-hover: color-mix(in srgb, #6C5CE7 85%, black);
   --color-primary-subtle: color-mix(in srgb, #6C5CE7 14%, #FFFFFF);
 
+  /* Deliberately theme-independent — a guaranteed-light chip/CTA surface for
+     content sitting on gradient hero banners (TodayMissionCard, roadmap's AI
+     draft banner), which must stay legible in both light and dark mode
+     regardless of palette. Not overridden per [data-theme="dark"] on purpose. */
+  --color-hero-chip: #FFFFFF;
+
   /* Type scale — weight is deliberately limited to 2 tiers: 600 (semibold, labels/body-emphasis)
      and 800 (extrabold, headings/hero numbers) to match the brand's existing bold tone. */
   --font-size-h1: 3rem;

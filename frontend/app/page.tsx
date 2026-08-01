@@ -1,5 +1,7 @@
 import ThemeSwitcher from "./components/ui/ThemeSwitcher";
 import Button from "./components/ui/Button";
+import Card from "./components/ui/Card";
+import Badge from "./components/ui/Badge";
 import PoweredBySolar from "./components/ui/PoweredBySolar";
 import { cn } from "./lib/cn";
 
@@ -71,7 +73,7 @@ export default function Home() {
           />
           <div className="landing-hero-grid relative z-[2] mx-auto max-w-[1200px] items-center">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-[15px] py-2 [font-family:var(--font-geist)] text-[13.5px] font-semibold tracking-[0.06em] text-primary">IDEA → PLAN → FUND</div>
+              <Badge variant="default" className="[font-family:var(--font-geist)] px-[15px] py-2 text-[13.5px] tracking-[0.06em]">IDEA → PLAN → FUND</Badge>
               <h1 className="landing-hero-title mt-6 [font-family:var(--font-geist)] font-extrabold leading-[1.1] tracking-[-0.03em]">아이디어를<br /><span className="text-primary">사업으로</span> 키우는<br />가장 빠른 길.</h1>
               <p className="mt-6 max-w-[520px] text-[17px] leading-[1.6] text-muted">창업 아이디어만 있다면 충분해요. AI 코치가 <b className="text-text">7단계로 사업계획서</b>를 완성하고, 지금 신청 가능한 <b className="text-text">정부지원사업</b>까지 매칭해 드립니다.</p>
               <div className="mt-8 flex flex-wrap items-center gap-[13px]">
@@ -138,7 +140,7 @@ export default function Home() {
                     <div className="text-[12px] font-bold tracking-[0.04em] text-primary">STEP 3 · 솔루션 &amp; MVP 설계</div>
                     <div className="mt-[6px] mb-[14px] text-[18px] font-bold tracking-[-0.01em] text-text">핵심 솔루션을 한 문장으로 정의해 볼까요?</div>
                     <div className="rounded-md border border-border bg-[color-mix(in_srgb,var(--color-primary)_6%,var(--color-surface))] px-[15px] py-[14px] text-[13.5px] leading-[1.7] text-text">
-                      <span className="mb-[9px] inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-[9px] py-1 text-[11px] font-bold text-primary">✦ AI 초안</span><br />
+                      <Badge variant="default" className="mb-[9px] gap-1.5 text-[11px]">✦ AI 초안</Badge><br />
                       지역 예술가의 작품을 <b>구독형 큐레이션</b>으로 매달 엄선해 배송하고, 구매 전 실물을 집에서 체험하게 하여 <b>온라인 구매 거부감</b>이라는 문제를 해소합니다.
                     </div>
                     <div className="mt-3 flex gap-2">
@@ -148,7 +150,7 @@ export default function Home() {
                     <div className="glass absolute right-[18px] bottom-[18px] w-[232px] animate-[floaty_7s_ease-in-out_infinite] rounded-md px-[15px] py-[14px]">
                       <div className="mb-2 flex items-center justify-between">
                         <span className="text-[10.5px] font-bold tracking-[0.04em] text-muted">🎯 추천 지원사업</span>
-                        <span className="rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-2 py-[3px] text-[10.5px] font-bold text-primary">매칭 94%</span>
+                        <Badge variant="default" className="text-[10.5px]">매칭 94%</Badge>
                       </div>
                       <div className="text-[13.5px] font-bold leading-[1.35] text-text">예비창업패키지 2026</div>
                       <div className="mt-[3px] text-[11.5px] text-muted">중소벤처기업부 · 최대 1억원</div>
@@ -193,11 +195,11 @@ export default function Home() {
               { emoji: "🔍", title: "흩어진 지원사업 공고", desc: "기관마다 흩어진 공고. 내 아이템에 맞는 것만 골라 드려요." },
               { emoji: "💬", title: "피드백 줄 사람이 없음", desc: "혼자 쓰면 비는 논리. 단계마다 AI가 약점을 짚어줍니다." },
             ] as Array<{emoji:string;title:string;desc:string}>).map((c) => (
-              <div key={c.title} className="glass rounded-lg px-[22px] py-[26px]">
+              <Card key={c.title} variant="glass" radius="lg" padding="none" className="px-[22px] py-[26px]">
                 <div className="text-[26px]">{c.emoji}</div>
                 <div className="mt-[14px] mb-2 text-[17px] font-bold">{c.title}</div>
                 <p className="m-0 text-[14px] leading-[1.6] text-muted">{c.desc}</p>
-              </div>
+              </Card>
             ))}
           </div>
         </section>
@@ -287,7 +289,7 @@ export default function Home() {
                 { pct: "88%", name: "초기창업패키지", org: "창업진흥원 · 최대 1억원 · 3년 이내", d: "D-30", urgent: false },
                 { pct: "81%", name: "예술인 창업 지원사업", org: "예술경영지원센터 · 최대 3천만원", d: "D-45", urgent: false },
               ] as Array<{pct:string;name:string;org:string;d:string;urgent:boolean}>).map((g) => (
-                <div key={g.name} className="glass flex items-center gap-[18px] rounded-lg px-[22px] py-5">
+                <Card key={g.name} variant="glass" radius="lg" padding="none" className="flex items-center gap-[18px] px-[22px] py-5">
                   <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-md bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] [font-family:var(--font-geist)] text-[17px] font-extrabold text-primary">{g.pct}</div>
                   <div className="flex-1">
                     <div className="text-[16.5px] font-bold">{g.name}</div>
@@ -297,7 +299,7 @@ export default function Home() {
                     <div className={cn("text-[13px] font-bold", g.urgent ? "text-error" : "text-primary")}>{g.d}</div>
                     <div className="mt-0.5 whitespace-nowrap text-[11.5px] text-muted">{g.urgent ? "마감 임박" : "접수 중"}</div>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           </div>
@@ -311,7 +313,7 @@ export default function Home() {
             <p className="mx-auto mt-[14px] max-w-[560px] text-[16px] leading-[1.6] text-muted">질문에 답하면 AI가 초안을 쓰고, 당신은 다듬기만 하면 됩니다.</p>
           </div>
           <div className="mx-auto mt-10 max-w-[1080px] px-5 md:mt-[52px] md:px-10">
-            <div className="glass overflow-hidden rounded-lg">
+            <Card variant="glass" radius="lg" padding="none" className="overflow-hidden">
               <div className="flex items-center gap-2 border-b border-border bg-[color-mix(in_srgb,var(--color-text)_4%,transparent)] px-[18px] py-3.5">
                 {(["bg-[#E5675B]","bg-[#F4BE4F]","bg-[#61C554]"] as const).map((c,i) => <span key={i} className={cn("h-3 w-3 rounded-full", c)} />)}
                 <span className="flex-1 text-center text-[12.5px] text-muted">app.stepup.kr / write</span>
@@ -378,7 +380,7 @@ export default function Home() {
                   ] as Array<{pct:string;name:string;org:string;d:string;urgent:boolean}>).map((g) => (
                     <div key={g.name} className="glass mb-2.5 rounded-md px-3.5 py-[13px]">
                       <div className="mb-[7px] flex items-center justify-between">
-                        <span className="rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-2 py-[3px] text-[10.5px] font-bold text-primary">{g.pct}</span>
+                        <Badge variant="default" className="text-[10.5px]">{g.pct}</Badge>
                         <span className={cn("text-[10.5px] font-bold", g.urgent ? "text-error" : "text-primary")}>{g.d}</span>
                       </div>
                       <div className="text-[13px] font-bold text-text">{g.name}</div>
@@ -388,7 +390,7 @@ export default function Home() {
                   <div className="mt-3 text-center text-[12px] text-muted">계획서가 채워질수록<br />추천이 정교해져요</div>
                 </div>
               </div>
-            </div>
+            </Card>
             <div className="mt-9 text-center">
               <Button
                 href="/dashboard"

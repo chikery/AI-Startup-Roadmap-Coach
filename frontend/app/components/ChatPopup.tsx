@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/app/lib/cn";
 import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
+import { Input } from "@/app/components/ui/Input";
+import Button from "@/app/components/ui/Button";
 
 interface Message {
   role: "user" | "assistant";
@@ -184,29 +186,35 @@ export default function ChatPopup() {
 
           {/* Input */}
           <div className="flex gap-2 border-t border-border bg-surface px-3 py-2.5">
-            <input
+            <Input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
               placeholder="코치에게 물어보세요..."
               disabled={loading}
-              className="flex-1 rounded-sm border-[1.5px] border-border bg-background px-[13px] py-[9px] text-[13px] text-text outline-none focus:border-primary disabled:opacity-50"
+              className="flex-1 px-[13px] py-[9px] text-[13px]"
             />
-            <button
+            {/* Compact icon-only send button — the 44px touch-target floor other
+                Buttons enforce would make this taller than the input it sits next
+                to, breaking the composer bar's alignment. variant="primary" is
+                Button's monochrome ink style, not the theme accent, so the color
+                is overridden here to keep matching the chat's violet branding. */}
+            <Button
               onClick={send}
               disabled={loading || !input.trim()}
+              variant="primary"
               className={cn(
-                "flex items-center justify-center rounded-sm px-[13px] py-[9px] text-white transition-colors duration-150 disabled:pointer-events-none disabled:cursor-not-allowed",
+                "h-9 min-h-0 w-9 rounded-sm p-0 text-white hover:opacity-100",
                 loading || !input.trim()
                   ? "bg-[color-mix(in_srgb,var(--color-primary)_30%,var(--color-surface))]"
-                  : "cursor-pointer bg-primary hover:bg-primary-hover"
+                  : "bg-primary hover:bg-primary-hover"
               )}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
               </svg>
-            </button>
+            </Button>
           </div>
         </div>
       )}

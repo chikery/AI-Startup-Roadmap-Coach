@@ -447,10 +447,10 @@ export default function RoadmapStepPage() {
               <span className="hidden border-l border-border pl-[18px] text-[13px] text-muted md:inline">{step}단계: {meta.name}</span>
             </div>
             <div className="flex items-center gap-2.5 sm:gap-4">
-              <span className="inline-flex items-center gap-[7px] rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-1.5 text-[13px] font-bold text-primary">
+              <Badge variant="default" className="gap-[7px] text-[13px]">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14h3v6H4zM10.5 9h3v11h-3zM17 4h3v16h-3z" fill="var(--color-primary)"/></svg>
                 {step}/7
-              </span>
+              </Badge>
               {/* Decorative bell — desktop only, no behavior attached */}
               <svg className="hidden md:block" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="var(--color-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
               <PoweredBySolar className="hidden md:inline-flex" />
@@ -509,7 +509,7 @@ export default function RoadmapStepPage() {
         <div className="roadmap-grid mx-auto max-w-[1180px]">
 
           {/* ── SIDEBAR ── */}
-          <aside className="glass sticky top-[26px] rounded-lg px-4 py-5">
+          <Card as="aside" variant="glass" radius="lg" padding="none" className="sticky top-[26px] px-4 py-5">
             <div className="text-[18px] font-extrabold text-primary">창업 여정</div>
             <div className="mt-[9px] mb-2 flex items-center justify-between">
               <span className="text-[12.5px] font-semibold text-muted">진행률</span>
@@ -657,7 +657,7 @@ export default function RoadmapStepPage() {
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="var(--color-muted)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </Link>
             </div>
-          </aside>
+          </Card>
 
           {/* ── MAIN ── */}
           <main>
@@ -679,7 +679,7 @@ export default function RoadmapStepPage() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="var(--color-primary)" strokeWidth="1.7"/><path d="M12 11v5M12 7.5h.01" stroke="var(--color-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
                 왜 이 단계가 필요한가 (펼쳐보기)
               </summary>
-              <div className="glass mt-2 rounded-md px-5 py-[18px]">
+              <Card variant="glass" radius="md" padding="none" className="mt-2 px-5 py-[18px]">
                 {meta.whyText.map((text, i) => (
                   <p key={i} className={cn("text-[13.5px] leading-[1.7] text-muted", i === 0 ? "m-0" : "mt-3")}>{text}</p>
                 ))}
@@ -689,7 +689,7 @@ export default function RoadmapStepPage() {
                   RK · AI 코치 요다
                 </div>
                 <div className="mt-2 text-[13px] leading-[1.7] text-text">"{meta.coachQuote}"</div>
-              </div>
+              </Card>
             </details>
 
             {/* Desktop-only version — always visible, two-column, unchanged */}
@@ -748,7 +748,7 @@ export default function RoadmapStepPage() {
                   style={{ background: "linear-gradient(115deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,255,255,0.12) 100%)" }}
                 />
                 <div className="relative flex items-center gap-[13px]">
-                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-white/30 bg-white/[0.22]">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-hero-chip/30 bg-hero-chip/[0.22]">
                     <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/></svg>
                   </span>
                   <div>
@@ -759,9 +759,9 @@ export default function RoadmapStepPage() {
                 <Button
                   onClick={handleGenerate}
                   disabled={generating || !user?.item_keyword}
-                  variant="primary"
+                  variant="secondary"
                   size="md"
-                  className="relative shrink-0 px-[22px] py-[13px]"
+                  className="relative shrink-0 bg-hero-chip px-[22px] py-[13px] text-primary hover:bg-hero-chip/90"
                 >
                   {generating ? (
                     <span
@@ -775,7 +775,7 @@ export default function RoadmapStepPage() {
                 </Button>
               </div>
             ) : (
-              <div className="glass mt-[18px] flex items-center justify-between gap-[18px] rounded-md bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-5 py-4">
+              <Card variant="glass" radius="md" padding="none" className="mt-[18px] flex items-center justify-between gap-[18px] bg-[color-mix(in_srgb,var(--color-success)_16%,var(--color-surface))] px-5 py-4">
                 <div className="flex items-center gap-[13px]">
                   <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-success">
                     <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -794,7 +794,7 @@ export default function RoadmapStepPage() {
                 >
                   {generating ? "생성 중..." : "다시 생성하기"}
                 </Button>
-              </div>
+              </Card>
             )}
 
             {/* Framework Table */}
@@ -825,9 +825,9 @@ export default function RoadmapStepPage() {
                     </div>
                     <div className="px-[22px] py-4 text-[13.5px] leading-[1.6]">
                       {val && (
-                        <span className="mb-2 inline-flex items-center gap-[5px] rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-2 py-[3px] text-[10.5px] font-bold text-primary">
+                        <Badge variant="default" className="mb-2 gap-[5px] text-[10.5px]">
                           ✦ AI 초안
-                        </span>
+                        </Badge>
                       )}
                       <textarea
                         value={val}
@@ -849,13 +849,13 @@ export default function RoadmapStepPage() {
             {/* Coaching Feedback — surfaced right after the work area on mobile so users see it without hunting */}
             <div className="roadmap-section-coachfeedback">
             {!draftGenerated ? (
-              <div className="glass mt-[18px] rounded-md p-[34px] text-center">
+              <Card variant="glass" radius="md" padding="none" className="mt-[18px] p-[34px] text-center">
                 <span className="inline-flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-muted)_15%,transparent)]">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.5 8.5 0 01-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1121 11.5z" stroke="var(--color-muted)" strokeWidth="1.7" strokeLinejoin="round"/></svg>
                 </span>
                 <div className="mt-3.5 text-[15px] font-extrabold text-muted">코칭 피드백 대기 중</div>
                 <div className="mt-[5px] text-[13px] leading-[1.6] text-muted">AI 초안을 생성하면 코치 요다가 작성된 내용을 분석해 피드백을 제시합니다.</div>
-              </div>
+              </Card>
             ) : (
               <>
                 {/* 완성도 점수 카드 */}
@@ -935,9 +935,9 @@ export default function RoadmapStepPage() {
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       <span className="text-[14px] font-extrabold text-success">수정 후 변화 분석</span>
                       {compareResult.progress_delta > 0 && (
-                        <span className="rounded-full bg-[color-mix(in_srgb,var(--color-success)_26%,var(--color-surface))] px-2 py-0.5 text-[12px] font-bold text-success">
+                        <Badge variant="success" className="text-[12px]">
                           +{compareResult.progress_delta}점 향상
-                        </span>
+                        </Badge>
                       )}
                     </div>
                     {compareResult.improvements.length > 0 && (

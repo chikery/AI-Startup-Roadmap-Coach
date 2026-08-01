@@ -7,6 +7,8 @@ import { Copy, Check, Pencil, Save, RefreshCw, ArrowLeft } from "lucide-react";
 import { api } from "@/app/lib/api";
 import { useToast } from "@/app/components/ui/Toast";
 import Button from "@/app/components/ui/Button";
+import Card from "@/app/components/ui/Card";
+import Badge from "@/app/components/ui/Badge";
 import ThemeSwitcher from "@/app/components/ui/ThemeSwitcher";
 import BottomNav from "@/app/components/ui/BottomNav";
 import Drawer from "@/app/components/ui/Drawer";
@@ -238,10 +240,10 @@ export default function BusinessPlanPage() {
               <span className="hidden border-l border-border pl-[18px] text-[13px] text-muted md:inline">사업계획서</span>
             </div>
             <div className="flex items-center gap-2.5 md:gap-4">
-              <span className="hidden items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-3 py-[5px] text-[13px] font-bold text-primary md:inline-flex">
+              <Badge variant="default" className="hidden gap-1.5 text-[13px] md:inline-flex">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill={INDIGO}/></svg>
                 완성
-              </span>
+              </Badge>
               <PoweredBySolar className="hidden md:inline-flex" />
               <ThemeSwitcher className="hidden md:inline-flex" />
               <span className="hidden h-8 w-8 rounded-full bg-[linear-gradient(135deg,var(--color-secondary),var(--color-primary))] md:inline-block" />
@@ -300,7 +302,7 @@ export default function BusinessPlanPage() {
           {/* Page header */}
           <div className="mb-5">
             <div className="mb-1.5 flex items-center gap-2.5">
-              <span className="rounded-full bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-2.5 py-[3px] text-[11px] font-bold tracking-[0.04em] text-primary">COMPLETE</span>
+              <Badge variant="default" className="text-[11px] tracking-[0.04em]">COMPLETE</Badge>
             </div>
             <h1 className="m-0 text-[24px] font-black tracking-[-0.02em] text-text md:text-[26px]">나의 사업계획서</h1>
             <p className="mt-1.5 text-[13.5px] text-muted">7단계 로드맵을 바탕으로 AI가 작성한 사업계획서입니다. 자유롭게 수정해 활용하세요.</p>
@@ -361,7 +363,7 @@ export default function BusinessPlanPage() {
                 </div>
               </div>
 
-              <div className={cn("glass min-h-[500px] rounded-md px-8 py-7", isEditing && "border-2 border-primary")}>
+              <Card variant="glass" padding="none" radius="md" className={cn("min-h-[500px] px-8 py-7", isEditing && "border-2 border-primary")}>
                 {loadingPlan ? (
                   <div className="flex min-h-[400px] flex-col items-center justify-center gap-[18px]">
                     <div className="flex gap-1.5">
@@ -391,12 +393,12 @@ export default function BusinessPlanPage() {
                     {renderPlan(businessPlan)}
                   </div>
                 ) : null}
-              </div>
+              </Card>
             </div>
 
             {/* RIGHT: 코치 요다 피드백 */}
             <div className="sticky top-[88px]">
-              <div className="glass overflow-hidden rounded-md">
+              <Card variant="glass" padding="none" radius="md" className="overflow-hidden">
                 {/* Header — the one hero gradient moment on this page */}
                 <div
                   className="relative overflow-hidden px-5 py-4"
@@ -455,7 +457,7 @@ export default function BusinessPlanPage() {
                     </Button>
                   </div>
                 )}
-              </div>
+              </Card>
 
               {/* Back to step 7 */}
               <Link

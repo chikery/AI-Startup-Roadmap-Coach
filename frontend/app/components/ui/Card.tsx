@@ -1,10 +1,11 @@
-import { HTMLAttributes } from "react";
+import { HTMLAttributes, ElementType } from "react";
 import { cn } from "@/app/lib/cn";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: "none" | "sm" | "md" | "lg";
   variant?: "glass" | "flat";
   radius?: "sm" | "md" | "lg" | "full";
+  as?: ElementType; // e.g. "aside"/"section" when the container is a real landmark, not a generic div
 }
 
 const PADDING_CLASS = {
@@ -21,9 +22,9 @@ const RADIUS_CLASS = {
   full: "rounded-full",
 };
 
-export default function Card({ padding = "md", variant = "glass", radius = "lg", className, ...props }: CardProps) {
+export default function Card({ padding = "md", variant = "glass", radius = "lg", as: Tag = "div", className, ...props }: CardProps) {
   return (
-    <div
+    <Tag
       className={cn(
         RADIUS_CLASS[radius],
         variant === "glass" ? "glass" : "bg-surface border border-border",
