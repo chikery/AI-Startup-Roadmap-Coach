@@ -39,6 +39,7 @@ export default function InfoHubList({ icon, title, items, currentStep, moreHref,
                 style={{
                   background: matched ? "color-mix(in srgb, var(--color-primary) 10%, var(--color-surface))" : "color-mix(in srgb, var(--color-surface) 60%, transparent)",
                   border: `1px solid ${matched ? "color-mix(in srgb, var(--color-primary) 30%, transparent)" : "var(--color-border)"}`,
+                  opacity: matched ? 1 : 0.62,
                 }}
               >
                 <div className="flex items-start justify-between gap-2">

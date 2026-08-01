@@ -1,28 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { SUPPORT_PROGRAMS, SupportProgram, isExpired, daysLeft } from "@/app/lib/support-programs";
+import { SUPPORT_PROGRAMS, SupportProgram, isExpired, daysLeft, profileMatchScore } from "@/app/lib/support-programs";
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 
 interface Props {
   currentStep: number;
+  user?: { category?: string; region?: string } | null;
 }
 
 interface RankedProgram extends SupportProgram {
   expired: boolean;
   left: number;
   matched: boolean;
+  profileScore: number;
 }
 
-export default function GovernmentSupportCard({ currentStep }: Props) {
+export default function GovernmentSupportCard({ currentStep, user }: Props) {
   const [open, setOpen] = useState(false);
 
+  // 프로필(관심분야/지역)에 맞는 것을 우선 노출하되, 프로필이 없는 유저는
+  // profileScore가 항상 0이라 기존 step 기준 정렬과 동일하게 동작한다(결과 0건 없음).
   const ranked = SUPPORT_PROGRAMS
-    .map((p) => ({ ...p, expired: isExpired(p.deadline), left: daysLeft(p.deadline), matched: p.steps.includes(currentStep) }))
+    .map((p) => ({ ...p, expired: isExpired(p.deadline), left: daysLeft(p.deadline), matched: p.steps.includes(currentStep), profileScore: profileMatchScore(p, user) }))
     .filter((p) => !p.expired)
-    .sort((a, b) => (Number(b.matched) - Number(a.matched)) || a.left - b.left);
+    .sort((a, b) => (b.profileScore - a.profileScore) || (Number(b.matched) - Number(a.matched)) || a.left - b.left);
 
   const preview = ranked.slice(0, 2);
   const rest = ranked.slice(2);
@@ -68,11 +72,18 @@ function SupportRow({ p }: { p: RankedProgram }) {
     >
       <div className="flex items-start justify-between gap-2">
         <span className="text-[13px] font-bold leading-snug" style={{ color: "var(--color-text)" }}>{p.name}</span>
-        {p.matched && (
-          <Badge variant="accent" className="flex-shrink-0 whitespace-nowrap text-[10px]">
-            현재 단계
-          </Badge>
-        )}
+        <div className="flex flex-shrink-0 gap-1">
+          {p.profileScore > 0 && (
+            <Badge variant="success" className="whitespace-nowrap text-[10px]">
+              맞춤
+            </Badge>
+          )}
+          {p.matched && (
+            <Badge variant="accent" className="whitespace-nowrap text-[10px]">
+              현재 단계
+            </Badge>
+          )}
+        </div>
       </div>
       <div className="mt-1.5 flex items-center justify-between text-[11px]">
         <span className="font-bold" style={{ color: p.left <= 7 ? "var(--color-error)" : "var(--color-muted)" }}>

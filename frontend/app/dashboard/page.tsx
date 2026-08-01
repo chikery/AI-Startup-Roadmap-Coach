@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/app/lib/api";
-import { SUPPORT_PROGRAMS, isExpired, daysLeft } from "@/app/lib/support-programs";
+import { SUPPORT_PROGRAMS, isExpired, daysLeft, profileMatchScore } from "@/app/lib/support-programs";
 import { STEP_CONTENT } from "./step-content";
 import TodayMissionCard, { MissionVariant } from "./components/TodayMissionCard";
 import RoadmapProgressCard from "./components/RoadmapProgressCard";
@@ -86,7 +86,11 @@ export default function DashboardPage() {
     .filter((p) => !p.expired && p.left <= 14)
     .sort((a, b) => a.left - b.left)[0];
 
-  const eligibleCount = SUPPORT_PROGRAMS.filter((p) => !isExpired(p.deadline)).length;
+  // 프로필(관심분야/지역)에 맞는 지원사업만 센 값을 우선 노출하되, 매칭 결과가
+  // 0건이면(또는 프로필 정보가 없으면) 기존 전체 개수로 폴백한다(결과 0건 금지).
+  const profileEligibleCount = SUPPORT_PROGRAMS.filter((p) => !isExpired(p.deadline) && profileMatchScore(p, user) > 0).length;
+  const isEligibleCountPersonalized = profileEligibleCount > 0;
+  const eligibleCount = isEligibleCountPersonalized ? profileEligibleCount : SUPPORT_PROGRAMS.filter((p) => !isExpired(p.deadline)).length;
 
   function buildMission(): { variant: MissionVariant; eyebrow: string; title: string; desc: string; ctaLabel: string; ctaHref: string; externalCta?: boolean } {
     if (!isLoggedIn) {
@@ -261,9 +265,9 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
               <ProjectHealthCard completedCount={completedCount} hasPlan={hasPlan} />
-              <EligibleProgramsCard count={eligibleCount} />
+              <EligibleProgramsCard count={eligibleCount} personalized={isEligibleCountPersonalized} />
               <RoadmapProgressCard completedCount={completedCount} activeStep={activeStep} />
-              <GovernmentSupportCard currentStep={activeStep} />
+              <GovernmentSupportCard currentStep={activeStep} user={user} />
             </div>
 
             {/* 창업 정보 허브 — desktop only. Mobile already has enough content and must
