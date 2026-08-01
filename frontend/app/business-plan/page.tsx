@@ -386,7 +386,7 @@ export default function BusinessPlanPage() {
                   <textarea
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
-                    className="min-h-[600px] w-full resize-y border-none bg-transparent text-[14px] leading-[1.85] text-muted outline-none font-[Pretendard,_sans-serif]"
+                    className="min-h-[600px] w-full resize-y rounded-sm border-none bg-transparent text-[14px] leading-[1.85] text-muted outline-none font-[Pretendard,_sans-serif] focus-visible:ring-2 focus-visible:ring-primary"
                   />
                 ) : businessPlan ? (
                   <div className="select-text">

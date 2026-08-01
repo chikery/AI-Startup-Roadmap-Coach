@@ -12,7 +12,9 @@
   --color-error: #FF3B30;
   --color-info: #0EA5E9;
   --color-text: #16151C;
-  --color-muted: #8B8894;
+  /* #6C6976 (not the original #8B8894) — WCAG AA 4.5:1 text contrast against
+     both --color-surface(#FFF) and --color-background(#F2F1F7) in violet light mode. */
+  --color-muted: #6C6976;
   --color-text-tertiary: #B4B1BC;
   --color-border: rgba(22, 21, 28, 0.08);
   --color-border-strong: rgba(22, 21, 28, 0.16);
@@ -100,7 +102,7 @@
   --color-error: #FF3B30;
   --color-info: #0EA5E9;
   --color-text: #16151C;
-  --color-muted: #8B8894;
+  --color-muted: #6C6976;
   --color-text-tertiary: #B4B1BC;
   --color-border: rgba(22, 21, 28, 0.08);
   --color-border-strong: rgba(22, 21, 28, 0.16);

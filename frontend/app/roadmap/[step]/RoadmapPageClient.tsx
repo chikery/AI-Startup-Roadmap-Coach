@@ -835,7 +835,7 @@ export default function RoadmapStepPage() {
                         onChange={(e) => setContent((prev) => ({ ...(prev || {}), [row.key]: e.target.value }))}
                         rows={val ? Math.max(2, val.split("\n").length + 1) : 2}
                         className={cn(
-                          "block w-full resize-none border-none bg-transparent p-0 text-[13.5px] leading-[1.6] outline-none font-['Pretendard',_sans-serif]",
+                          "block w-full resize-none rounded-sm border-none bg-transparent p-0 text-[13.5px] leading-[1.6] outline-none font-['Pretendard',_sans-serif] focus-visible:ring-2 focus-visible:ring-primary",
                           val ? "text-text" : "text-muted"
                         )}
                       />

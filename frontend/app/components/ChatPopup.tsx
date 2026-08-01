@@ -61,6 +61,9 @@ export default function ChatPopup() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
+  const wasOpenRef = useRef(false);
 
   // Reset messages when step changes
   useEffect(() => {
@@ -78,6 +81,25 @@ export default function ChatPopup() {
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
+
+  // 열릴 때 입력창으로 포커스 이동, 닫힐 때(Escape/닫기 버튼/토글 재클릭 무엇이든) FAB로 포커스 복귀
+  useEffect(() => {
+    if (open) {
+      inputRef.current?.focus();
+    } else if (wasOpenRef.current) {
+      fabRef.current?.focus();
+    }
+    wasOpenRef.current = open;
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   async function send() {
     const text = input.trim();
@@ -140,6 +162,7 @@ export default function ChatPopup() {
               </div>
               <button
                 onClick={() => setOpen(false)}
+                aria-label="채팅 닫기"
                 className="rounded-sm border-none bg-transparent px-1.5 py-1 text-[20px] leading-none text-white/70 hover:text-white"
               >
                 ×
@@ -187,11 +210,13 @@ export default function ChatPopup() {
           {/* Input */}
           <div className="flex gap-2 border-t border-border bg-surface px-3 py-2.5">
             <Input
+              ref={inputRef}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
               placeholder="코치에게 물어보세요..."
+              aria-label="코치에게 메시지 보내기"
               disabled={loading}
               className="flex-1 px-[13px] py-[9px] text-[13px]"
             />
@@ -204,6 +229,7 @@ export default function ChatPopup() {
               onClick={send}
               disabled={loading || !input.trim()}
               variant="primary"
+              aria-label="메시지 전송"
               className={cn(
                 "h-9 min-h-0 w-9 rounded-sm p-0 text-white hover:opacity-100",
                 loading || !input.trim()
@@ -221,7 +247,9 @@ export default function ChatPopup() {
 
       {/* Toggle FAB — boxShadow stays inline: color-mix() shadow, arbitrary-value would be unreadable */}
       <button
+        ref={fabRef}
         onClick={() => setOpen((v) => !v)}
+        aria-label={open ? "채팅 닫기" : "AI 코치와 채팅 열기"}
         className={cn(
           "flex h-14 w-14 items-center justify-center rounded-full border-none text-white transition duration-150 hover:scale-[1.08]",
           open ? "bg-primary-hover" : "bg-primary"

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 /* ─── shared styles ─── */
-const INPUT = "w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] bg-white";
+const INPUT = "w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary bg-white";
 const TEXTAREA = INPUT + " resize-y";
 
 /* ─── primitive components ─── */
