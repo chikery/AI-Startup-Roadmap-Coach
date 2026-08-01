@@ -10,8 +10,6 @@ os.environ["OPENAI_API_KEY"] = "test-openai-key"
 os.environ["SOLAR_API_KEY"] = ""
 os.environ["HUB_COLLECTOR_KEY"] = ""
 os.environ["KSTARTUP_API_KEY"] = ""
-os.environ["BIZINFO_API_KEY"] = ""
-os.environ["KOCCA_API_KEY"] = ""
 
 import pytest
 from fastapi.testclient import TestClient
