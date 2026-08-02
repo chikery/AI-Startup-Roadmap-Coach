@@ -33,6 +33,7 @@ mockup*
 !frontend/app/icon.png
 !frontend/app/apple-icon.png
 !frontend/public/logo-icon.png
+!frontend/public/guide/*.jpg
 
 # Build
 dist/

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ThemeSwitcher from "./components/ui/ThemeSwitcher";
 import Button from "./components/ui/Button";
 import Card from "./components/ui/Card";
@@ -48,9 +49,9 @@ export default function Home() {
               <span className="[font-family:var(--font-geist)] text-[20px] font-bold tracking-[-0.01em]">Stepup</span>
             </div>
             <div className="landing-nav-links items-center gap-7 text-[15px] font-medium text-muted whitespace-nowrap">
-              <a href="#how" className="text-inherit no-underline">작동 방식</a>
-              <a href="#match" className="text-inherit no-underline">지원사업 매칭</a>
-              <a href="#preview" className="text-inherit no-underline">작성 화면</a>
+              <Link href="/guide#how" className="text-inherit no-underline">작동 방식</Link>
+              <Link href="/guide#match" className="text-inherit no-underline">지원사업 매칭</Link>
+              <Link href="/guide#write" className="text-inherit no-underline">작성 화면</Link>
               <ThemeSwitcher />
               <Button href="/dashboard" variant="primary" size="md" className="rounded-full">무료로 시작하기</Button>
             </div>
