@@ -49,10 +49,6 @@ export const api = {
       }
     },
   },
-  programs: {
-    recommend: (body: object) =>
-      request("/programs/recommend", { method: "POST", body: JSON.stringify(body) }),
-  },
   roadmap: {
     getProgress: () =>
       request(`/roadmap/progress?token=${getToken()}`),

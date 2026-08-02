@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Search, ChevronRight } from "lucide-react";
-import { api } from "@/app/lib/api";
 import { useToast } from "@/app/components/ui/Toast";
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
@@ -17,21 +16,12 @@ import Drawer from "@/app/components/ui/Drawer";
 import PoweredBySolar from "@/app/components/ui/PoweredBySolar";
 import NotificationList from "@/app/components/ui/NotificationList";
 import { NOTIFICATIONS } from "@/app/lib/notifications-data";
+import { SUPPORT_PROGRAMS, SupportProgram, isExpired, matchesRegion } from "@/app/lib/support-programs";
 
 const CATEGORIES = ["문화예술", "콘텐츠", "공예", "소셜임팩트", "기술/IT", "기타"];
 const STAGES = ["아이디어", "예비창업", "초기창업"];
 
-interface Program {
-  id: number;
-  name: string;
-  organization: string;
-  support_type: string;
-  support_amount: string;
-  eligibility: string;
-  target_stage: string;
-  region: string;
-  deadline: string;
-  apply_url: string;
+interface Program extends SupportProgram {
   match_reason: string;
 }
 
@@ -41,6 +31,28 @@ function daysUntil(dateStr: string): number | null {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return Math.ceil((d.getTime() - today.getTime()) / 86400000);
+}
+
+// 예전엔 백엔드 LangChain+FAISS RAG(OpenAI 임베딩)로 추천했는데, Render 배포 환경에서
+// FAISS 인덱스가 컨테이너 재배포마다 사라져 매 요청마다 재빌드를 시도하다 500을
+// 던지고 있었다 — 게다가 그 RAG가 참조하던 sample_programs.json은 지금 실제로
+// 유지·검증하고 있는 SUPPORT_PROGRAMS(19곳 확인 후 27개로 확장)와 아예 다른,
+// 오래된 샘플 데이터였다. AI 매칭 대신 이미 검증해둔 SUPPORT_PROGRAMS를
+// 관심분야(정확 일치)·지역(느슨한 부분일치) 기준으로 직접 필터링한다 — 네트워크
+// 호출이 없어 즉시 응답하고, 결과가 전부 실제 존재하고 검증된 공고다.
+function recommendFromSupportPrograms(form: { category: string; region: string }): Program[] {
+  return SUPPORT_PROGRAMS
+    .filter((p) => !isExpired(p.deadline))
+    .map((p) => {
+      const categoryMatch = !!form.category && p.category === form.category;
+      const regionMatch = !!form.region.trim() && p.region !== "전국" && matchesRegion(p.region, form.region);
+      const reasons: string[] = [];
+      if (categoryMatch) reasons.push(`관심분야(${form.category})와 일치해요`);
+      if (regionMatch) reasons.push(`${form.region} 지역 조건과 맞아요`);
+      if (reasons.length === 0) reasons.push("지금 신청 가능한 지원사업이에요");
+      return { ...p, score: (categoryMatch ? 1 : 0) + (regionMatch ? 1 : 0), match_reason: reasons.join(" · ") };
+    })
+    .sort((a, b) => b.score - a.score || (new Date(a.deadline).getTime() - new Date(b.deadline).getTime()));
 }
 
 function DeadlineBadge({ deadline }: { deadline: string }) {
@@ -62,8 +74,7 @@ export default function ProgramsPage() {
     setLoading(true);
     setSearched(false);
     try {
-      const res = (await api.programs.recommend(body)) as { programs: Program[] };
-      setResults(res.programs);
+      setResults(recommendFromSupportPrograms(body));
       setSearched(true);
     } catch {
       toast.show("추천 조회 중 오류가 발생했습니다", "error");
@@ -163,7 +174,7 @@ export default function ProgramsPage() {
                 <Badge variant={eligibleCount > 0 ? "success" : "default"}>지금 자격 {eligibleCount}건</Badge>
               </div>
               <h1 className="text-[22px] sm:text-h3 font-[800] text-text m-0">신청 가능한 지원사업이에요</h1>
-              <p className="text-[14px] text-muted mt-1.5">아이템·단계 기준으로 AI가 분석한 결과예요. 조건을 바꾸고 싶다면 아래 "검색 조건 수정"을 열어보세요.</p>
+              <p className="text-[14px] text-muted mt-1.5">관심분야·지역 조건으로 찾은 결과예요. 조건을 바꾸고 싶다면 아래 "검색 조건 수정"을 열어보세요.</p>
             </div>
           ) : (
             <div className="mb-6">
@@ -186,13 +197,13 @@ export default function ProgramsPage() {
           )}
 
           {loading && (
-            <div className="text-center py-10 text-[13.5px] text-muted">AI가 지원사업을 분석하고 있어요...</div>
+            <div className="text-center py-10 text-[13.5px] text-muted">지원사업을 찾고 있어요...</div>
           )}
 
           {!loading && searched && (
             <div className="flex flex-col gap-4">
               {results.map((p, i) => (
-                <Card key={p.id} padding="md">
+                <Card key={p.name} padding="md">
                   <div className="flex items-start justify-between gap-4 mb-2.5 flex-wrap">
                     <div className="flex items-center gap-2 min-w-0">
                       <Badge variant="default">#{i + 1}</Badge>
@@ -200,18 +211,18 @@ export default function ProgramsPage() {
                     </div>
                     <DeadlineBadge deadline={p.deadline} />
                   </div>
-                  <p className="text-[13.5px] text-muted mb-2.5">{p.organization}</p>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="success">{p.support_type} {p.support_amount}</Badge>
+                    <Badge variant="success">{p.maxSupport}</Badge>
+                    <Badge variant="default" className="text-muted bg-background border border-border">{p.category}</Badge>
                     <Badge variant="default" className="text-muted bg-background border border-border">{p.region}</Badge>
                   </div>
                   <div className="rounded-md p-3.5 mb-3.5" style={{ background: "var(--color-primary-subtle)" }}>
                     <p className="text-[12px] font-[600] text-primary m-0 mb-1">왜 지금 추천되었나요</p>
                     <p className="text-[13.5px] text-primary m-0 leading-relaxed">{p.match_reason}</p>
                   </div>
-                  <p className="text-[13px] text-muted mb-4 leading-relaxed">{p.eligibility}</p>
-                  {p.apply_url && (
-                    <a href={p.apply_url} target="_blank" rel="noopener noreferrer" className="no-underline">
+                  <p className="text-[13px] text-muted mb-4 leading-relaxed">{p.description}</p>
+                  {p.url && (
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="no-underline">
                       <Button variant="primary" size="sm">
                         신청 조건 확인하기 <ChevronRight size={15} />
                       </Button>
