@@ -165,7 +165,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* TRUST MARQUEE */}
+        {/* TRUST MARQUEE — 기관명을 실제 로고/심벌 없이 워드마크 카드로만 표시한다.
+            정부·공공기관 심벌은 상업적 사용에 별도 허가가 필요할 수 있고, 실제 로고를
+            쓰면 "이 기관들과 제휴·후원 관계"처럼 보일 위험이 있다 — 여기서 말하려는 건
+            "이 기관들의 공개 공고를 가져다 보여준다"는 사실뿐이라 텍스트 워드마크로 충분하다. */}
         <section className="glass overflow-hidden rounded-none border-l-0 border-r-0 py-[22px]">
           <div className="mx-auto flex max-w-[1200px] items-center gap-[18px] px-10">
             <span className="shrink-0 whitespace-nowrap text-[13px] font-semibold text-muted">실시간 반영 공고 기관</span>
@@ -178,8 +181,19 @@ export default function Home() {
                 maskImage: "linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)",
               }}
             >
-              <div className="flex w-max animate-[marquee_26s_linear_infinite] gap-11 [font-family:var(--font-geist)] text-[17px] font-semibold text-muted">
-                {(["중소벤처기업부","문화체육관광부","예술경영지원센터","창업진흥원","중소기업진흥공단","한국콘텐츠진흥원","K-Startup","중소벤처기업부","문화체육관광부","예술경영지원센터","창업진흥원","중소기업진흥공단","한국콘텐츠진흥원","K-Startup"] as string[]).map((o,i) => <span key={i}>{o}</span>)}
+              <div className="flex w-max animate-[marquee_26s_linear_infinite] gap-3.5">
+                {(["중소벤처기업부","문화체육관광부","예술경영지원센터","창업진흥원","중소기업진흥공단","한국콘텐츠진흥원","K-Startup","중소벤처기업부","문화체육관광부","예술경영지원센터","창업진흥원","중소기업진흥공단","한국콘텐츠진흥원","K-Startup"] as string[]).map((name, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex shrink-0 items-center gap-2 rounded-md border border-border bg-surface px-4 py-2.5"
+                  >
+                    <span
+                      className="h-1.5 w-1.5 shrink-0 rounded-full"
+                      style={{ background: ["var(--color-primary)", "var(--color-secondary)", "var(--color-accent)"][i % 3] }}
+                    />
+                    <span className="whitespace-nowrap [font-family:var(--font-geist)] text-[13.5px] font-bold tracking-[0.01em] text-text">{name}</span>
+                  </span>
+                ))}
               </div>
             </div>
           </div>
