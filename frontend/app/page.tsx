@@ -49,9 +49,9 @@ export default function Home() {
               <span className="[font-family:var(--font-geist)] text-[20px] font-bold tracking-[-0.01em]">Stepup</span>
             </div>
             <div className="landing-nav-links items-center gap-7 text-[15px] font-medium text-muted whitespace-nowrap">
-              <Link href="/guide#how" className="text-inherit no-underline">작동 방식</Link>
+              <Link href="/guide#how" className="text-inherit no-underline">전체 이용 가이드</Link>
               <Link href="/guide#match" className="text-inherit no-underline">지원사업 매칭</Link>
-              <Link href="/guide#write" className="text-inherit no-underline">이용 가이드</Link>
+              <Link href="/guide#write" className="text-inherit no-underline">사업계획서 작성</Link>
               <ThemeSwitcher />
               <Button href="/dashboard" variant="primary" size="md" className="rounded-full">무료로 시작하기</Button>
             </div>
@@ -93,7 +93,7 @@ export default function Home() {
                     <span key={i} className={cn("inline-block h-[26px] w-[26px] rounded-full border-2 border-background", c, i > 0 && "-ml-2")} />
                   ))}
                 </span>
-                문체부 · 중기부 · 예술경영지원센터 공고 <b className="text-text">실시간 반영</b>
+                문체부 · 중기부 · 예술경영지원센터 공고 <b className="text-text">반영</b>
               </div>
             </div>
             {/* Mockup — desktop only; too dense to responsively shrink, hidden on mobile */}

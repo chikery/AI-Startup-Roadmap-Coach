@@ -77,9 +77,9 @@ export default function GuidePage() {
               <span className="[font-family:var(--font-geist)] text-[20px] font-bold tracking-[-0.01em] text-text">Stepup</span>
             </Link>
             <div className="landing-nav-links items-center gap-7 text-[15px] font-medium text-muted whitespace-nowrap">
-              <a href="#how" className="text-inherit no-underline">작동 방식</a>
+              <a href="#how" className="text-inherit no-underline">전체 이용 가이드</a>
               <a href="#match" className="text-inherit no-underline">지원사업 매칭</a>
-              <a href="#write" className="text-inherit no-underline">이용 가이드</a>
+              <a href="#write" className="text-inherit no-underline">사업계획서 작성</a>
               <ThemeSwitcher />
               <Button href="/dashboard" variant="primary" size="md" className="rounded-full">무료로 시작하기</Button>
             </div>
