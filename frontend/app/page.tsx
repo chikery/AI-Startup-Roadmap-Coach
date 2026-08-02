@@ -52,6 +52,7 @@ export default function Home() {
               <Link href="/guide#how" className="text-inherit no-underline">전체 이용 가이드</Link>
               <Link href="/guide#match" className="text-inherit no-underline">지원사업 매칭</Link>
               <Link href="/guide#write" className="text-inherit no-underline">사업계획서 작성</Link>
+              <Link href="/pricing" className="text-inherit no-underline">가격</Link>
               <ThemeSwitcher />
               <Button href="/dashboard" variant="primary" size="md" className="rounded-full">무료로 시작하기</Button>
             </div>

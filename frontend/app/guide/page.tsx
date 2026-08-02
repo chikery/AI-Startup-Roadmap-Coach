@@ -80,6 +80,7 @@ export default function GuidePage() {
               <a href="#how" className="text-inherit no-underline">전체 이용 가이드</a>
               <a href="#match" className="text-inherit no-underline">지원사업 매칭</a>
               <a href="#write" className="text-inherit no-underline">사업계획서 작성</a>
+              <Link href="/pricing" className="text-inherit no-underline">가격</Link>
               <ThemeSwitcher />
               <Button href="/dashboard" variant="primary" size="md" className="rounded-full">무료로 시작하기</Button>
             </div>
