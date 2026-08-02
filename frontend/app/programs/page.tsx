@@ -20,8 +20,11 @@ import { SUPPORT_PROGRAMS, SupportProgram, isExpired, matchesRegion } from "@/ap
 
 const CATEGORIES = ["문화예술", "콘텐츠", "공예", "소셜임팩트", "기술/IT", "기타"];
 const STAGES = ["아이디어", "예비창업", "초기창업"];
+// 로드맵 7단계 이름 그대로 — SUPPORT_PROGRAMS의 steps: number[]와 직접 매칭된다.
+const STEP_NAMES = ["아이디어 스파크", "예술적 비전", "시장 적합성", "재무 지도", "투자 유치", "팀 빌딩", "런칭 데이"];
 
 interface Program extends SupportProgram {
+  score: number;
   match_reason: string;
 }
 
@@ -38,19 +41,24 @@ function daysUntil(dateStr: string): number | null {
 // 던지고 있었다 — 게다가 그 RAG가 참조하던 sample_programs.json은 지금 실제로
 // 유지·검증하고 있는 SUPPORT_PROGRAMS(19곳 확인 후 27개로 확장)와 아예 다른,
 // 오래된 샘플 데이터였다. AI 매칭 대신 이미 검증해둔 SUPPORT_PROGRAMS를
-// 관심분야(정확 일치)·지역(느슨한 부분일치) 기준으로 직접 필터링한다 — 네트워크
-// 호출이 없어 즉시 응답하고, 결과가 전부 실제 존재하고 검증된 공고다.
-function recommendFromSupportPrograms(form: { category: string; region: string }): Program[] {
+// STEP(정확 일치, steps 배열 포함 여부)·관심분야(정확 일치)·지역(느슨한 부분일치)
+// 기준으로 직접 필터링한다 — 네트워크 호출이 없어 즉시 응답하고, 결과가 전부 실제
+// 존재하고 검증된 공고다. 조건에 안 맞는 공고도 계속 목록에 남겨두고(결과 0건
+// 금지) 점수로만 정렬 — 카드 쪽에서 매칭된 것만 테두리로 강조한다.
+function recommendFromSupportPrograms(form: { category: string; region: string; step: string }): Program[] {
+  const stepNum = form.step ? Number(form.step) : null;
   return SUPPORT_PROGRAMS
     .filter((p) => !isExpired(p.deadline))
     .map((p) => {
       const categoryMatch = !!form.category && p.category === form.category;
       const regionMatch = !!form.region.trim() && p.region !== "전국" && matchesRegion(p.region, form.region);
+      const stepMatch = stepNum !== null && p.steps.includes(stepNum);
       const reasons: string[] = [];
+      if (stepMatch) reasons.push(`STEP ${stepNum}(${STEP_NAMES[stepNum - 1]})와 관련 있어요`);
       if (categoryMatch) reasons.push(`관심분야(${form.category})와 일치해요`);
       if (regionMatch) reasons.push(`${form.region} 지역 조건과 맞아요`);
-      if (reasons.length === 0) reasons.push("지금 신청 가능한 지원사업이에요");
-      return { ...p, score: (categoryMatch ? 1 : 0) + (regionMatch ? 1 : 0), match_reason: reasons.join(" · ") };
+      const score = (categoryMatch ? 1 : 0) + (regionMatch ? 1 : 0) + (stepMatch ? 1 : 0);
+      return { ...p, score, match_reason: reasons.join(" · ") };
     })
     .sort((a, b) => b.score - a.score || (new Date(a.deadline).getTime() - new Date(b.deadline).getTime()));
 }
@@ -64,7 +72,7 @@ function DeadlineBadge({ deadline }: { deadline: string }) {
 
 export default function ProgramsPage() {
   const toast = useToast();
-  const [form, setForm] = useState({ item_keyword: "", category: "", startup_stage: "", region: "" });
+  const [form, setForm] = useState({ item_keyword: "", category: "", startup_stage: "", region: "", step: "" });
   const [results, setResults] = useState<Program[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -92,6 +100,7 @@ export default function ProgramsPage() {
       category: parsed.category || "",
       startup_stage: parsed.startup_stage || "",
       region: parsed.region || "",
+      step: "",
     };
     setForm(next);
     // Task-driven: if we already know enough about this user, show "지금 자격 되는 사업"
@@ -108,10 +117,8 @@ export default function ProgramsPage() {
     await runSearch(form);
   }
 
-  const eligibleCount = results.filter((p) => {
-    const left = daysUntil(p.deadline);
-    return left === null || left >= 0;
-  }).length;
+  const matchedCount = results.filter((p) => p.score > 0).length;
+  const hasCriteria = !!(form.category || form.region.trim() || form.step);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background">
@@ -171,10 +178,14 @@ export default function ProgramsPage() {
           {searched ? (
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-1.5">
-                <Badge variant={eligibleCount > 0 ? "success" : "default"}>지금 자격 {eligibleCount}건</Badge>
+                {hasCriteria ? (
+                  <Badge variant={matchedCount > 0 ? "success" : "default"}>조건에 맞는 지원사업 {matchedCount}건</Badge>
+                ) : (
+                  <Badge variant="default">지금 신청 가능한 지원사업 {results.length}건</Badge>
+                )}
               </div>
               <h1 className="text-[22px] sm:text-h3 font-[800] text-text m-0">신청 가능한 지원사업이에요</h1>
-              <p className="text-[14px] text-muted mt-1.5">관심분야·지역 조건으로 찾은 결과예요. 조건을 바꾸고 싶다면 아래 "검색 조건 수정"을 열어보세요.</p>
+              <p className="text-[14px] text-muted mt-1.5">STEP·관심분야·지역 조건에 맞는 공고는 테두리로 표시돼요. 조건을 바꾸고 싶다면 아래 "검색 조건 수정"을 열어보세요.</p>
             </div>
           ) : (
             <div className="mb-6">
@@ -202,36 +213,46 @@ export default function ProgramsPage() {
 
           {!loading && searched && (
             <div className="flex flex-col gap-4">
-              {results.map((p, i) => (
-                <Card key={p.name} padding="md">
-                  <div className="flex items-start justify-between gap-4 mb-2.5 flex-wrap">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Badge variant="default">#{i + 1}</Badge>
-                      <span className="font-[800] text-text text-[16px]">{p.name}</span>
+              {results.map((p, i) => {
+                const matched = hasCriteria && p.score > 0;
+                return (
+                  <Card
+                    key={p.name}
+                    padding="md"
+                    className={matched ? "border-2 border-primary" : undefined}
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-2.5 flex-wrap">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Badge variant="default">#{i + 1}</Badge>
+                        <span className="font-[800] text-text text-[16px]">{p.name}</span>
+                        {matched && <Badge variant="success">맞춤</Badge>}
+                      </div>
+                      <DeadlineBadge deadline={p.deadline} />
                     </div>
-                    <DeadlineBadge deadline={p.deadline} />
-                  </div>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="success">{p.maxSupport}</Badge>
-                    <Badge variant="default" className="text-muted bg-background border border-border">{p.category}</Badge>
-                    <Badge variant="default" className="text-muted bg-background border border-border">{p.region}</Badge>
-                  </div>
-                  <div className="rounded-md p-3.5 mb-3.5" style={{ background: "var(--color-primary-subtle)" }}>
-                    <p className="text-[12px] font-[600] text-primary m-0 mb-1">왜 지금 추천되었나요</p>
-                    <p className="text-[13.5px] text-primary m-0 leading-relaxed">{p.match_reason}</p>
-                  </div>
-                  <p className="text-[13px] text-muted mb-4 leading-relaxed">{p.description}</p>
-                  {p.url && (
-                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="no-underline">
-                      <Button variant="primary" size="sm">
-                        신청 조건 확인하기 <ChevronRight size={15} />
-                      </Button>
-                    </a>
-                  )}
-                </Card>
-              ))}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <Badge variant="success">{p.maxSupport}</Badge>
+                      <Badge variant="default" className="text-muted bg-background border border-border">{p.category}</Badge>
+                      <Badge variant="default" className="text-muted bg-background border border-border">{p.region}</Badge>
+                    </div>
+                    {matched && (
+                      <div className="rounded-md p-3.5 mb-3.5" style={{ background: "var(--color-primary-subtle)" }}>
+                        <p className="text-[12px] font-[600] text-primary m-0 mb-1">왜 지금 추천되었나요</p>
+                        <p className="text-[13.5px] text-primary m-0 leading-relaxed">{p.match_reason}</p>
+                      </div>
+                    )}
+                    <p className="text-[13px] text-muted mb-4 leading-relaxed">{p.description}</p>
+                    {p.url && (
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="no-underline">
+                        <Button variant="primary" size="sm">
+                          신청 조건 확인하기 <ChevronRight size={15} />
+                        </Button>
+                      </a>
+                    )}
+                  </Card>
+                );
+              })}
               {results.length === 0 && (
-                <div className="text-center py-10 text-[13.5px] text-muted">조건에 맞는 지원사업을 찾지 못했어요. 조건을 조정해보세요.</div>
+                <div className="text-center py-10 text-[13.5px] text-muted">지금 신청 가능한 지원사업이 없어요.</div>
               )}
             </div>
           )}
@@ -246,8 +267,8 @@ export default function ProgramsPage() {
 function SearchForm({
   form, setForm, onSubmit, loading,
 }: {
-  form: { item_keyword: string; category: string; startup_stage: string; region: string };
-  setForm: (f: { item_keyword: string; category: string; startup_stage: string; region: string }) => void;
+  form: { item_keyword: string; category: string; startup_stage: string; region: string; step: string };
+  setForm: (f: { item_keyword: string; category: string; startup_stage: string; region: string; step: string }) => void;
   onSubmit: (e: React.FormEvent) => void;
   loading: boolean;
 }) {
@@ -263,6 +284,14 @@ function SearchForm({
             placeholder="예: 공예 작가를 위한 온라인 판매 플랫폼"
           />
         </div>
+        <Select
+          label="로드맵 STEP (선택)"
+          value={form.step}
+          onChange={(e) => setForm({ ...form, step: e.target.value })}
+        >
+          <option value="">선택 안 함</option>
+          {STEP_NAMES.map((name, idx) => <option key={idx} value={idx + 1}>STEP {idx + 1} · {name}</option>)}
+        </Select>
         <Select
           label="분야"
           required
