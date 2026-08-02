@@ -1,6 +1,5 @@
-// Mock/sample data for the desktop-only "창업 정보 허브" dashboard section.
-// TODO: replace with real scraping/API integration in a follow-up phase.
-
+// 창업 정보 허브 대시보드 섹션의 fallback 데이터. 실데이터(hub_items)가 비어있을 때만
+// (수집 전/실패 시) 쓰인다 — dashboard/page.tsx 참고.
 export interface InfoHubItem {
   title: string;
   source: string;
@@ -9,54 +8,59 @@ export interface InfoHubItem {
   steps: number[]; // roadmap steps this item is most relevant to
 }
 
+// STARTUP_NEWS는 "이번 주 최신 뉴스"라 원래 자동 수집(RSS) 대상이다 —
+// 실데이터가 없을 때만 잠깐 보이는 fallback이라, 지어낸 헤드라인+홈페이지 링크 대신
+// 실제 존재하는 기사로 2026-08-02 시점 스냅샷을 박아뒀다(제목/URL 라이브 확인 완료).
+// 시간이 지나면 "최신"이라기엔 오래된 기사가 되지만, 그래도 "제목과 링크가 실제로
+// 일치하는 진짜 기사"라는 게 핵심 — 실데이터 수집이 정상화되면 이 배열은 거의 안 보인다.
 export const STARTUP_NEWS: InfoHubItem[] = [
   {
-    title: "2026년 초기 스타트업 투자, '검증된 문제 정의'가 최우선 기준으로",
+    title: "중기부, '모두의 창업' 아이디어 보호 지원 확대…플랫폼 보안체계 전면 개편",
     source: "플래텀",
-    date: "2026-07-20",
-    url: "https://platum.kr/",
+    date: "2026-07-31",
+    url: "https://platum.kr/archives/291754",
     steps: [1],
   },
   {
-    title: "예술·콘텐츠 분야 창업, 브랜드 차별화가 투자 유치의 핵심 변수로",
-    source: "벤처스퀘어",
-    date: "2026-07-18",
-    url: "https://www.venturesquare.net/",
+    title: "[커머스BN] 김봉진 \"브랜드 시대 끝났다…조직이 중요\"",
+    source: "바이라인네트워크",
+    date: "2026-07-31",
+    url: "https://byline.network/2026/07/31_2182773/",
     steps: [2],
   },
   {
-    title: "국내 시드 투자 시장, TAM·SAM·SOM 근거 자료 요구 강화",
-    source: "더벨",
-    date: "2026-07-15",
-    url: "https://www.thebell.co.kr/",
+    title: "윤슬기 언어발전소 대표, \"기술보다 사람…AI로 언어재활의 공백 메운다\"",
+    source: "벤처스퀘어",
+    date: "2026-08-01",
+    url: "https://www.venturesquare.net/1093775/",
     steps: [3],
   },
   {
-    title: "유닛 이코노믹스 못 챙기면 시리즈 A도 없다 — 초기 창업 자금조달 트렌드",
-    source: "플래텀",
-    date: "2026-07-10",
-    url: "https://platum.kr/",
+    title: "[VS기획] '메시지당 과금' 없어도 흑자… 제타가 증명한 '광고 기반 무료화'의 힘",
+    source: "벤처스퀘어",
+    date: "2026-07-31",
+    url: "https://www.venturesquare.net/1097430/",
     steps: [4],
   },
   {
-    title: "2026 하반기 예비창업패키지, 역대 최대 규모로 모집",
-    source: "벤처스퀘어",
-    date: "2026-07-08",
-    url: "https://www.venturesquare.net/",
+    title: "충청권 엔젤투자허브, 지역 초기창업기업과 투자사 잇는 '엔젤 웨이브 IR 캠프' 열어",
+    source: "플래텀",
+    date: "2026-07-31",
+    url: "https://platum.kr/archives/291764",
     steps: [5],
   },
   {
-    title: "1인 창업자도 괜찮다 — 초기 팀 구성 성공 사례 분석",
-    source: "더벨",
-    date: "2026-07-03",
-    url: "https://www.thebell.co.kr/",
+    title: "프라이머, 29세 이하 창업자 커뮤니티 'U29 파운더스 클럽' 성장세…7월 밋업에 200명 모였다",
+    source: "벤처스퀘어",
+    date: "2026-08-01",
+    url: "https://www.venturesquare.net/1102785/",
     steps: [6],
   },
   {
-    title: "데모데이 피칭, 3분 안에 '왜 지금 이 팀인가'를 설득해야",
+    title: "디캠프, 배치 3기 디데이 열어… 참여 5개사 성과 공개",
     source: "플래텀",
-    date: "2026-06-29",
-    url: "https://platum.kr/",
+    date: "2026-07-31",
+    url: "https://platum.kr/archives/291743",
     steps: [7],
   },
 ];
