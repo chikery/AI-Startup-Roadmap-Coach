@@ -6,9 +6,9 @@ interface Props {
   items: InfoHubItem[];
 }
 
-// K-Startup/기업마당/KOCCA는 전부 지원사업 공고 API라 학습 아티클을 주지 않는다 —
-// 이 카드는 실데이터 수집기가 없고, dashboard/page.tsx가 항상 RECOMMENDED_ARTICLES
-// 목업을 그대로 items로 내려준다.
+// "이번 주 최신 글"이 아니라 "단계별로 계속 유효한 좋은 글"이 필요해 RSS/API
+// 자동 수집 대상이 아니다 — info-hub-data.ts에 실제 존재하는 글을 직접
+// 큐레이션해뒀고(제목·저자·URL 실검증 완료), 이 카드는 그 값을 그대로 받는다.
 export default function RecommendedArticleCard({ currentStep, items }: Props) {
   return (
     <InfoHubList

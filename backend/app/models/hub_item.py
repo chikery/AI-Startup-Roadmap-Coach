@@ -5,9 +5,11 @@ from app.database import Base
 class HubItem(Base):
     """창업 정보 허브(대시보드) 수집 데이터. source_type: 'news' | 'gov_support' | 'article'.
 
-    이번 단계에서는 K-Startup/기업마당/KOCCA 3개 공식 API만 'gov_support'로 수집한다.
-    'news'/'article'은 향후 확장을 위해 스키마에는 남겨두되 아직 채우는 수집기가 없다 —
-    프론트는 빈 결과일 때 자동으로 기존 목업(info-hub-data.ts)으로 폴백한다.
+    'gov_support'는 K-Startup/기업마당/KOCCA 3개 기관, 'news'는 플래텀/벤처스퀘어/
+    바이라인네트워크 RSS 3개 매체를 수집한다. 'article'(Recommended Articles)은
+    "이번 주 최신 글"이 아니라 "단계별로 계속 유효한 글"이 필요해 자동 수집 대상이
+    아니다 — 수동으로 큐레이션한 실제 아티클을 info-hub-data.ts에 직접 등록한다.
+    프론트는 이 테이블이 비어있으면(수집 전/실패 시) 자동으로 기존 목업으로 폴백한다.
     """
     __tablename__ = "hub_items"
 

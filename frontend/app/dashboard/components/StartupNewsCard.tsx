@@ -6,9 +6,8 @@ interface Props {
   items: InfoHubItem[];
 }
 
-// 이번 단계에서 확정한 수집 대상(K-Startup/기업마당/KOCCA)은 전부 정부지원사업
-// 공고이지, 창업 생태계 일반 뉴스가 아니다 — 그래서 이 카드는 실데이터 수집기가
-// 없고, dashboard/page.tsx가 항상 STARTUP_NEWS 목업을 그대로 items로 내려준다.
+// items는 플래텀/벤처스퀘어/바이라인네트워크 RSS 실데이터(hub_items, source_type="news").
+// dashboard/page.tsx가 수집 결과가 비어있으면(수집 전/실패 시) STARTUP_NEWS 목업으로 폴백한다.
 export default function StartupNewsCard({ currentStep, items }: Props) {
   return (
     <InfoHubList

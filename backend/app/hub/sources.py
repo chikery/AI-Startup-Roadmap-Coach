@@ -32,7 +32,9 @@ GOKAMS(예술경영지원센터):
 import html as htmllib
 import logging
 import re
+import xml.etree.ElementTree as ET
 from datetime import date, datetime
+from email.utils import parsedate_to_datetime
 from typing import Any, Optional
 
 import httpx
@@ -274,4 +276,64 @@ SOURCE_FETCHERS = {
     "K-Startup": fetch_kstartup,
     "기업마당": fetch_bizinfo,
     "한국콘텐츠진흥원": fetch_kocca,
+}
+
+
+def _fetch_wordpress_rss(url: str, agency: str) -> list[dict]:
+    """워드프레스 표준 RSS(title/link/pubDate/category)를 쓰는 매체 공용 파서.
+    라이브로 확인(2026-08-01): 플래텀·벤처스퀘어·바이라인네트워크 전부 이 구조.
+    마감일 개념이 없는 뉴스라 deadline/max_support_amount는 항상 None."""
+    try:
+        resp = httpx.get(url, headers={"User-Agent": UA}, timeout=15, follow_redirects=True)
+        resp.raise_for_status()
+        root = ET.fromstring(resp.text)
+    except Exception as e:
+        logger.warning("%s RSS fetch failed: %s", agency, e)
+        return []
+
+    out = []
+    for item in root.findall(".//item"):
+        link = (item.findtext("link") or "").strip()
+        title = (item.findtext("title") or "").strip()
+        if not link or not title:
+            continue
+        published_at = None
+        pub_raw = item.findtext("pubDate")
+        if pub_raw:
+            try:
+                published_at = parsedate_to_datetime(pub_raw).date()
+            except (ValueError, TypeError):
+                published_at = None
+        categories = [c.text.strip() for c in item.findall("category") if c.text and c.text.strip()]
+
+        out.append({
+            "raw_id": link,
+            "agency": agency,
+            "title": title,
+            "summary": ", ".join(categories),
+            "url": link,
+            "published_at": published_at,
+            "deadline": None,
+            "max_support_amount": None,
+            "raw_eligibility_text": f"{title} {' '.join(categories)}",
+        })
+    return out
+
+
+def fetch_platum() -> list[dict]:
+    return _fetch_wordpress_rss("https://platum.kr/feed", "플래텀")
+
+
+def fetch_venturesquare() -> list[dict]:
+    return _fetch_wordpress_rss("https://www.venturesquare.net/feed", "벤처스퀘어")
+
+
+def fetch_byline() -> list[dict]:
+    return _fetch_wordpress_rss("https://byline.network/feed", "바이라인네트워크")
+
+
+NEWS_SOURCE_FETCHERS = {
+    "플래텀": fetch_platum,
+    "벤처스퀘어": fetch_venturesquare,
+    "바이라인네트워크": fetch_byline,
 }

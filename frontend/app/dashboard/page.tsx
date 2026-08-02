@@ -37,9 +37,9 @@ export default function DashboardPage() {
   const [progress, setProgress] = useState<StepStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasPlan, setHasPlan] = useState(false);
-  // 실데이터(hub_items)가 비어있으면 목업을 기본값으로 유지 — K-Startup/기업마당/KOCCA는
-  // 전부 정부지원사업 공고라 govSupportNews만 실제 수집기가 있고, 나머지 둘은 계속 목업.
+  // 실데이터(hub_items)가 비어있으면 목업을 기본값으로 유지.
   const [govSupportNews, setGovSupportNews] = useState<InfoHubItem[]>(GOV_SUPPORT_NEWS);
+  const [startupNews, setStartupNews] = useState<InfoHubItem[]>(STARTUP_NEWS);
 
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -73,6 +73,11 @@ export default function DashboardPage() {
     api.hub.getItems("gov_support")
       .then((res) => {
         if (res.items.length > 0) setGovSupportNews(res.items);
+      })
+      .catch(() => {});
+    api.hub.getItems("news")
+      .then((res) => {
+        if (res.items.length > 0) setStartupNews(res.items);
       })
       .catch(() => {});
   }, []);
@@ -275,7 +280,7 @@ export default function DashboardPage() {
             <div className="hidden md:block">
               <div className="text-base font-bold" style={{ color: "var(--color-text)" }}>창업 정보 허브</div>
               <div className="mt-3 grid grid-cols-3 gap-6">
-                <StartupNewsCard currentStep={activeStep} items={STARTUP_NEWS} />
+                <StartupNewsCard currentStep={activeStep} items={startupNews} />
                 <GovSupportNewsCard currentStep={activeStep} items={govSupportNews} />
                 <RecommendedArticleCard currentStep={activeStep} items={RECOMMENDED_ARTICLES} />
               </div>

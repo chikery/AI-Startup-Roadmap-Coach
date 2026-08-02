@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from app.hub import tagging, sources
-from app.hub.collector import collect_gov_support, deactivate_expired
+from app.hub.collector import collect_gov_support, collect_startup_news, deactivate_expired
 from app.models.hub_item import HubItem
 
 
@@ -74,6 +74,31 @@ def test_dedup_via_raw_source_id_unique(db, monkeypatch):
     assert len(rows) == 1
 
 
+def test_collect_startup_news_dedup(db, monkeypatch):
+    raw_item = {
+        "raw_id": "https://platum.kr/archives/1",
+        "agency": "플래텀",
+        "title": "테스트 뉴스",
+        "summary": "스타트업",
+        "url": "https://platum.kr/archives/1",
+        "published_at": date.today(),
+        "deadline": None,
+        "max_support_amount": None,
+        "raw_eligibility_text": "테스트 뉴스 스타트업",
+    }
+    monkeypatch.setitem(sources.NEWS_SOURCE_FETCHERS, "플래텀", lambda: [raw_item])
+    monkeypatch.setitem(sources.NEWS_SOURCE_FETCHERS, "벤처스퀘어", lambda: [])
+    monkeypatch.setitem(sources.NEWS_SOURCE_FETCHERS, "바이라인네트워크", lambda: [])
+
+    collect_startup_news(db)
+    collect_startup_news(db)  # 동일 raw_id(링크)로 재수집
+
+    rows = db.query(HubItem).filter(HubItem.source_type == "news", HubItem.raw_source_id == raw_item["raw_id"]).all()
+    assert len(rows) == 1
+    # 뉴스는 deadline이 없으니 deactivate_expired 대상이 아니어야 한다
+    assert deactivate_expired(db) == 0
+
+
 # ---- 3. 마감 지난 공고 자동 비활성화 ----
 
 def test_deactivate_expired(db):
@@ -122,6 +147,9 @@ def test_collect_endpoint_accepts_correct_key(client, monkeypatch):
     monkeypatch.setitem(sources.SOURCE_FETCHERS, "K-Startup", lambda: [])
     monkeypatch.setitem(sources.SOURCE_FETCHERS, "기업마당", lambda: [])
     monkeypatch.setitem(sources.SOURCE_FETCHERS, "한국콘텐츠진흥원", lambda: [])
+    monkeypatch.setitem(sources.NEWS_SOURCE_FETCHERS, "플래텀", lambda: [])
+    monkeypatch.setitem(sources.NEWS_SOURCE_FETCHERS, "벤처스퀘어", lambda: [])
+    monkeypatch.setitem(sources.NEWS_SOURCE_FETCHERS, "바이라인네트워크", lambda: [])
 
     res = client.post("/hub/collect", headers={"X-Hub-Collector-Key": "test-collector-key"})
     assert res.status_code == 200

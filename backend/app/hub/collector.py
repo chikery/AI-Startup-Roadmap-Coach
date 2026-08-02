@@ -8,17 +8,18 @@ from datetime import date
 from sqlalchemy.orm import Session
 
 from app.models.hub_item import HubItem
-from app.hub.sources import SOURCE_FETCHERS
+from app.hub.sources import SOURCE_FETCHERS, NEWS_SOURCE_FETCHERS
 from app.hub.tagging import tag_item
 
 SOURCE_TYPE_GOV_SUPPORT = "gov_support"
+SOURCE_TYPE_NEWS = "news"
 
 
-def collect_gov_support(db: Session) -> dict:
+def _collect(db: Session, source_type: str, fetchers: dict) -> dict:
     collected = 0
     errors: list[str] = []
 
-    for agency, fetcher in SOURCE_FETCHERS.items():
+    for agency, fetcher in fetchers.items():
         try:
             raw_items = fetcher()
         except Exception as e:
@@ -32,7 +33,7 @@ def collect_gov_support(db: Session) -> dict:
                 existing = (
                     db.query(HubItem)
                     .filter(
-                        HubItem.source_type == SOURCE_TYPE_GOV_SUPPORT,
+                        HubItem.source_type == source_type,
                         HubItem.agency == raw["agency"],
                         HubItem.raw_source_id == raw["raw_id"],
                     )
@@ -52,7 +53,7 @@ def collect_gov_support(db: Session) -> dict:
                     existing.is_active = True  # 재수집됐고 아래에서 마감 여부를 다시 판단하므로 일단 활성화
                 else:
                     db.add(HubItem(
-                        source_type=SOURCE_TYPE_GOV_SUPPORT,
+                        source_type=source_type,
                         agency=raw["agency"],
                         title=raw["title"],
                         summary=raw.get("summary"),
@@ -73,6 +74,16 @@ def collect_gov_support(db: Session) -> dict:
     return {"collected": collected, "errors": errors}
 
 
+def collect_gov_support(db: Session) -> dict:
+    return _collect(db, SOURCE_TYPE_GOV_SUPPORT, SOURCE_FETCHERS)
+
+
+def collect_startup_news(db: Session) -> dict:
+    """뉴스는 마감일 개념이 없어(raw.deadline은 항상 None) deactivate_expired 대상이 되지
+    않는다 — 화면은 published_at 최신순 상위 N건만 보여주므로 오래된 기사는 자연히 밀려난다."""
+    return _collect(db, SOURCE_TYPE_NEWS, NEWS_SOURCE_FETCHERS)
+
+
 def deactivate_expired(db: Session) -> int:
     today = date.today()
     q = db.query(HubItem).filter(
@@ -88,11 +99,12 @@ def deactivate_expired(db: Session) -> int:
 
 
 def run_collection(db: Session) -> dict:
-    result = collect_gov_support(db)
+    gov = collect_gov_support(db)
+    news = collect_startup_news(db)
     deactivated = deactivate_expired(db)
     return {
         "ok": True,
-        "collected": result["collected"],
+        "collected": gov["collected"] + news["collected"],
         "deactivated": deactivated,
-        "errors": result["errors"],
+        "errors": gov["errors"] + news["errors"],
     }
