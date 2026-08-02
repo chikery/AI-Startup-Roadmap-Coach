@@ -86,7 +86,7 @@ export default function Home() {
                   className="rounded-full"
                   style={{ boxShadow: "0 14px 30px -10px color-mix(in srgb, var(--color-text) 45%, transparent)" }}
                 >무료로 시작하기 →</Button>
-                <Button href="#preview" variant="secondary" size="lg" className="rounded-full">데모 둘러보기</Button>
+                <Button href="/guide" variant="secondary" size="lg" className="rounded-full">데모 둘러보기</Button>
               </div>
               <div className="mt-9 flex flex-wrap items-center gap-3 text-[13.5px] text-muted">
                 <span className="inline-flex">
