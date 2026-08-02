@@ -51,7 +51,7 @@ export default function Home() {
             <div className="landing-nav-links items-center gap-7 text-[15px] font-medium text-muted whitespace-nowrap">
               <Link href="/guide#how" className="text-inherit no-underline">작동 방식</Link>
               <Link href="/guide#match" className="text-inherit no-underline">지원사업 매칭</Link>
-              <Link href="/guide#write" className="text-inherit no-underline">작성 화면</Link>
+              <Link href="/guide#write" className="text-inherit no-underline">이용 가이드</Link>
               <ThemeSwitcher />
               <Button href="/dashboard" variant="primary" size="md" className="rounded-full">무료로 시작하기</Button>
             </div>
